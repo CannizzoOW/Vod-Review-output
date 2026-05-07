@@ -21,7 +21,7 @@ import heroTemplates from "./data/heroTemplates.json";
 const PAGE_W = 1080;
 const PAGE_H = 1527;
 const HEROES = Object.keys(heroTemplates);
-const fallbackTemplate = "/templates/default.png";
+const fallbackTemplate = `${import.meta.env.BASE_URL}templates/default.png`;
 
 const APPROVED_REGIONS = [
   { id: "mainText", label: "Main text", x: 70, y: 360, w: 585, h: 950 },
@@ -206,7 +206,11 @@ export default function App() {
   const selectedLayer = activePage?.layers.find((l) => l.id === selectedLayerId);
 
   const templateBackground = useMemo(() => {
-    return heroTemplates[form.hero]?.template || fallbackTemplate;
+    const template = heroTemplates[form.hero]?.template;
+
+    if (!template) return fallbackTemplate;
+
+    return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
   }, [form.hero]);
 
   function updateForm(key, value) {

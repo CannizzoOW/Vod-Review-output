@@ -69,7 +69,7 @@ for (const file of files) {
 
     heroTemplates[heroName] = {
         slug,
-        template: `/templates/${file}`,
+        template: `templates/${file}`,
     };
 }
 

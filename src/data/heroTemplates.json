@@ -1,210 +1,214 @@
 {
   "Adam Warlock": {
     "slug": "adam-warlock",
-    "template": "/templates/Adam Warlock.png"
+    "template": "templates/Adam Warlock.png"
   },
   "Angela": {
     "slug": "angela",
-    "template": "/templates/Angela.png"
+    "template": "templates/Angela.png"
   },
   "Black Cat": {
     "slug": "black-cat",
-    "template": "/templates/Black Cat.png"
+    "template": "templates/Black Cat.png"
   },
   "Blackwidow": {
     "slug": "blackwidow",
-    "template": "/templates/Black_Widow.png"
+    "template": "templates/Black_Widow.png"
   },
   "Blade": {
     "slug": "blade",
-    "template": "/templates/Blade.png"
+    "template": "templates/Blade.png"
   },
   "Capatain America": {
     "slug": "capatain-america",
-    "template": "/templates/Capatain America.png"
+    "template": "templates/Capatain America.png"
   },
   "Cloak Dagger": {
     "slug": "cloak-dagger",
-    "template": "/templates/Cloak & Dagger.png"
+    "template": "templates/Cloak & Dagger.png"
   },
   "Dpspool": {
     "slug": "dpspool",
-    "template": "/templates/DPSpool.png"
+    "template": "templates/DPSpool.png"
   },
   "Daredevil": {
     "slug": "daredevil",
-    "template": "/templates/Daredevil.png"
+    "template": "templates/Daredevil.png"
   },
   "Elsa Bloodstone": {
     "slug": "elsa-bloodstone",
-    "template": "/templates/Elsa Bloodstone.png"
+    "template": "templates/Elsa Bloodstone.png"
   },
   "Emma Frost": {
     "slug": "emma-frost",
-    "template": "/templates/Emma Frost.png"
+    "template": "templates/Emma Frost.png"
   },
   "Gambit": {
     "slug": "gambit",
-    "template": "/templates/Gambit.png"
+    "template": "templates/Gambit.png"
   },
   "Groot": {
     "slug": "groot",
-    "template": "/templates/Groot.png"
+    "template": "templates/Groot.png"
   },
   "Hawkeye": {
     "slug": "hawkeye",
-    "template": "/templates/Hawkeye.png"
+    "template": "templates/Hawkeye.png"
   },
   "Healpool": {
     "slug": "healpool",
-    "template": "/templates/Healpool.png"
+    "template": "templates/Healpool.png"
   },
   "Hela": {
     "slug": "hela",
-    "template": "/templates/Hela.png"
+    "template": "templates/Hela.png"
   },
   "Hulk": {
     "slug": "hulk",
-    "template": "/templates/Hulk.png"
+    "template": "templates/Hulk.png"
   },
   "Human Torch": {
     "slug": "human-torch",
-    "template": "/templates/Human Torch.png"
+    "template": "templates/Human Torch.png"
   },
   "Invisible Woman": {
     "slug": "invisible-woman",
-    "template": "/templates/Invisible Woman.png"
+    "template": "templates/Invisible Woman.png"
   },
   "Iron Fist": {
     "slug": "iron-fist",
-    "template": "/templates/Iron Fist.png"
+    "template": "templates/Iron Fist.png"
   },
   "Iron Man": {
     "slug": "iron-man",
-    "template": "/templates/Iron Man.png"
+    "template": "templates/Iron Man.png"
   },
   "Jeff": {
     "slug": "jeff",
-    "template": "/templates/Jeff.png"
+    "template": "templates/Jeff.png"
   },
   "Loki": {
     "slug": "loki",
-    "template": "/templates/Loki.png"
+    "template": "templates/Loki.png"
   },
   "Luna Snow Example": {
     "slug": "luna-snow-example",
-    "template": "/templates/Luna Snow - Example.png"
+    "template": "templates/Luna Snow - Example.png"
   },
   "Luna Snow": {
     "slug": "luna-snow",
-    "template": "/templates/Luna Snow.png"
+    "template": "templates/Luna Snow.png"
   },
   "Magik": {
     "slug": "magik",
-    "template": "/templates/Magik.png"
+    "template": "templates/Magik.png"
   },
   "Magneto": {
     "slug": "magneto",
-    "template": "/templates/Magneto.png"
+    "template": "templates/Magneto.png"
   },
   "Mantis": {
     "slug": "mantis",
-    "template": "/templates/Mantis.png"
+    "template": "templates/Mantis.png"
   },
   "Mister Fantastic": {
     "slug": "mister-fantastic",
-    "template": "/templates/Mister Fantastic.png"
+    "template": "templates/Mister Fantastic.png"
   },
   "Moon Knight": {
     "slug": "moon-knight",
-    "template": "/templates/Moon Knight.png"
+    "template": "templates/Moon Knight.png"
   },
   "Namor": {
     "slug": "namor",
-    "template": "/templates/Namor.png"
+    "template": "templates/Namor.png"
   },
   "Panther": {
     "slug": "panther",
-    "template": "/templates/Panther.png"
+    "template": "templates/Panther.png"
   },
   "Peni": {
     "slug": "peni",
-    "template": "/templates/Peni.png"
+    "template": "templates/Peni.png"
   },
   "Phoenix": {
     "slug": "phoenix",
-    "template": "/templates/Phoenix.png"
+    "template": "templates/Phoenix.png"
   },
   "Psylocke": {
     "slug": "psylocke",
-    "template": "/templates/Psylocke.png"
+    "template": "templates/Psylocke.png"
   },
   "Punisher": {
     "slug": "punisher",
-    "template": "/templates/Punisher.png"
+    "template": "templates/Punisher.png"
   },
   "Rocket": {
     "slug": "rocket",
-    "template": "/templates/Rocket.png"
+    "template": "templates/Rocket.png"
   },
   "Rogue": {
     "slug": "rogue",
-    "template": "/templates/Rogue.png"
+    "template": "templates/Rogue.png"
   },
   "Scarlet Witch": {
     "slug": "scarlet-witch",
-    "template": "/templates/Scarlet Witch.png"
+    "template": "templates/Scarlet Witch.png"
   },
   "Spider-Man": {
     "slug": "spider-man",
-    "template": "/templates/Spider-Man.png"
+    "template": "templates/Spider-Man.png"
   },
   "Squirrel Girl": {
     "slug": "squirrel-girl",
-    "template": "/templates/Squirrel Girl.png"
+    "template": "templates/Squirrel Girl.png"
   },
   "Star Lord": {
     "slug": "star-lord",
-    "template": "/templates/Star-Lord.png"
+    "template": "templates/Star-Lord.png"
   },
   "Storm": {
     "slug": "storm",
-    "template": "/templates/Storm.png"
+    "template": "templates/Storm.png"
   },
   "Strange": {
     "slug": "strange",
-    "template": "/templates/Strange.png"
+    "template": "templates/Strange.png"
   },
   "Tankpool": {
     "slug": "tankpool",
-    "template": "/templates/Tankpool.png"
+    "template": "templates/Tankpool.png"
   },
   "Thing": {
     "slug": "thing",
-    "template": "/templates/Thing.png"
+    "template": "templates/Thing.png"
   },
   "Thor": {
     "slug": "thor",
-    "template": "/templates/Thor.png"
+    "template": "templates/Thor.png"
   },
   "Ultron": {
     "slug": "ultron",
-    "template": "/templates/Ultron.png"
+    "template": "templates/Ultron.png"
   },
   "Venom": {
     "slug": "venom",
-    "template": "/templates/Venom.png"
+    "template": "templates/Venom.png"
   },
   "White Fox": {
     "slug": "white-fox",
-    "template": "/templates/White Fox.png"
+    "template": "templates/White Fox.png"
   },
   "Winter Soldier": {
     "slug": "winter-soldier",
-    "template": "/templates/Winter Soldier.png"
+    "template": "templates/Winter Soldier.png"
   },
   "Wolverine": {
     "slug": "wolverine",
-    "template": "/templates/Wolverine.png"
+    "template": "templates/Wolverine.png"
+  },
+  "Default": {
+    "slug": "default",
+    "template": "templates/default.png"
   }
 }
