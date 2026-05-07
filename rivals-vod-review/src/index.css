@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  background: #070b16;
+  font-family: Inter, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.editor-canvas,
+.editor-canvas * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.input {
+  @apply w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none focus:border-blue-400;
+}
+
+.panel {
+  @apply rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-xl;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-500;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-sm font-bold text-slate-100 hover:bg-slate-700;
+}
+
+.tool-btn {
+  @apply inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-sm font-bold text-slate-300 hover:bg-slate-800 hover:text-white;
+}
+
+.tool-btn-active {
+  @apply bg-blue-600 text-white hover:bg-blue-500;
+}
