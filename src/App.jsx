@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 
 import heroTemplates from "./data/heroTemplates.json";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const PAGE_W = 1080;
 const PAGE_H = 1527;
@@ -132,12 +134,17 @@ function makeTextLayer(segment, x = 80, y = 380) {
     id: uid(),
     kind: "text",
     sourceSegmentId: segment.id,
+
     x,
     y,
     w: segment.type === "heading" ? 420 : 560,
     h: segment.type === "heading" ? 55 : 130,
+
     fontSize: segment.type === "heading" ? 28 : 18,
     weight: segment.type === "heading" ? 900 : 500,
+    italic: false,
+    markdown: true,
+
     text:
       segment.type === "heading"
         ? segment.text.toUpperCase()
@@ -588,10 +595,81 @@ export default function App() {
               {selectedLayer.kind === "text" && (
                 <>
                   <div className="mt-3 grid grid-cols-2 gap-2">
-                    <NumberField label="Font size" value={selectedLayer.fontSize} onChange={(v) => setLayer(selectedLayer.id, { fontSize: v })} />
-                    <NumberField label="Weight" value={selectedLayer.weight} onChange={(v) => setLayer(selectedLayer.id, { weight: v })} />
+                    <NumberField
+                      label="Font size"
+                      value={selectedLayer.fontSize}
+                      onChange={(v) =>
+                        setLayer(selectedLayer.id, {
+                          fontSize: v,
+                        })
+                      }
+                    />
+
+                    <NumberField
+                      label="Weight"
+                      value={selectedLayer.weight}
+                      onChange={(v) =>
+                        setLayer(selectedLayer.id, {
+                          weight: v,
+                        })
+                      }
+                    />
                   </div>
-                  <TextArea label="Text" value={selectedLayer.text} onChange={(v) => setLayer(selectedLayer.id, { text: v })} />
+
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      className={`tool-btn ${selectedLayer.weight >= 700
+                          ? "tool-btn-active"
+                          : ""
+                        }`}
+                      onClick={() =>
+                        setLayer(selectedLayer.id, {
+                          weight:
+                            selectedLayer.weight >= 700
+                              ? 500
+                              : 900,
+                        })
+                      }
+                    >
+                      Bold
+                    </button>
+
+                    <button
+                      className={`tool-btn ${selectedLayer.italic
+                          ? "tool-btn-active"
+                          : ""
+                        }`}
+                      onClick={() =>
+                        setLayer(selectedLayer.id, {
+                          italic: !selectedLayer.italic,
+                        })
+                      }
+                    >
+                      Italic
+                    </button>
+                  </div>
+
+                  <TextArea
+                    label="Markdown Text"
+                    value={selectedLayer.text}
+                    onChange={(v) =>
+                      setLayer(selectedLayer.id, {
+                        text: v,
+                      })
+                    }
+                  />
+
+                  <div className="mt-2 rounded-xl border border-slate-700 bg-slate-950 p-3 text-xs text-slate-400">
+                    <p className="font-bold text-slate-200">
+                      Markdown supported
+                    </p>
+
+                    <div className="mt-2 space-y-1">
+                      <p>**bold**</p>
+                      <p>*italic*</p>
+                      <p>- bullet list</p>
+                    </div>
+                  </div>
                 </>
               )}
 
@@ -830,14 +908,21 @@ function PlacedLayer({ layer, selected, onSelect, onMove }) {
     >
       {layer.kind === "text" ? (
         <div
-          className="whitespace-pre-wrap text-[#5f4e46] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
+          className="vod-text whitespace-pre-wrap text-[#5f4e46] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
           style={{
             fontSize: `${layer.fontSize / 10}cqw`,
             fontWeight: layer.weight,
+            fontStyle: layer.italic ? "italic" : "normal",
             lineHeight: 1.25,
           }}
         >
-          {layer.text}
+          {layer.markdown ? (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {layer.text}
+            </ReactMarkdown>
+          ) : (
+            layer.text
+          )}
         </div>
       ) : (
         <div className="overflow-hidden bg-slate-800 shadow-lg">

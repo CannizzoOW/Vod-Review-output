@@ -55,3 +55,29 @@ select {
 .tool-btn-active {
   @apply bg-blue-600 text-white hover:bg-blue-500;
 }
+
+.vod-text p {
+  margin: 0 0 0.45em;
+}
+
+.vod-text p:last-child {
+  margin-bottom: 0;
+}
+
+.vod-text strong {
+  font-weight: 900;
+}
+
+.vod-text em {
+  font-style: italic;
+}
+
+.vod-text ul,
+.vod-text ol {
+  margin: 0.25em 0 0.5em 1.2em;
+  padding: 0;
+}
+
+.vod-text li {
+  margin-bottom: 0.25em;
+}
