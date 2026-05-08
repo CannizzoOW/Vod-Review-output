@@ -290,6 +290,9 @@ export default function App() {
 
   const [tool, setTool] = useState("select");
   const [zoom, setZoom] = useState(0.9);
+  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [pageTabsOpen, setPageTabsOpen] = useState(true);
   const [gridEnabled, setGridEnabled] = useState(true);
   const [lockToRegions, setLockToRegions] = useState(false);
   const [pendingImage, setPendingImage] = useState("");
@@ -587,9 +590,31 @@ export default function App() {
         </div>
 
         <div className="flex gap-2">
+          <button
+            className={`btn-secondary ${leftPanelOpen ? "ring-1 ring-blue-400" : ""}`}
+            onClick={() => setLeftPanelOpen(!leftPanelOpen)}
+          >
+            {leftPanelOpen ? "Hide Left" : "Show Left"}
+          </button>
+
+          <button
+            className={`btn-secondary ${rightPanelOpen ? "ring-1 ring-blue-400" : ""}`}
+            onClick={() => setRightPanelOpen(!rightPanelOpen)}
+          >
+            {rightPanelOpen ? "Hide Right" : "Show Right"}
+          </button>
+
+          <button
+            className={`btn-secondary ${pageTabsOpen ? "ring-1 ring-blue-400" : ""}`}
+            onClick={() => setPageTabsOpen(!pageTabsOpen)}
+          >
+            {pageTabsOpen ? "Hide Pages" : "Show Pages"}
+          </button>
+
           <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
             <FileInput size={16} /> Import JSON
           </button>
+
           <input
             ref={fileInputRef}
             type="file"
@@ -612,13 +637,20 @@ export default function App() {
         </div>
       </header>
 
-      <div className="grid h-[calc(100vh-56px)] grid-cols-[330px_1fr_320px] overflow-hidden">
-        <aside className="overflow-auto border-r border-slate-800 bg-[#111827] p-3">
-          <PanelTitle
-            icon={<ClipboardList />}
-            title="Imported review"
-            subtitle="Bot JSON or pasted raw review text."
-          />
+      <div
+        className="grid h-[calc(100vh-56px)] overflow-hidden transition-all duration-200"
+        style={{
+          gridTemplateColumns: `${leftPanelOpen ? "330px" : "0px"} minmax(0, 1fr) ${rightPanelOpen ? "320px" : "0px"
+            }`,
+        }}
+      >
+        {leftPanelOpen && (
+  <aside className="overflow-auto border-r border-slate-800 bg-[#111827] p-3">
+    <PanelTitle
+      icon={<ClipboardList />}
+      title="Imported review"
+      subtitle="Bot JSON or pasted raw review text."
+    />
 
           <div className="panel mt-3">
             <div className="grid grid-cols-2 gap-2">
@@ -691,7 +723,8 @@ export default function App() {
               </button>
             ))}
           </div>
-        </aside>
+          </aside>
+        )}
 
         <main className="flex min-w-0 flex-col bg-[radial-gradient(circle_at_top,#263450_0%,#101522_45%,#070b16_100%)]">
           <Toolbar
@@ -734,6 +767,7 @@ export default function App() {
           </div>
 
           <div className="flex-1 overflow-auto p-4">
+            <div className="min-h-full min-w-full p-10">
             <ReviewCanvas
               refEl={canvasRef}
               templateBackground={templateBackground}
@@ -751,10 +785,12 @@ export default function App() {
               gridEnabled={gridEnabled}
               lockToRegions={lockToRegions}
             />
-          </div>
+            </div>  
+          </div>  
         </main>
 
-        <aside className="overflow-auto border-l border-slate-800 bg-[#111827] p-3">
+        {rightPanelOpen && (
+          <aside className="overflow-auto border-l border-slate-800 bg-[#111827] p-3">
           <PanelTitle title="Properties" subtitle="Move, resize and edit layers/safe zones." />
 
           <div className="panel mt-3 text-sm text-slate-400">
@@ -827,7 +863,7 @@ export default function App() {
               ))}
             </div>
           </div>
-        </aside>
+          </aside>)}
       </div>
     </div>
   );
