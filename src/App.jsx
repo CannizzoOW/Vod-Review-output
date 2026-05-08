@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect,useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -9,6 +9,10 @@ import {
   ImagePlus,
   LayoutGrid,
   MousePointer2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
   Plus,
   RefreshCcw,
   Save,
@@ -285,6 +289,7 @@ export default function App() {
   const [activePageId, setActivePageId] = useState(firstPage.id);
 
   const [selectedLayerId, setSelectedLayerId] = useState(null);
+  const [selectedLayerIds, setSelectedLayerIds] = useState([]);
   const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
   const [selectedSafeZoneId, setSelectedSafeZoneId] = useState(null);
 
@@ -400,6 +405,68 @@ export default function App() {
     }
 
     setSelectedLayerId(null);
+  }
+
+  function selectLayer(layerId, additive = false) {
+    setSelectedSafeZoneId(null);
+
+    if (additive) {
+      setSelectedLayerIds((prev) =>
+        prev.includes(layerId)
+          ? prev.filter((id) => id !== layerId)
+          : [...prev, layerId]
+      );
+
+      setSelectedLayerId(layerId);
+      return;
+    }
+
+    setSelectedLayerId(layerId);
+    setSelectedLayerIds([layerId]);
+  }
+
+  function deleteSelectedLayers() {
+    const idsToDelete = selectedLayerIds.length
+      ? selectedLayerIds
+      : selectedLayerId
+        ? [selectedLayerId]
+        : [];
+
+    if (!idsToDelete.length) return;
+
+    updateActivePageLayers((layers) => {
+      const removed = layers.filter((layer) => idsToDelete.includes(layer.id));
+
+      for (const layer of removed) {
+        if (layer.sourceSegmentId) {
+          markSegmentUsed(layer.sourceSegmentId, false);
+        }
+      }
+
+      return layers.filter((layer) => !idsToDelete.includes(layer.id));
+    });
+
+    setSelectedLayerId(null);
+    setSelectedLayerIds([]);
+  }
+
+  function removeActivePage() {
+    if (pages.length <= 1) {
+      alert("You need at least one page.");
+      return;
+    }
+
+    const currentIndex = pages.findIndex((page) => page.id === activePageId);
+    const nextPages = pages.filter((page) => page.id !== activePageId);
+
+    const nextIndex = Math.max(0, currentIndex - 1);
+    const nextActive = nextPages[nextIndex] || nextPages[0];
+
+    setPages(nextPages);
+    setActivePageId(nextActive.id);
+    setSelectedLayerId(null);
+    setSelectedLayerIds([]);
+    setSelectedSafeZoneId(null);
   }
 
   function canvasClick(e) {
@@ -570,7 +637,7 @@ export default function App() {
   }
 
   function addPage() {
-    const page = { id: uid(), title: `Page ${pages.length + 1}`, layers: [] };
+    const page = { id: uid(), layers: [] };
     setPages((prev) => [...prev, page]);
     setActivePageId(page.id);
     setSelectedLayerId(null);
@@ -581,29 +648,46 @@ export default function App() {
     alert("PNG export is next step. Layout state is ready.");
   }
 
+  useEffect(() => {
+  function handleKeyDown(e) {
+    const target = e.target;
+    const isTyping =
+      target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.tagName === "SELECT" ||
+      target.isContentEditable;
+
+    if (isTyping) return;
+
+    if (e.key === "Delete" || e.key === "Backspace") {
+      e.preventDefault();
+      deleteSelectedLayers();
+    }
+  }
+
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [selectedLayerId, selectedLayerIds, activePageId, pages]);
+
   return (
     <div className="h-screen overflow-hidden bg-[#070b16] text-slate-100">
       <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-[#0f172a] px-4">
-        <div>
-          <h1 className="text-lg font-black">Rivals VOD Review Editor</h1>
-          <p className="text-xs text-slate-500">Import JSON → layout → export</p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-400/40 bg-blue-600/20 text-lg font-black text-blue-200 shadow-lg">
+            R
+          </div>
+
+          <div>
+            <h1 className="text-lg font-black leading-tight">
+              Rivals VOD Review Editor
+            </h1>
+            <p className="text-xs text-slate-500">
+              Import JSON → layout → export
+            </p>
+          </div>
         </div>
 
         <div className="flex gap-2">
-          <button
-            className={`btn-secondary ${leftPanelOpen ? "ring-1 ring-blue-400" : ""}`}
-            onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-          >
-            {leftPanelOpen ? "Hide Left" : "Show Left"}
-          </button>
-
-          <button
-            className={`btn-secondary ${rightPanelOpen ? "ring-1 ring-blue-400" : ""}`}
-            onClick={() => setRightPanelOpen(!rightPanelOpen)}
-          >
-            {rightPanelOpen ? "Hide Right" : "Show Right"}
-          </button>
-
           <button
             className={`btn-secondary ${pageTabsOpen ? "ring-1 ring-blue-400" : ""}`}
             onClick={() => setPageTabsOpen(!pageTabsOpen)}
@@ -638,14 +722,22 @@ export default function App() {
       </header>
 
       <div
-        className="grid h-[calc(100vh-56px)] overflow-hidden transition-all duration-200"
+        className="grid h-[calc(100vh-56px)] min-h-0 overflow-hidden transition-all duration-200"
         style={{
           gridTemplateColumns: `${leftPanelOpen ? "330px" : "0px"} minmax(0, 1fr) ${rightPanelOpen ? "320px" : "0px"
             }`,
         }}
       >
-        {leftPanelOpen && (
-  <aside className="overflow-auto border-r border-slate-800 bg-[#111827] p-3">
+        <aside className="relative min-h-0 overflow-visible border-r border-slate-800 bg-[#111827]">
+          <button
+            className="absolute -right-4 top-[120px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-200 shadow-lg hover:bg-blue-600"
+            onClick={() => setLeftPanelOpen(!leftPanelOpen)}
+            title={leftPanelOpen ? "Hide left panel" : "Show left panel"}
+          >
+            {leftPanelOpen ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+          </button>
+          {leftPanelOpen && (
+            <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
     <PanelTitle
       icon={<ClipboardList />}
       title="Imported review"
@@ -723,10 +815,10 @@ export default function App() {
               </button>
             ))}
           </div>
-          </aside>
+        </div>
         )}
-
-        <main className="flex min-w-0 flex-col bg-[radial-gradient(circle_at_top,#263450_0%,#101522_45%,#070b16_100%)]">
+      </aside>
+        <main className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#263450_0%,#101522_45%,#070b16_100%)]">
           <Toolbar
             tool={tool}
             setTool={setTool}
@@ -743,54 +835,93 @@ export default function App() {
             }}
           />
 
-          <div className="flex gap-2 border-b border-slate-800 bg-[#0b1020] p-2">
-            {pages.map((page, index) => (
-              <button
-                key={page.id}
-                onClick={() => {
-                  setActivePageId(page.id);
-                  setSelectedLayerId(null);
-                  setSelectedSafeZoneId(null);
-                }}
-                className={`rounded-xl px-3 py-2 text-sm font-bold ${activePageId === page.id
-                    ? "bg-blue-600"
-                    : "bg-slate-800 hover:bg-slate-700"
-                  }`}
-              >
-                {page.title || `Page ${index + 1}`}
+          {pageTabsOpen && (
+            <div className="flex gap-2 border-b border-slate-800 bg-[#0b1020] p-2">
+              {pages.map((page, index) => (
+                <div
+                  key={page.id}
+                  className={`flex items-center overflow-hidden rounded-xl ${activePageId === page.id
+                      ? "bg-blue-600"
+                      : "bg-slate-800 hover:bg-slate-700"
+                    }`}
+                >
+                  <button
+                    onClick={() => {
+                      setActivePageId(page.id);
+                      setSelectedLayerId(null);
+                      setSelectedLayerIds([]);
+                      setSelectedSafeZoneId(null);
+                    }}
+                    className="px-3 py-2 text-sm font-bold"
+                  >
+                    {`Page ${index + 1}`}
+                  </button>
+
+                  {pages.length > 1 && activePageId === page.id && (
+                    <button
+                      onClick={removeActivePage}
+                      className="px-2 py-2 text-red-200 hover:bg-red-500/20"
+                      title="Delete page"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button className="btn-secondary px-3" onClick={addPage}>
+                <Plus size={16} /> Page
               </button>
-            ))}
+            </div>
+          )}
 
-            <button className="btn-secondary px-3" onClick={addPage}>
-              <Plus size={16} /> Page
-            </button>
+          <div className="flex-1 min-h-0 min-w-0 overflow-scroll">
+            <div
+              className="flex justify-center"
+              style={{
+                width: "max-content",
+                minWidth: "100%",
+                padding: "80px 80px 220px 80px",
+              }}
+            >
+              <div
+                style={{
+                  width: `${860 * zoom}px`,
+                }}
+              >
+                <ReviewCanvas
+                  refEl={canvasRef}
+                  templateBackground={templateBackground}
+                  layers={activePage.layers}
+                  safeZones={safeZones}
+                  selectedLayerId={selectedLayerId}
+                  selectedLayerIds={selectedLayerIds}
+                  selectedSafeZoneId={selectedSafeZoneId}
+                  selectLayer={selectLayer}
+                  setSelectedSafeZoneId={setSelectedSafeZoneId}
+                  updateLayer={setLayer}
+                  updateSafeZone={setSafeZone}
+                  canvasClick={canvasClick}
+                  tool={tool}
+                  zoom={zoom}
+                  gridEnabled={gridEnabled}
+                  lockToRegions={lockToRegions}
+                />
+              </div>
+            </div>
           </div>
-
-          <div className="flex-1 overflow-auto p-4">
-            <div className="min-h-full min-w-full p-10">
-            <ReviewCanvas
-              refEl={canvasRef}
-              templateBackground={templateBackground}
-              layers={activePage.layers}
-              safeZones={safeZones}
-              selectedLayerId={selectedLayerId}
-              selectedSafeZoneId={selectedSafeZoneId}
-              setSelectedLayerId={setSelectedLayerId}
-              setSelectedSafeZoneId={setSelectedSafeZoneId}
-              updateLayer={setLayer}
-              updateSafeZone={setSafeZone}
-              canvasClick={canvasClick}
-              tool={tool}
-              zoom={zoom}
-              gridEnabled={gridEnabled}
-              lockToRegions={lockToRegions}
-            />
-            </div>  
-          </div>  
         </main>
 
-        {rightPanelOpen && (
-          <aside className="overflow-auto border-l border-slate-800 bg-[#111827] p-3">
+        <aside className="relative min-h-0 overflow-visible border-l border-slate-800 bg-[#111827]">
+          <button
+            className="absolute -left-4 top-[120px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-200 shadow-lg hover:bg-blue-600"
+            onClick={() => setRightPanelOpen(!rightPanelOpen)}
+            title={rightPanelOpen ? "Hide right panel" : "Show right panel"}
+          >
+            {rightPanelOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+          </button>
+          {rightPanelOpen && (
+            <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
           <PanelTitle title="Properties" subtitle="Move, resize and edit layers/safe zones." />
 
           <div className="panel mt-3 text-sm text-slate-400">
@@ -863,8 +994,10 @@ export default function App() {
               ))}
             </div>
           </div>
-          </aside>)}
-      </div>
+        </div>
+      )}
+    </aside>
+    </div>
     </div>
   );
 }
@@ -1025,8 +1158,9 @@ function ReviewCanvas({
   layers,
   safeZones,
   selectedLayerId,
+  selectedLayerIds,
   selectedSafeZoneId,
-  setSelectedLayerId,
+  selectLayer,
   setSelectedSafeZoneId,
   updateLayer,
   updateSafeZone,
@@ -1039,7 +1173,12 @@ function ReviewCanvas({
   const cursor = tool === "insertText" || tool === "insertImage" ? "cursor-crosshair" : "cursor-default";
 
   return (
-    <motion.div className="mx-auto origin-top" style={{ width: 860 * zoom }}>
+    <motion.div
+      className="origin-top"
+      style={{
+        width: "100%",
+      }}
+    >
       <div
         ref={refEl}
         className={`editor-canvas relative aspect-[100/141.4286] w-full overflow-hidden rounded-2xl bg-[#efeae7] shadow-2xl ring-1 ring-white/10 ${cursor}`}
@@ -1085,11 +1224,10 @@ function ReviewCanvas({
           <PlacedLayer
             key={layer.id}
             layer={layer}
-            selected={selectedLayerId === layer.id}
+            selected={selectedLayerIds.includes(layer.id)}
             onSelect={(e) => {
               e.stopPropagation();
-              setSelectedLayerId(layer.id);
-              setSelectedSafeZoneId(null);
+              selectLayer(layer.id, e.shiftKey);
             }}
             onMove={(patch) => updateLayer(layer.id, patch)}
           />
