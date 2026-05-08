@@ -1,5 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   ClipboardList,
   Download,
@@ -17,18 +19,16 @@ import {
 } from "lucide-react";
 
 import heroTemplates from "./data/heroTemplates.json";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 const PAGE_W = 1080;
 const PAGE_H = 1527;
 const HEROES = Object.keys(heroTemplates);
 const fallbackTemplate = `${import.meta.env.BASE_URL}templates/default.png`;
 
-const APPROVED_REGIONS = [
-  { id: "mainText", label: "Main text", x: 70, y: 360, w: 585, h: 950 },
-  { id: "rightMedia", label: "Screenshots", x: 680, y: 360, w: 340, h: 850 },
-  { id: "footerSafe", label: "Footer-safe", x: 70, y: 1320, w: 950, h: 90 },
+const DEFAULT_SAFE_ZONES = [
+  { id: "mainText", label: "Main text", x: 70, y: 420, w: 600, h: 850 },
+  { id: "rightMedia", label: "Screenshots", x: 700, y: 420, w: 320, h: 850 },
+  { id: "footerSafe", label: "Footer", x: 70, y: 1385, w: 950, h: 70 },
 ];
 
 const SAMPLE_REVIEW = `Replay ID: 10903088673
@@ -56,7 +56,12 @@ function extractTimestamp(text) {
 }
 
 function parseDiscordReview(raw) {
-  const lines = raw.replace(/\r/g, "").split("\n").map((x) => x.trim()).filter(Boolean);
+  const lines = raw
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((x) => x.trim())
+    .filter(Boolean);
+
   const segments = [];
   let section = "General";
   let replayId = "";
@@ -64,7 +69,9 @@ function parseDiscordReview(raw) {
 
   function flush() {
     if (!paragraph.length) return;
+
     const text = paragraph.join(" ");
+
     segments.push({
       id: uid(),
       type: "paragraph",
@@ -74,11 +81,13 @@ function parseDiscordReview(raw) {
       text,
       used: false,
     });
+
     paragraph = [];
   }
 
   for (const line of lines) {
     const replay = line.match(/Replay ID:\s*(\d+)/i);
+
     if (replay) {
       replayId = replay[1];
       continue;
@@ -87,6 +96,7 @@ function parseDiscordReview(raw) {
     const clean = line.replace(/^[-•*]\s*/, "").trim();
     const isBullet = /^[-•*]\s*/.test(line);
     const hasTime = extractTimestamp(line);
+
     const isHeading =
       clean.length <= 35 &&
       !/[.!?]$/.test(clean) &&
@@ -96,6 +106,7 @@ function parseDiscordReview(raw) {
     if (isHeading) {
       flush();
       section = clean;
+
       segments.push({
         id: uid(),
         type: "heading",
@@ -105,11 +116,13 @@ function parseDiscordReview(raw) {
         text: clean,
         used: false,
       });
+
       continue;
     }
 
     if (isBullet || hasTime) {
       flush();
+
       segments.push({
         id: uid(),
         type: "timestamp_note",
@@ -119,6 +132,7 @@ function parseDiscordReview(raw) {
         text: clean,
         used: false,
       });
+
       continue;
     }
 
@@ -134,17 +148,14 @@ function makeTextLayer(segment, x = 80, y = 380) {
     id: uid(),
     kind: "text",
     sourceSegmentId: segment.id,
-
     x,
     y,
     w: segment.type === "heading" ? 420 : 560,
     h: segment.type === "heading" ? 55 : 130,
-
     fontSize: segment.type === "heading" ? 28 : 18,
     weight: segment.type === "heading" ? 900 : 500,
     italic: false,
     markdown: true,
-
     text:
       segment.type === "heading"
         ? segment.text.toUpperCase()
@@ -152,7 +163,7 @@ function makeTextLayer(segment, x = 80, y = 380) {
   };
 }
 
-function makeImageLayer(src, x = 700, y = 380) {
+function makeImageLayer(src, x = 700, y = 420) {
   return {
     id: uid(),
     kind: "image",
@@ -169,13 +180,18 @@ function snap(value, grid) {
   return Math.round(value / grid) * grid;
 }
 
-function clampToRegions(layer) {
-  const region = layer.kind === "image" ? APPROVED_REGIONS[1] : APPROVED_REGIONS[0];
+function clampToZones(layer, safeZones) {
+  const zone =
+    layer.kind === "image"
+      ? safeZones.find((z) => z.id === "rightMedia") || safeZones[0]
+      : safeZones.find((z) => z.id === "mainText") || safeZones[0];
+
+  if (!zone) return layer;
 
   return {
     ...layer,
-    x: Math.min(Math.max(layer.x, region.x), region.x + region.w - layer.w),
-    y: Math.min(Math.max(layer.y, region.y), region.y + region.h - layer.h),
+    x: Math.min(Math.max(layer.x, zone.x), zone.x + zone.w - layer.w),
+    y: Math.min(Math.max(layer.y, zone.y), zone.y + zone.h - layer.h),
   };
 }
 
@@ -185,7 +201,9 @@ export default function App() {
   const canvasRef = useRef(null);
 
   const [rawText, setRawText] = useState(SAMPLE_REVIEW);
-  const [segments, setSegments] = useState(() => parseDiscordReview(SAMPLE_REVIEW).segments);
+  const [segments, setSegments] = useState(
+    () => parseDiscordReview(SAMPLE_REVIEW).segments
+  );
   const [selectedSegmentId, setSelectedSegmentId] = useState(null);
 
   const [form, setForm] = useState({
@@ -196,27 +214,28 @@ export default function App() {
     requestId: "",
   });
 
-  const [pages, setPages] = useState([
-    { id: uid(), title: "Page 1", layers: [] },
-  ]);
-  const [activePageId, setActivePageId] = useState(pages[0].id);
+  const firstPage = useMemo(() => ({ id: uid(), title: "Page 1", layers: [] }), []);
+  const [pages, setPages] = useState([firstPage]);
+  const [activePageId, setActivePageId] = useState(firstPage.id);
+
   const [selectedLayerId, setSelectedLayerId] = useState(null);
+  const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
+  const [selectedSafeZoneId, setSelectedSafeZoneId] = useState(null);
 
   const [tool, setTool] = useState("select");
   const [zoom, setZoom] = useState(0.9);
   const [gridEnabled, setGridEnabled] = useState(true);
-  const [lockToRegions, setLockToRegions] = useState(true);
+  const [lockToRegions, setLockToRegions] = useState(false);
   const [pendingImage, setPendingImage] = useState("");
 
   const activePage = pages.find((p) => p.id === activePageId) || pages[0];
   const selectedSegment = segments.find((s) => s.id === selectedSegmentId);
   const selectedLayer = activePage?.layers.find((l) => l.id === selectedLayerId);
+  const selectedSafeZone = safeZones.find((z) => z.id === selectedSafeZoneId);
 
   const templateBackground = useMemo(() => {
     const template = heroTemplates[form.hero]?.template;
-
     if (!template) return fallbackTemplate;
-
     return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
   }, [form.hero]);
 
@@ -227,9 +246,7 @@ export default function App() {
   function updateActivePageLayers(updater) {
     setPages((prev) =>
       prev.map((page) =>
-        page.id === activePageId
-          ? { ...page, layers: updater(page.layers) }
-          : page
+        page.id === activePageId ? { ...page, layers: updater(page.layers) } : page
       )
     );
   }
@@ -238,14 +255,39 @@ export default function App() {
     updateActivePageLayers((layers) =>
       layers.map((layer) => {
         if (layer.id !== layerId) return layer;
+
         let next = { ...layer, ...patch };
+
         if (gridEnabled) {
           next.x = snap(next.x, 10);
           next.y = snap(next.y, 10);
           next.w = snap(next.w, 10);
           next.h = snap(next.h, 10);
         }
-        if (lockToRegions) next = clampToRegions(next);
+
+        if (lockToRegions) {
+          next = clampToZones(next, safeZones);
+        }
+
+        return next;
+      })
+    );
+  }
+
+  function setSafeZone(zoneId, patch) {
+    setSafeZones((prev) =>
+      prev.map((zone) => {
+        if (zone.id !== zoneId) return zone;
+
+        let next = { ...zone, ...patch };
+
+        if (gridEnabled) {
+          next.x = snap(next.x, 10);
+          next.y = snap(next.y, 10);
+          next.w = snap(next.w, 10);
+          next.h = snap(next.h, 10);
+        }
+
         return next;
       })
     );
@@ -257,22 +299,38 @@ export default function App() {
 
   function addLayer(layer) {
     let next = layer;
-    if (gridEnabled) next = { ...next, x: snap(next.x, 10), y: snap(next.y, 10) };
-    if (lockToRegions) next = clampToRegions(next);
+
+    if (gridEnabled) {
+      next = {
+        ...next,
+        x: snap(next.x, 10),
+        y: snap(next.y, 10),
+      };
+    }
+
+    if (lockToRegions) {
+      next = clampToZones(next, safeZones);
+    }
 
     updateActivePageLayers((layers) => [...layers, next]);
     setSelectedLayerId(next.id);
+    setSelectedSafeZoneId(null);
   }
 
   function removeLayer(id) {
     const layer = activePage.layers.find((l) => l.id === id);
+
     updateActivePageLayers((layers) => layers.filter((l) => l.id !== id));
-    if (layer?.sourceSegmentId) markSegmentUsed(layer.sourceSegmentId, false);
+
+    if (layer?.sourceSegmentId) {
+      markSegmentUsed(layer.sourceSegmentId, false);
+    }
+
     setSelectedLayerId(null);
   }
 
   function canvasClick(e) {
-    if (tool === "select") return;
+    if (tool === "select" || tool === "safeZone") return;
 
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * PAGE_W;
@@ -307,10 +365,9 @@ export default function App() {
     }
 
     const existingText = activePage.layers.filter((l) => l.kind === "text").length;
-    const x = selectedSegment.type === "heading" ? 80 : 80;
-    const y = 360 + existingText * 145;
+    const y = 420 + existingText * 145;
 
-    const layer = makeTextLayer(selectedSegment, x, y);
+    const layer = makeTextLayer(selectedSegment, 80, y);
     addLayer(layer);
     markSegmentUsed(selectedSegment.id, true);
   }
@@ -318,7 +375,11 @@ export default function App() {
   function runParser() {
     const parsed = parseDiscordReview(rawText);
     setSegments(parsed.segments);
-    if (parsed.replayId) updateForm("replayId", parsed.replayId);
+
+    if (parsed.replayId) {
+      updateForm("replayId", parsed.replayId);
+    }
+
     setSelectedSegmentId(parsed.segments[0]?.id || null);
   }
 
@@ -330,7 +391,6 @@ export default function App() {
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result);
-
         const request = data.request || data.meta?.request || data.meta || {};
         const coach = data.coach || {};
 
@@ -338,8 +398,16 @@ export default function App() {
           ...prev,
           player: request.player || request.username || prev.player,
           hero: request.hero || request.heroes || prev.hero,
-          reviewer: coach.displayName || coach.username || request.reviewer || prev.reviewer,
-          replayId: request.replayId || request.replayID || request.replay_id || prev.replayId,
+          reviewer:
+            coach.displayName ||
+            coach.username ||
+            request.reviewer ||
+            prev.reviewer,
+          replayId:
+            request.replayId ||
+            request.replayID ||
+            request.replay_id ||
+            prev.replayId,
           requestId: request.requestId || request.id || prev.requestId,
         }));
 
@@ -358,13 +426,18 @@ export default function App() {
         }
 
         if (Array.isArray(data.pages)) {
-          setPages(
-            data.pages.map((p) => ({
-              id: p.id || uid(),
-              title: p.title || "Page",
-              layers: Array.isArray(p.layers) ? p.layers : [],
-            }))
-          );
+          const importedPages = data.pages.map((p) => ({
+            id: p.id || uid(),
+            title: p.title || "Page",
+            layers: Array.isArray(p.layers) ? p.layers : [],
+          }));
+
+          setPages(importedPages);
+          setActivePageId(importedPages[0]?.id);
+        }
+
+        if (Array.isArray(data.safeZones)) {
+          setSafeZones(data.safeZones);
         }
 
         alert("Review JSON imported.");
@@ -382,6 +455,7 @@ export default function App() {
       segments,
       pages,
       activePageId,
+      safeZones,
       savedAt: new Date().toISOString(),
     };
 
@@ -391,16 +465,19 @@ export default function App() {
 
   function loadDraft() {
     const raw = localStorage.getItem("rivals-vod-review-draft");
+
     if (!raw) {
       alert("No local draft found.");
       return;
     }
 
     const draft = JSON.parse(raw);
+
     setForm(draft.form);
     setSegments(draft.segments || []);
     setPages(draft.pages || []);
     setActivePageId(draft.activePageId || draft.pages?.[0]?.id);
+    setSafeZones(draft.safeZones || DEFAULT_SAFE_ZONES);
   }
 
   function addPage() {
@@ -408,10 +485,11 @@ export default function App() {
     setPages((prev) => [...prev, page]);
     setActivePageId(page.id);
     setSelectedLayerId(null);
+    setSelectedSafeZoneId(null);
   }
 
-  async function exportPng() {
-    alert("PNG export is next step. Current app has layout state ready for export.");
+  function exportPng() {
+    alert("PNG export is next step. Layout state is ready.");
   }
 
   return (
@@ -433,12 +511,15 @@ export default function App() {
             className="hidden"
             onChange={(e) => importJson(e.target.files?.[0])}
           />
+
           <button className="btn-secondary" onClick={saveDraft}>
             <Save size={16} /> Save draft
           </button>
+
           <button className="btn-secondary" onClick={loadDraft}>
             <RefreshCcw size={16} /> Load draft
           </button>
+
           <button className="btn-primary" onClick={exportPng}>
             <Download size={16} /> Export PNG
           </button>
@@ -478,6 +559,7 @@ export default function App() {
               onChange={(e) => setRawText(e.target.value)}
               className="input min-h-40 resize-y font-mono text-xs"
             />
+
             <button className="btn-primary mt-3 w-full" onClick={runParser}>
               <RefreshCcw size={16} /> Parse fallback text
             </button>
@@ -506,11 +588,20 @@ export default function App() {
                   }`}
               >
                 <div className="mb-1 flex justify-between gap-2">
-                  <span className="text-xs font-black uppercase text-blue-200">{segment.type}</span>
-                  {segment.timestamp && <span className="rounded bg-slate-800 px-2 py-0.5 text-xs">{segment.timestamp}</span>}
+                  <span className="text-xs font-black uppercase text-blue-200">
+                    {segment.type}
+                  </span>
+                  {segment.timestamp && (
+                    <span className="rounded bg-slate-800 px-2 py-0.5 text-xs">
+                      {segment.timestamp}
+                    </span>
+                  )}
                 </div>
+
                 <p className="text-sm font-bold">{segment.title}</p>
-                <p className="mt-1 line-clamp-3 text-xs text-slate-400">{segment.text}</p>
+                <p className="mt-1 line-clamp-3 text-xs text-slate-400">
+                  {segment.text}
+                </p>
               </button>
             ))}
           </div>
@@ -540,13 +631,17 @@ export default function App() {
                 onClick={() => {
                   setActivePageId(page.id);
                   setSelectedLayerId(null);
+                  setSelectedSafeZoneId(null);
                 }}
-                className={`rounded-xl px-3 py-2 text-sm font-bold ${activePageId === page.id ? "bg-blue-600" : "bg-slate-800 hover:bg-slate-700"
+                className={`rounded-xl px-3 py-2 text-sm font-bold ${activePageId === page.id
+                    ? "bg-blue-600"
+                    : "bg-slate-800 hover:bg-slate-700"
                   }`}
               >
                 {page.title || `Page ${index + 1}`}
               </button>
             ))}
+
             <button className="btn-secondary px-3" onClick={addPage}>
               <Plus size={16} /> Page
             </button>
@@ -557,9 +652,13 @@ export default function App() {
               refEl={canvasRef}
               templateBackground={templateBackground}
               layers={activePage.layers}
+              safeZones={safeZones}
               selectedLayerId={selectedLayerId}
+              selectedSafeZoneId={selectedSafeZoneId}
               setSelectedLayerId={setSelectedLayerId}
+              setSelectedSafeZoneId={setSelectedSafeZoneId}
               updateLayer={setLayer}
+              updateSafeZone={setSafeZone}
               canvasClick={canvasClick}
               tool={tool}
               zoom={zoom}
@@ -570,115 +669,28 @@ export default function App() {
         </main>
 
         <aside className="overflow-auto border-l border-slate-800 bg-[#111827] p-3">
-          <PanelTitle title="Properties" subtitle="Move, resize and edit layers." />
+          <PanelTitle title="Properties" subtitle="Move, resize and edit layers/safe zones." />
 
           <div className="panel mt-3 text-sm text-slate-400">
             Tool: <strong className="text-slate-100">{tool}</strong>
           </div>
 
           {selectedLayer ? (
-            <div className="panel mt-3">
-              <div className="mb-3 flex items-center justify-between">
-                <p className="font-black">Selected {selectedLayer.kind}</p>
-                <button onClick={() => removeLayer(selectedLayer.id)} className="rounded-lg p-2 text-red-300 hover:bg-red-500/10">
-                  <Trash2 size={16} />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <NumberField label="X" value={selectedLayer.x} onChange={(v) => setLayer(selectedLayer.id, { x: v })} />
-                <NumberField label="Y" value={selectedLayer.y} onChange={(v) => setLayer(selectedLayer.id, { y: v })} />
-                <NumberField label="Width" value={selectedLayer.w} onChange={(v) => setLayer(selectedLayer.id, { w: v })} />
-                <NumberField label="Height" value={selectedLayer.h} onChange={(v) => setLayer(selectedLayer.id, { h: v })} />
-              </div>
-
-              {selectedLayer.kind === "text" && (
-                <>
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <NumberField
-                      label="Font size"
-                      value={selectedLayer.fontSize}
-                      onChange={(v) =>
-                        setLayer(selectedLayer.id, {
-                          fontSize: v,
-                        })
-                      }
-                    />
-
-                    <NumberField
-                      label="Weight"
-                      value={selectedLayer.weight}
-                      onChange={(v) =>
-                        setLayer(selectedLayer.id, {
-                          weight: v,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <div className="mt-3 flex gap-2">
-                    <button
-                      className={`tool-btn ${selectedLayer.weight >= 700
-                          ? "tool-btn-active"
-                          : ""
-                        }`}
-                      onClick={() =>
-                        setLayer(selectedLayer.id, {
-                          weight:
-                            selectedLayer.weight >= 700
-                              ? 500
-                              : 900,
-                        })
-                      }
-                    >
-                      Bold
-                    </button>
-
-                    <button
-                      className={`tool-btn ${selectedLayer.italic
-                          ? "tool-btn-active"
-                          : ""
-                        }`}
-                      onClick={() =>
-                        setLayer(selectedLayer.id, {
-                          italic: !selectedLayer.italic,
-                        })
-                      }
-                    >
-                      Italic
-                    </button>
-                  </div>
-
-                  <TextArea
-                    label="Markdown Text"
-                    value={selectedLayer.text}
-                    onChange={(v) =>
-                      setLayer(selectedLayer.id, {
-                        text: v,
-                      })
-                    }
-                  />
-
-                  <div className="mt-2 rounded-xl border border-slate-700 bg-slate-950 p-3 text-xs text-slate-400">
-                    <p className="font-bold text-slate-200">
-                      Markdown supported
-                    </p>
-
-                    <div className="mt-2 space-y-1">
-                      <p>**bold**</p>
-                      <p>*italic*</p>
-                      <p>- bullet list</p>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {selectedLayer.kind === "image" && (
-                <Field label="Caption" value={selectedLayer.caption} onChange={(v) => setLayer(selectedLayer.id, { caption: v })} />
-              )}
-            </div>
+            <LayerProperties
+              selectedLayer={selectedLayer}
+              setLayer={setLayer}
+              removeLayer={removeLayer}
+            />
+          ) : selectedSafeZone ? (
+            <SafeZoneProperties
+              zone={selectedSafeZone}
+              setSafeZone={setSafeZone}
+              resetSafeZones={() => setSafeZones(DEFAULT_SAFE_ZONES)}
+            />
           ) : (
-            <div className="panel mt-3 text-sm text-slate-400">Select a layer to edit it.</div>
+            <div className="panel mt-3 text-sm text-slate-400">
+              Select a layer or safe zone to edit it.
+            </div>
           )}
 
           <div className="panel mt-3">
@@ -689,9 +701,12 @@ export default function App() {
                   key={layer.id}
                   onClick={() => {
                     setSelectedLayerId(layer.id);
+                    setSelectedSafeZoneId(null);
                     setTool("select");
                   }}
-                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedLayerId === layer.id ? "bg-blue-600" : "bg-slate-950 hover:bg-slate-800"
+                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedLayerId === layer.id
+                      ? "bg-blue-600"
+                      : "bg-slate-950 hover:bg-slate-800"
                     }`}
                 >
                   {index + 1}. {layer.kind}
@@ -699,8 +714,109 @@ export default function App() {
               ))}
             </div>
           </div>
+
+          <div className="panel mt-3">
+            <p className="mb-2 font-black">Safe zones</p>
+            <div className="space-y-2">
+              {safeZones.map((zone) => (
+                <button
+                  key={zone.id}
+                  onClick={() => {
+                    setSelectedSafeZoneId(zone.id);
+                    setSelectedLayerId(null);
+                    setTool("safeZone");
+                  }}
+                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedSafeZoneId === zone.id
+                      ? "bg-emerald-600"
+                      : "bg-slate-950 hover:bg-slate-800"
+                    }`}
+                >
+                  {zone.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+function LayerProperties({ selectedLayer, setLayer, removeLayer }) {
+  return (
+    <div className="panel mt-3">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="font-black">Selected {selectedLayer.kind}</p>
+        <button
+          onClick={() => removeLayer(selectedLayer.id)}
+          className="rounded-lg p-2 text-red-300 hover:bg-red-500/10"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <NumberField label="X" value={selectedLayer.x} onChange={(v) => setLayer(selectedLayer.id, { x: v })} />
+        <NumberField label="Y" value={selectedLayer.y} onChange={(v) => setLayer(selectedLayer.id, { y: v })} />
+        <NumberField label="Width" value={selectedLayer.w} onChange={(v) => setLayer(selectedLayer.id, { w: v })} />
+        <NumberField label="Height" value={selectedLayer.h} onChange={(v) => setLayer(selectedLayer.id, { h: v })} />
+      </div>
+
+      {selectedLayer.kind === "text" && (
+        <>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <NumberField label="Font size" value={selectedLayer.fontSize} onChange={(v) => setLayer(selectedLayer.id, { fontSize: v })} />
+            <NumberField label="Weight" value={selectedLayer.weight} onChange={(v) => setLayer(selectedLayer.id, { weight: v })} />
+          </div>
+
+          <div className="mt-3 flex gap-2">
+            <button
+              className={`tool-btn ${selectedLayer.weight >= 700 ? "tool-btn-active" : ""}`}
+              onClick={() =>
+                setLayer(selectedLayer.id, {
+                  weight: selectedLayer.weight >= 700 ? 500 : 900,
+                })
+              }
+            >
+              Bold
+            </button>
+
+            <button
+              className={`tool-btn ${selectedLayer.italic ? "tool-btn-active" : ""}`}
+              onClick={() => setLayer(selectedLayer.id, { italic: !selectedLayer.italic })}
+            >
+              Italic
+            </button>
+          </div>
+
+          <TextArea label="Markdown Text" value={selectedLayer.text} onChange={(v) => setLayer(selectedLayer.id, { text: v })} />
+        </>
+      )}
+
+      {selectedLayer.kind === "image" && (
+        <Field label="Caption" value={selectedLayer.caption} onChange={(v) => setLayer(selectedLayer.id, { caption: v })} />
+      )}
+    </div>
+  );
+}
+
+function SafeZoneProperties({ zone, setSafeZone, resetSafeZones }) {
+  return (
+    <div className="panel mt-3">
+      <p className="mb-3 font-black">Safe zone: {zone.label}</p>
+
+      <Field label="Label" value={zone.label} onChange={(v) => setSafeZone(zone.id, { label: v })} />
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <NumberField label="X" value={zone.x} onChange={(v) => setSafeZone(zone.id, { x: v })} />
+        <NumberField label="Y" value={zone.y} onChange={(v) => setSafeZone(zone.id, { y: v })} />
+        <NumberField label="Width" value={zone.w} onChange={(v) => setSafeZone(zone.id, { w: v })} />
+        <NumberField label="Height" value={zone.h} onChange={(v) => setSafeZone(zone.id, { h: v })} />
+      </div>
+
+      <button className="btn-secondary mt-3 w-full" onClick={resetSafeZones}>
+        Reset safe zones
+      </button>
     </div>
   );
 }
@@ -719,8 +835,13 @@ function Toolbar({
   return (
     <div className="flex h-14 items-center justify-between border-b border-slate-800 bg-[#0b1020] px-3">
       <div className="flex items-center gap-2">
-        <ToolButton active={tool === "select"} onClick={() => setTool("select")} icon={<MousePointer2 />}>Select</ToolButton>
-        <ToolButton active={tool === "insertText"} onClick={() => setTool("insertText")} icon={<Type />}>Insert text</ToolButton>
+        <ToolButton active={tool === "select"} onClick={() => setTool("select")} icon={<MousePointer2 />}>
+          Select
+        </ToolButton>
+
+        <ToolButton active={tool === "insertText"} onClick={() => setTool("insertText")} icon={<Type />}>
+          Insert text
+        </ToolButton>
 
         <label className={`tool-btn ${tool === "insertImage" ? "tool-btn-active" : ""}`}>
           <ImagePlus size={16} /> Insert image
@@ -737,9 +858,15 @@ function Toolbar({
       </div>
 
       <div className="flex items-center gap-2">
-        <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.max(0.45, Number((z - 0.1).toFixed(2))))}><ZoomOut size={16} /></button>
+        <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.max(0.45, Number((z - 0.1).toFixed(2))))}>
+          <ZoomOut size={16} />
+        </button>
+
         <span className="w-16 text-center text-sm">{Math.round(zoom * 100)}%</span>
-        <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.min(2, Number((z + 0.1).toFixed(2))))}><ZoomIn size={16} /></button>
+
+        <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.min(2, Number((z + 0.1).toFixed(2))))}>
+          <ZoomIn size={16} />
+        </button>
       </div>
     </div>
   );
@@ -758,16 +885,20 @@ function ReviewCanvas({
   refEl,
   templateBackground,
   layers,
+  safeZones,
   selectedLayerId,
+  selectedSafeZoneId,
   setSelectedLayerId,
+  setSelectedSafeZoneId,
   updateLayer,
+  updateSafeZone,
   canvasClick,
   tool,
   zoom,
   gridEnabled,
   lockToRegions,
 }) {
-  const cursor = tool === "select" ? "cursor-default" : "cursor-crosshair";
+  const cursor = tool === "insertText" || tool === "insertImage" ? "cursor-crosshair" : "cursor-default";
 
   return (
     <motion.div className="mx-auto origin-top" style={{ width: 860 * zoom }}>
@@ -780,7 +911,9 @@ function ReviewCanvas({
         <img
           src={templateBackground}
           alt="Hero template"
-          onError={(e) => { e.currentTarget.src = fallbackTemplate; }}
+          onError={(e) => {
+            e.currentTarget.src = fallbackTemplate;
+          }}
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         />
 
@@ -796,16 +929,17 @@ function ReviewCanvas({
         )}
 
         {lockToRegions &&
-          APPROVED_REGIONS.map((r) => (
-            <div
-              key={r.id}
-              className="pointer-events-none absolute border border-emerald-400/40 bg-emerald-400/5"
-              style={{
-                left: `${(r.x / PAGE_W) * 100}%`,
-                top: `${(r.y / PAGE_H) * 100}%`,
-                width: `${(r.w / PAGE_W) * 100}%`,
-                height: `${(r.h / PAGE_H) * 100}%`,
+          safeZones.map((zone) => (
+            <SafeZone
+              key={zone.id}
+              zone={zone}
+              selected={selectedSafeZoneId === zone.id}
+              onSelect={(e) => {
+                e.stopPropagation();
+                setSelectedSafeZoneId(zone.id);
+                setSelectedLayerId(null);
               }}
+              onChange={(patch) => updateSafeZone(zone.id, patch)}
             />
           ))}
 
@@ -817,12 +951,109 @@ function ReviewCanvas({
             onSelect={(e) => {
               e.stopPropagation();
               setSelectedLayerId(layer.id);
+              setSelectedSafeZoneId(null);
             }}
             onMove={(patch) => updateLayer(layer.id, patch)}
           />
         ))}
       </div>
     </motion.div>
+  );
+}
+
+function SafeZone({ zone, selected, onSelect, onChange }) {
+  const startRef = useRef(null);
+
+  const style = {
+    left: `${(zone.x / PAGE_W) * 100}%`,
+    top: `${(zone.y / PAGE_H) * 100}%`,
+    width: `${(zone.w / PAGE_W) * 100}%`,
+    height: `${(zone.h / PAGE_H) * 100}%`,
+  };
+
+  function startDrag(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(e);
+
+    startRef.current = {
+      mode: "drag",
+      pointerX: e.clientX,
+      pointerY: e.clientY,
+      x: zone.x,
+      y: zone.y,
+    };
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  }
+
+  function startResize(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(e);
+
+    startRef.current = {
+      mode: "resize",
+      pointerX: e.clientX,
+      pointerY: e.clientY,
+      w: zone.w,
+      h: zone.h,
+    };
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  }
+
+  function move(e) {
+    const start = startRef.current;
+    if (!start) return;
+
+    const dx = ((e.clientX - start.pointerX) / 860) * PAGE_W;
+    const dy = ((e.clientY - start.pointerY) / 1212) * PAGE_H;
+
+    if (start.mode === "drag") {
+      onChange({
+        x: Math.round(start.x + dx),
+        y: Math.round(start.y + dy),
+      });
+    }
+
+    if (start.mode === "resize") {
+      onChange({
+        w: Math.max(40, Math.round(start.w + dx)),
+        h: Math.max(30, Math.round(start.h + dy)),
+      });
+    }
+  }
+
+  function stop() {
+    startRef.current = null;
+    window.removeEventListener("pointermove", move);
+    window.removeEventListener("pointerup", stop);
+  }
+
+  return (
+    <div
+      onPointerDown={startDrag}
+      className={`absolute cursor-move border bg-emerald-400/5 ${selected
+          ? "border-emerald-300 ring-2 ring-emerald-300"
+          : "border-emerald-400/40"
+        }`}
+      style={style}
+    >
+      <div className="absolute left-1 top-1 rounded bg-emerald-500/80 px-2 py-0.5 text-[10px] font-bold text-white">
+        {zone.label}
+      </div>
+
+      {selected && (
+        <button
+          onPointerDown={startResize}
+          className="absolute -bottom-2 -right-2 h-5 w-5 rounded-full bg-emerald-400 ring-2 ring-white"
+          title="Resize safe zone"
+        />
+      )}
+    </div>
   );
 }
 
@@ -874,14 +1105,14 @@ function PlacedLayer({ layer, selected, onSelect, onMove }) {
     const start = startRef.current;
     if (!start) return;
 
-    const scaleX = PAGE_W / 860;
-    const scaleY = PAGE_H / 1212;
-
-    const dx = (e.clientX - start.pointerX) * scaleX;
-    const dy = (e.clientY - start.pointerY) * scaleY;
+    const dx = ((e.clientX - start.pointerX) / 860) * PAGE_W;
+    const dy = ((e.clientY - start.pointerY) / 1212) * PAGE_H;
 
     if (start.mode === "drag") {
-      onMove({ x: Math.round(start.x + dx), y: Math.round(start.y + dy) });
+      onMove({
+        x: Math.round(start.x + dx),
+        y: Math.round(start.y + dy),
+      });
     }
 
     if (start.mode === "resize") {
@@ -902,7 +1133,9 @@ function PlacedLayer({ layer, selected, onSelect, onMove }) {
     <div
       onPointerDown={startDrag}
       onClick={onSelect}
-      className={`absolute cursor-move rounded-sm text-left ${selected ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-blue-950" : "hover:ring-2 hover:ring-white/50"
+      className={`absolute cursor-move rounded-sm text-left ${selected
+          ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-blue-950"
+          : "hover:ring-2 hover:ring-white/50"
         }`}
       style={style}
     >
@@ -957,7 +1190,11 @@ function PanelTitle({ icon, title, subtitle }) {
 }
 
 function Label({ children }) {
-  return <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">{children}</span>;
+  return (
+    <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">
+      {children}
+    </span>
+  );
 }
 
 function Field({ label, value, onChange }) {
