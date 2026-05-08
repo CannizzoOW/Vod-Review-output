@@ -26,9 +26,39 @@ const HEROES = Object.keys(heroTemplates);
 const fallbackTemplate = `${import.meta.env.BASE_URL}templates/default.png`;
 
 const DEFAULT_SAFE_ZONES = [
-  { id: "mainText", label: "Main text", x: 70, y: 420, w: 600, h: 850 },
-  { id: "rightMedia", label: "Screenshots", x: 700, y: 420, w: 320, h: 850 },
-  { id: "footerSafe", label: "Footer", x: 70, y: 1385, w: 950, h: 70 },
+  {
+    id: "mainText",
+    label: "Main text",
+    x: 10,
+    y: 450,
+    w: 670,
+    h: 940,
+    layout: "flow",
+    padding: 28,
+    gap: 18,
+  },
+  {
+    id: "rightMedia",
+    label: "Screenshots",
+    x: 700,
+    y: 450,
+    w: 360,
+    h: 940,
+    layout: "stack",
+    padding: 16,
+    gap: 16,
+  },
+  {
+    id: "footerSafe",
+    label: "Footer",
+    x: 0,
+    y: 1450,
+    w: 1080,
+    h: 70,
+    layout: "fixed",
+    padding: 10,
+    gap: 10,
+  },
 ];
 
 const SAMPLE_REVIEW = `Replay ID: 10903088673
@@ -156,6 +186,8 @@ function makeTextLayer(segment, x = 80, y = 380) {
     weight: segment.type === "heading" ? 900 : 500,
     italic: false,
     markdown: true,
+    autoFlow: false,
+    zoneId: null,
     text:
       segment.type === "heading"
         ? segment.text.toUpperCase()
@@ -180,6 +212,14 @@ function snap(value, grid) {
   return Math.round(value / grid) * grid;
 }
 
+function estimateTextHeight(text, width, fontSize) {
+  const avgCharWidth = fontSize * 0.52;
+  const charsPerLine = Math.max(18, Math.floor(width / avgCharWidth));
+  const lineCount = Math.ceil(text.length / charsPerLine);
+
+  return Math.max(fontSize * 2.2, lineCount * fontSize * 1.45);
+}
+
 function clampToZones(layer, safeZones) {
   const zone =
     layer.kind === "image"
@@ -193,6 +233,32 @@ function clampToZones(layer, safeZones) {
     x: Math.min(Math.max(layer.x, zone.x), zone.x + zone.w - layer.w),
     y: Math.min(Math.max(layer.y, zone.y), zone.y + zone.h - layer.h),
   };
+}
+
+function autoPlaceInZone({ segment, zone, layers }) {
+  const padding = zone.padding || 20;
+  const gap = zone.gap || 16;
+
+  const zoneLayers = layers.filter(
+    (layer) => layer.zoneId === zone.id && layer.kind === "text"
+  );
+
+  const width = zone.w - padding * 2;
+
+  let y = zone.y + padding;
+
+  for (const layer of zoneLayers) {
+    y = Math.max(y, layer.y + layer.h + gap);
+  }
+
+  const layer = makeTextLayer(segment, zone.x + padding, y);
+
+  layer.zoneId = zone.id;
+  layer.autoFlow = true;
+  layer.w = width;
+  layer.h = estimateTextHeight(layer.text, width, layer.fontSize);
+
+  return layer;
 }
 
 export default function App() {
@@ -257,6 +323,10 @@ export default function App() {
         if (layer.id !== layerId) return layer;
 
         let next = { ...layer, ...patch };
+
+        if (next.kind === "text" && next.autoFlow) {
+          next.h = estimateTextHeight(next.text, next.w, next.fontSize);
+        }
 
         if (gridEnabled) {
           next.x = snap(next.x, 10);
@@ -344,7 +414,19 @@ export default function App() {
         if (!reuse) return;
       }
 
-      const layer = makeTextLayer(selectedSegment, Math.round(x), Math.round(y));
+      const nearestZone =
+        safeZones.find((z) => {
+          return x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h;
+        }) ||
+        safeZones.find((z) => z.id === "mainText") ||
+        safeZones[0];
+
+      const layer = autoPlaceInZone({
+        segment: selectedSegment,
+        zone: nearestZone,
+        layers: activePage.layers,
+      });
+
       addLayer(layer);
       markSegmentUsed(selectedSegment.id, true);
       setTool("select");
@@ -364,10 +446,14 @@ export default function App() {
       if (!reuse) return;
     }
 
-    const existingText = activePage.layers.filter((l) => l.kind === "text").length;
-    const y = 420 + existingText * 145;
+    const zone = safeZones.find((z) => z.id === "mainText") || safeZones[0];
 
-    const layer = makeTextLayer(selectedSegment, 80, y);
+    const layer = autoPlaceInZone({
+      segment: selectedSegment,
+      zone,
+      layers: activePage.layers,
+    });
+
     addLayer(layer);
     markSegmentUsed(selectedSegment.id, true);
   }
@@ -710,6 +796,11 @@ export default function App() {
                     }`}
                 >
                   {index + 1}. {layer.kind}
+                  {layer.autoFlow && (
+                    <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
+                      flow
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -786,6 +877,17 @@ function LayerProperties({ selectedLayer, setLayer, removeLayer }) {
               onClick={() => setLayer(selectedLayer.id, { italic: !selectedLayer.italic })}
             >
               Italic
+            </button>
+
+            <button
+              className={`tool-btn ${selectedLayer.autoFlow ? "tool-btn-active" : ""}`}
+              onClick={() =>
+                setLayer(selectedLayer.id, {
+                  autoFlow: !selectedLayer.autoFlow,
+                })
+              }
+            >
+              Flow
             </button>
           </div>
 
