@@ -11,7 +11,7 @@
     "slug": "black-cat",
     "template": "templates/Black Cat.png"
   },
-  "Blackwidow": {
+  "Black Widow": {
     "slug": "blackwidow",
     "template": "templates/Black_Widow.png"
   },
@@ -19,11 +19,11 @@
     "slug": "blade",
     "template": "templates/Blade.png"
   },
-  "Capatain America": {
-    "slug": "capatain-america",
-    "template": "templates/Capatain America.png"
+  "Captain America": {
+    "slug": "captain-america",
+    "template": "templates/Captain America.png"
   },
-  "Cloak Dagger": {
+  "Cloak & Dagger": {
     "slug": "cloak-dagger",
     "template": "templates/Cloak & Dagger.png"
   },
