@@ -234,6 +234,26 @@ function makeFooterLayer(form) {
   };
 }
 
+function makePageTitleLayer(title) {
+  return {
+    id: "page-title",
+    kind: "text",
+    color: "#e7e6e6",
+    x: 415,
+    y: 394,
+    w: 614,
+    h: 66,
+    fontSize: 30,
+    weight: 900,
+    italic: false,
+    markdown: false,
+    autoFlow: false,
+    zoneId: null,
+    locked: true,
+    text: title || "VOD FEEDBACK",
+  };
+}
+
 function getLayerListLabel(layer) {
   if (layer.kind === "text") {
     const cleanText = (layer.text || "")
@@ -345,7 +365,15 @@ export default function App() {
     requestId: "",
   });
 
-  const firstPage = useMemo(() => ({ id: uid(), title: "Page 1", layers: [] }), []);
+  const firstPage = useMemo(
+    () => ({
+      id: uid(),
+      title: "VOD FEEDBACK",
+      isCoverPage: true,
+      layers: [makePageTitleLayer("VOD FEEDBACK")],
+    }),
+    []
+  );
   const [pages, setPages] = useState([firstPage]);
   const [activePageId, setActivePageId] = useState(firstPage.id);
 
@@ -359,6 +387,7 @@ export default function App() {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [pageTabsOpen, setPageTabsOpen] = useState(true);
+  const [editingPageId, setEditingPageId] = useState(null);
   const [segmentsOpen, setSegmentsOpen] = useState(true);
   const [safeZonesOpen, setSafeZonesOpen] = useState(true);
   const [layerListOpen, setLayerListOpen] = useState(true);
@@ -403,13 +432,61 @@ export default function App() {
     setSelectedSafeZoneId(null);
   }
 
+  function updatePageTitleLayer(title = activePage?.title || "VOD FEEDBACK") {
+    const titleLayer = makePageTitleLayer(title);
+
+    updateActivePageLayers((layers) => {
+      const withoutOldTitle = layers.filter((layer) => layer.id !== "page-title");
+      return [...withoutOldTitle, titleLayer];
+    });
+
+    setSelectedLayerId("page-title");
+    setSelectedLayerIds(["page-title"]);
+    setSelectedSafeZoneId(null);
+  }
+
+  function renamePage(pageId, title) {
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== pageId) return page;
+
+        const nextTitle = title;
+
+        return {
+          ...page,
+          title: nextTitle,
+          layers: page.layers.some((layer) => layer.id === "page-title")
+            ? page.layers.map((layer) =>
+              layer.id === "page-title"
+                ? { ...layer, text: nextTitle }
+                : layer
+            )
+            : [...page.layers, makePageTitleLayer(nextTitle)],
+        };
+      })
+    );
+  }
+
+  function getPageFallbackTitle(pageIndex, pageId) {
+    const currentPage = pages.find((page) => page.id === pageId);
+
+    if (pageIndex === 0 || currentPage?.isCoverPage) {
+      return "VOD FEEDBACK";
+    }
+
+    const otherPages = pages.filter((page) => page.id !== pageId);
+    return getNextPageTitle(otherPages);
+  }
+
   function deselectAll() {
     setSelectedLayerId(null);
     setSelectedLayerIds([]);
     setSelectedSafeZoneId(null);
   }
 
-  function setLayer(layerId, patch) {
+  function setLayer(layerId, patch, options = {}) {
+    const shouldSnap = options.snapToGrid ?? false;
+
     updateActivePageLayers((layers) =>
       layers.map((layer) => {
         if (layer.id !== layerId) return layer;
@@ -420,7 +497,7 @@ export default function App() {
           next.h = estimateTextHeight(next.text, next.w, next.fontSize);
         }
 
-        if (gridEnabled) {
+        if (gridEnabled && shouldSnap) {
           next.x = snap(next.x, 10);
           next.y = snap(next.y, 10);
           next.w = snap(next.w, 10);
@@ -436,14 +513,16 @@ export default function App() {
     );
   }
 
-  function setSafeZone(zoneId, patch) {
+  function setSafeZone(zoneId, patch, options = {}) {
+    const shouldSnap = options.snapToGrid ?? false;
+
     setSafeZones((prev) =>
       prev.map((zone) => {
         if (zone.id !== zoneId) return zone;
 
         let next = { ...zone, ...patch };
 
-        if (gridEnabled) {
+        if (gridEnabled && shouldSnap) {
           next.x = snap(next.x, 10);
           next.y = snap(next.y, 10);
           next.w = snap(next.w, 10);
@@ -828,11 +907,42 @@ export default function App() {
     setSafeZones(draft.safeZones || DEFAULT_SAFE_ZONES);
   }
 
+  function getNextPageTitle(pageList = pages) {
+    const usedNumbers = new Set();
+
+    for (const page of pageList) {
+      if (page.isCoverPage) continue;
+
+      const match = String(page.title || "").trim().match(/^Page\s+(\d+)$/i);
+
+      if (match) {
+        usedNumbers.add(Number(match[1]));
+      }
+    }
+
+    let nextNumber = 1;
+
+    while (usedNumbers.has(nextNumber)) {
+      nextNumber += 1;
+    }
+
+    return `Page ${nextNumber}`;
+  }
+
   function addPage() {
-    const page = { id: uid(), layers: [] };
+    const pageTitle = getNextPageTitle(pages);
+
+    const page = {
+      id: uid(),
+      title: pageTitle,
+      isCoverPage: false,
+      layers: [makePageTitleLayer(pageTitle)],
+    };
+
     setPages((prev) => [...prev, page]);
     setActivePageId(page.id);
     setSelectedLayerId(null);
+    setSelectedLayerIds([]);
     setSelectedSafeZoneId(null);
   }
 
@@ -907,6 +1017,23 @@ export default function App() {
       );
     });
   }, [form.player, form.reviewer, form.replayId]);
+
+  useEffect(() => {
+    updateActivePageLayers((layers) => {
+      const hasTitle = layers.some((layer) => layer.id === "page-title");
+
+      if (!hasTitle) return layers;
+
+      return layers.map((layer) =>
+        layer.id === "page-title"
+          ? {
+            ...layer,
+            text: activePage?.title || "VOD FEEDBACK",
+          }
+          : layer
+      );
+    });
+  }, [activePage?.title, activePageId]);
 
   useEffect(() => {
   function handleKeyDown(e) {
@@ -1118,7 +1245,8 @@ export default function App() {
           />
 
           {pageTabsOpen && (
-            <div className="flex gap-2 border-b border-slate-800 bg-[#0b1020] p-2">
+            <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 bg-[#0b1020] p-2">
+              
               {pages.map((page, index) => (
                 <div
                   key={page.id}
@@ -1127,17 +1255,85 @@ export default function App() {
                       : "bg-slate-800 hover:bg-slate-700"
                     }`}
                 >
-                  <button
-                    onClick={() => {
-                      setActivePageId(page.id);
-                      setSelectedLayerId(null);
-                      setSelectedLayerIds([]);
-                      setSelectedSafeZoneId(null);
-                    }}
-                    className="px-3 py-2 text-sm font-bold"
-                  >
-                    {`Page ${index + 1}`}
-                  </button>
+                  {editingPageId === page.id ? (
+                    <input
+                      className="min-w-28 bg-transparent px-3 py-2 text-sm font-bold text-white outline-none"
+                      autoFocus
+                      value={page.title || ""}
+                      placeholder={`Page ${index + 1}`}
+                      onChange={(e) => {
+                        const nextTitle = e.target.value || `Page ${index + 1}`;
+
+                        setPages((prev) =>
+                          prev.map((p) =>
+                            p.id === page.id
+                              ? {
+                                ...p,
+                                title: nextTitle,
+                                layers: p.layers.some((layer) => layer.id === "page-title")
+                                  ? p.layers.map((layer) =>
+                                    layer.id === "page-title"
+                                      ? { ...layer, text: nextTitle }
+                                      : layer
+                                  )
+                                  : [...p.layers, makePageTitleLayer(nextTitle)],
+                              }
+                              : p
+                          )
+                        );
+                      }}
+                      onBlur={() => {
+                        const fallbackTitle = getPageFallbackTitle(index, page.id);
+                        const finalTitle = (page.title || "").trim() || fallbackTitle;
+
+                        setPages((prev) =>
+                          prev.map((p) =>
+                            p.id === page.id
+                              ? {
+                                ...p,
+                                title: finalTitle,
+                                layers: p.layers.some((layer) => layer.id === "page-title")
+                                  ? p.layers.map((layer) =>
+                                    layer.id === "page-title"
+                                      ? { ...layer, text: finalTitle }
+                                      : layer
+                                  )
+                                  : [...p.layers, makePageTitleLayer(finalTitle)],
+                              }
+                              : p
+                          )
+                        );
+
+                        setEditingPageId(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.currentTarget.blur();
+                        }
+
+                        if (e.key === "Escape") {
+                          setEditingPageId(null);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setActivePageId(page.id);
+                        setSelectedLayerId(null);
+                        setSelectedLayerIds([]);
+                        setSelectedSafeZoneId(null);
+                      }}
+                      onDoubleClick={() => {
+                        setActivePageId(page.id);
+                        setEditingPageId(page.id);
+                      }}
+                      className="px-3 py-2 text-sm font-bold"
+                      title="Double-click to rename page"
+                    >
+                      {page.title || `Page ${index + 1}`}
+                    </button>
+                  )}
 
                   {pages.length > 1 && activePageId === page.id && (
                     <button
@@ -1174,6 +1370,7 @@ export default function App() {
                 <ReviewCanvas
                   refEl={canvasRef}
                   exportRef={exportRef}
+                  deselectAll={deselectAll}
                   isExporting={isExporting}
                   templateBackground={templateBackground}
                   layers={activePage.layers}
@@ -1491,6 +1688,7 @@ function ToolButton({ active, icon, children, onClick }) {
 function ReviewCanvas({
   refEl,
   exportRef,
+  deselectAll,
   isExporting,
   templateBackground,
   layers,
@@ -1521,6 +1719,13 @@ function ReviewCanvas({
         ref={(node) => {
           refEl.current = node;
           exportRef.current = node;
+        }}
+        onPointerDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+
+          if (tool === "select" || tool === "safeZone") {
+            deselectAll();
+          }
         }}
         className={`editor-canvas relative aspect-[100/141.4286] w-full overflow-hidden bg-[#efeae7] ${isExporting ? "" : "rounded-2xl shadow-2xl ring-1 ring-white/10"
           } ${cursor}`}
@@ -1557,7 +1762,7 @@ function ReviewCanvas({
                 setSelectedSafeZoneId(zone.id);
                 selectLayer(null, false);
               }}
-              onChange={(patch) => updateSafeZone(zone.id, patch)}
+              onChange={(patch) => updateSafeZone(zone.id, patch, { snapToGrid: true })}
             />
           ))}
 
@@ -1571,7 +1776,7 @@ function ReviewCanvas({
               e.stopPropagation();
               selectLayer(layer.id, e.shiftKey);
             }}
-            onMove={(patch) => updateLayer(layer.id, patch)}
+            onMove={(patch) => updateLayer(layer.id, patch, { snapToGrid: true })}
           />
         ))}
       </div>
@@ -1827,11 +2032,17 @@ function Field({ label, value, onChange }) {
   );
 }
 
-function NumberField({ label, value, onChange }) {
+function NumberField({ label, value, onChange, step = 1 }) {
   return (
     <label className="block">
       <Label>{label}</Label>
-      <input className="input" type="number" value={value} onChange={(e) => onChange(Number(e.target.value))} />
+      <input
+        className="input"
+        type="number"
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
     </label>
   );
 }
