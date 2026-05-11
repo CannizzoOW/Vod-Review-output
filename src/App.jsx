@@ -898,6 +898,7 @@ export default function App() {
                   selectedLayerIds={selectedLayerIds}
                   selectedSafeZoneId={selectedSafeZoneId}
                   selectLayer={selectLayer}
+                  selectLayer={selectLayer}
                   setSelectedSafeZoneId={setSelectedSafeZoneId}
                   updateLayer={setLayer}
                   updateSafeZone={setSafeZone}

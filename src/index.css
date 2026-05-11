@@ -81,3 +81,88 @@ select {
 .vod-text li {
   margin-bottom: 0.25em;
 }
+
+/* 
+    MARK: scrollbar 
+*/
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(76, 201, 240, 0) transparent;
+}
+
+/* Chrome / Edge / Safari */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(76, 201, 240, 0);
+  border-radius: 999px;
+  transition: background 0.3s ease;
+}
+
+/* Show scrollbar on hover / scrollable interaction */
+:hover::-webkit-scrollbar-thumb {
+  background: rgba(76, 201, 240, 0.7);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(76, 201, 240, 1);
+}
+
+/* 
+    MARK: Phone Support 
+*/
+
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+
+  /* smooth scrolling iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent images/videos from overflowing */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Inputs zoom-fix for iPhone etc */
+input,
+textarea,
+select,
+button {
+  font-size: 16px;
+}
+
+/* Better touch targets */
+button,
+a {
+  touch-action: manipulation;
+}
