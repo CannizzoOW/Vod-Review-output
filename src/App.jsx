@@ -219,12 +219,13 @@ function makeFooterLayer(form) {
     id: "footer-info",
     kind: "text",
     color: "#e7e6e6",
-    x: 40,
+    x: 0,
     y: 1470,
-    w: 1010,
+    w: 1080,
     h: 40,
     fontSize: 19,
     weight: 900,
+    align: "center",
     italic: false,
     markdown: false,
     autoFlow: false,
@@ -1512,8 +1513,9 @@ export default function App() {
                       <button
                         key={zone.id}
                         onClick={() => {
+                          setSelectedLayerId(null);
+                          setSelectedLayerIds([]);
                           setSelectedSafeZoneId(zone.id);
-                          selectLayer(null, false);
                           setTool("safeZone");
                         }}
                         className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedSafeZoneId === zone.id
@@ -1975,6 +1977,7 @@ function PlacedLayer({ layer, selected, onSelect, onMove, isExporting }) {
             fontWeight: layer.weight,
             fontStyle: layer.italic ? "italic" : "normal",
             lineHeight: 1.25,
+            textAlign: layer.align || "left",
           }}
         >
           {layer.markdown ? (
