@@ -183,6 +183,7 @@ function makeTextLayer(segment, x = 80, y = 380) {
     id: uid(),
     kind: "text",
     sourceSegmentId: segment.id,
+    color: "#000000",
     x,
     y,
     w: segment.type === "heading" ? 420 : 560,
@@ -211,6 +212,48 @@ function makeImageLayer(src, x = 700, y = 420) {
     src,
     caption: "Screenshot note",
   };
+}
+
+function makeFooterLayer(form) {
+  return {
+    id: "footer-info",
+    kind: "text",
+    color: "#e7e6e6",
+    x: 40,
+    y: 1470,
+    w: 1010,
+    h: 40,
+    fontSize: 19,
+    weight: 900,
+    italic: false,
+    markdown: false,
+    autoFlow: false,
+    zoneId: "footerSafe",
+    locked: true,
+    text: `VOD REVIEW  | @${form.player || "USERNAME"} | FOR QUESTIONS, PING @${form.reviewer || "COACH"} | REPLAY ID: ${form.replayId || ""}`,
+  };
+}
+
+function getLayerListLabel(layer) {
+  if (layer.kind === "text") {
+    const cleanText = (layer.text || "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const firstWords = cleanText
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .join(" ");
+
+    return `T ${firstWords || "Text"}`;
+  }
+
+  if (layer.kind === "image") {
+    return `IMG ${layer.caption || "Image"}`;
+  }
+
+  return layer.kind;
 }
 
 function snap(value, grid) {
@@ -266,8 +309,24 @@ function autoPlaceInZone({ segment, zone, layers }) {
   return layer;
 }
 
+function makeAutoTextLayerAtY({ segment, zone, y }) {
+  const padding = zone.padding || 20;
+  const width = zone.w - padding * 2;
+
+  const layer = makeTextLayer(segment, zone.x + padding, y);
+
+  layer.zoneId = zone.id;
+  layer.autoFlow = true;
+  layer.w = width;
+  layer.h = estimateTextHeight(layer.text, width, layer.fontSize);
+
+  return layer;
+}
+
 export default function App() {
-  const firstHero = HEROES[0] || "Cloak & Dagger";
+  const firstHero = heroTemplates["Cloak & Dagger"]
+    ? "Cloak & Dagger"
+    : HEROES[0];
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
   const exportRef = useRef(null);
@@ -300,6 +359,9 @@ export default function App() {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [pageTabsOpen, setPageTabsOpen] = useState(true);
+  const [segmentsOpen, setSegmentsOpen] = useState(true);
+  const [safeZonesOpen, setSafeZonesOpen] = useState(true);
+  const [layerListOpen, setLayerListOpen] = useState(true);
   const [gridEnabled, setGridEnabled] = useState(true);
   const [lockToRegions, setLockToRegions] = useState(false);
   const [pendingImage, setPendingImage] = useState("");
@@ -326,6 +388,19 @@ export default function App() {
         page.id === activePageId ? { ...page, layers: updater(page.layers) } : page
       )
     );
+  }
+
+  function updateFooterLayer() {
+    const footerLayer = makeFooterLayer(form);
+
+    updateActivePageLayers((layers) => {
+      const withoutOldFooter = layers.filter((layer) => layer.id !== "footer-info");
+      return [...withoutOldFooter, footerLayer];
+    });
+
+    setSelectedLayerId("footer-info");
+    setSelectedLayerIds(["footer-info"]);
+    setSelectedSafeZoneId(null);
   }
 
   function deselectAll() {
@@ -384,6 +459,25 @@ export default function App() {
     setSegments((prev) => prev.map((s) => (s.id === id ? { ...s, used } : s)));
   }
 
+  function syncSegmentUsage(nextPages) {
+    const usedSegmentIds = new Set();
+
+    for (const page of nextPages) {
+      for (const layer of page.layers || []) {
+        if (layer.sourceSegmentId) {
+          usedSegmentIds.add(layer.sourceSegmentId);
+        }
+      }
+    }
+
+    setSegments((prev) =>
+      prev.map((segment) => ({
+        ...segment,
+        used: usedSegmentIds.has(segment.id),
+      }))
+    );
+  }
+
   function addLayer(layer) {
     let next = layer;
 
@@ -405,15 +499,29 @@ export default function App() {
   }
 
   function removeLayer(id) {
-    const layer = activePage.layers.find((l) => l.id === id);
+    let nextPagesSnapshot = null;
 
-    updateActivePageLayers((layers) => layers.filter((l) => l.id !== id));
+    setPages((prev) => {
+      nextPagesSnapshot = prev.map((page) =>
+        page.id === activePageId
+          ? {
+            ...page,
+            layers: page.layers.filter((layer) => layer.id !== id),
+          }
+          : page
+      );
 
-    if (layer?.sourceSegmentId) {
-      markSegmentUsed(layer.sourceSegmentId, false);
-    }
+      return nextPagesSnapshot;
+    });
+
+    setTimeout(() => {
+      if (nextPagesSnapshot) {
+        syncSegmentUsage(nextPagesSnapshot);
+      }
+    }, 0);
 
     setSelectedLayerId(null);
+    setSelectedLayerIds([]);
   }
 
   function selectLayer(layerId, additive = false) {
@@ -451,17 +559,28 @@ export default function App() {
 
     if (!idsToDelete.length) return;
 
-    updateActivePageLayers((layers) => {
-      const removed = layers.filter((layer) => idsToDelete.includes(layer.id));
+    let nextPagesSnapshot = null;
 
-      for (const layer of removed) {
-        if (layer.sourceSegmentId) {
-          markSegmentUsed(layer.sourceSegmentId, false);
-        }
-      }
+    setPages((prev) => {
+      nextPagesSnapshot = prev.map((page) =>
+        page.id === activePageId
+          ? {
+            ...page,
+            layers: page.layers.filter(
+              (layer) => !idsToDelete.includes(layer.id)
+            ),
+          }
+          : page
+      );
 
-      return layers.filter((layer) => !idsToDelete.includes(layer.id));
+      return nextPagesSnapshot;
     });
+
+    setTimeout(() => {
+      if (nextPagesSnapshot) {
+        syncSegmentUsage(nextPagesSnapshot);
+      }
+    }, 0);
 
     setSelectedLayerId(null);
     setSelectedLayerIds([]);
@@ -480,6 +599,8 @@ export default function App() {
     const nextActive = nextPages[nextIndex] || nextPages[0];
 
     setPages(nextPages);
+    syncSegmentUsage(nextPages);
+
     setActivePageId(nextActive.id);
     setSelectedLayerId(null);
     setSelectedLayerIds([]);
@@ -525,24 +646,78 @@ export default function App() {
     }
   }
 
-  function autoPlaceSelected() {
-    if (!selectedSegment) return;
-
-    if (selectedSegment.used) {
-      const reuse = window.confirm("This segment is already used. Place it again?");
-      if (!reuse) return;
-    }
-
+  function autoPlaceAllSegments() {
     const zone = safeZones.find((z) => z.id === "mainText") || safeZones[0];
 
-    const layer = autoPlaceInZone({
-      segment: selectedSegment,
-      zone,
-      layers: activePage.layers,
-    });
+    if (!zone) return;
 
-    addLayer(layer);
-    markSegmentUsed(selectedSegment.id, true);
+    const segmentsToPlace = segments.filter((segment) => !segment.used);
+
+    if (!segmentsToPlace.length) {
+      alert("No unused segments to auto-place.");
+      return;
+    }
+
+    const padding = zone.padding || 20;
+    const gap = zone.gap || 16;
+    const startY = zone.y + padding;
+    const maxY = zone.y + zone.h - padding;
+
+    const activeIndex = pages.findIndex((page) => page.id === activePageId);
+    const basePages = [...pages];
+
+    let workingPages = basePages.map((page) => ({
+      ...page,
+      layers: [...page.layers],
+    }));
+
+    let pageIndex = activeIndex >= 0 ? activeIndex : 0;
+    let currentPage = workingPages[pageIndex];
+
+    let y = startY;
+
+    const existingZoneLayers = currentPage.layers.filter(
+      (layer) => layer.zoneId === zone.id && layer.kind === "text"
+    );
+
+    for (const layer of existingZoneLayers) {
+      y = Math.max(y, layer.y + layer.h + gap);
+    }
+
+    for (const segment of segmentsToPlace) {
+      let layer = makeAutoTextLayerAtY({ segment, zone, y });
+
+      if (layer.y + layer.h > maxY) {
+        const newPage = {
+          id: uid(),
+          layers: [],
+        };
+
+        workingPages.push(newPage);
+        pageIndex = workingPages.length - 1;
+        currentPage = workingPages[pageIndex];
+
+        y = startY;
+        layer = makeAutoTextLayerAtY({ segment, zone, y });
+      }
+
+      currentPage.layers.push(layer);
+      y = layer.y + layer.h + gap;
+    }
+
+    setPages(workingPages);
+    setActivePageId(workingPages[activeIndex >= 0 ? activeIndex : 0].id);
+
+    setSegments((prev) =>
+      prev.map((segment) =>
+        segmentsToPlace.some((placed) => placed.id === segment.id)
+          ? { ...segment, used: true }
+          : segment
+      )
+    );
+
+    deselectAll();
+    setTool("select");
   }
 
   function runParser() {
@@ -717,6 +892,23 @@ export default function App() {
   }
 
   useEffect(() => {
+    updateActivePageLayers((layers) => {
+      const hasFooter = layers.some((layer) => layer.id === "footer-info");
+
+      if (!hasFooter) return layers;
+
+      return layers.map((layer) =>
+        layer.id === "footer-info"
+          ? {
+            ...layer,
+            text: makeFooterLayer(form).text,
+          }
+          : layer
+      );
+    });
+  }, [form.player, form.reviewer, form.replayId]);
+
+  useEffect(() => {
   function handleKeyDown(e) {
     const target = e.target;
     const isTyping =
@@ -754,9 +946,6 @@ export default function App() {
             <h1 className="text-lg font-black leading-tight">
               Rivals VOD Review Editor
             </h1>
-            <p className="text-xs text-slate-500">
-              Import JSON → layout → export
-            </p>
           </div>
         </div>
 
@@ -813,20 +1002,24 @@ export default function App() {
             <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
     <PanelTitle
       icon={<ClipboardList />}
-      title="Imported review"
+      title="Paste review"
       subtitle="Bot JSON or pasted raw review text."
     />
 
           <div className="panel mt-3">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="mb-3 grid grid-cols-2 gap-2">
               <Field label="Player" value={form.player} onChange={(v) => updateForm("player", v)} />
               <Field label="Coach" value={form.reviewer} onChange={(v) => updateForm("reviewer", v)} />
             </div>
 
-            <Field label="Replay ID" value={form.replayId} onChange={(v) => updateForm("replayId", v)} />
+                <Field label="Replay ID" value={form.replayId} onChange={(v) => updateForm("replayId", v)} />
 
-            <label>
-              <Label>Hero template</Label>
+                <button className="btn-secondary mt-4 mb-3 w-full" onClick={updateFooterLayer}>
+                  Update footer info
+                </button>
+
+                <label>
+                  <Label>Hero template</Label>
               <select className="input" value={form.hero} onChange={(e) => updateForm("hero", e.target.value)}>
                 {HEROES.map((hero) => (
                   <option key={hero}>{hero}</option>
@@ -848,15 +1041,30 @@ export default function App() {
             </button>
           </div>
 
-          <div className="mt-3 flex items-center justify-between">
-            <PanelTitle title="Segments" subtitle={`${segments.length} blocks`} />
-            <button className="btn-secondary px-3" onClick={autoPlaceSelected}>
-              Auto-place
-            </button>
-          </div>
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <button
+                  className="flex min-w-0 flex-1 items-center justify-between rounded-xl px-2 py-1 text-left hover:bg-slate-800"
+                  onClick={() => setSegmentsOpen((v) => !v)}
+                  title={segmentsOpen ? "Collapse segments" : "Expand segments"}
+                >
+                  <div>
+                    <p className="font-black">Segments</p>
+                    <p className="text-sm text-slate-400">{segments.length} blocks</p>
+                  </div>
 
-          <div className="mt-2 space-y-2">
-            {segments.map((segment) => (
+                  <span className="text-lg text-slate-400">
+                    {segmentsOpen ? "▾" : "▸"}
+                  </span>
+                </button>
+
+                <button className="btn-secondary px-3" onClick={autoPlaceAllSegments}>
+                  Auto-place all
+                </button>
+              </div>
+
+              {segmentsOpen && (
+                <div className="mt-2 space-y-2">
+                  {segments.map((segment) => (
               <button
                 key={segment.id}
                 onClick={() => {
@@ -888,6 +1096,7 @@ export default function App() {
               </button>
             ))}
           </div>
+              )}
         </div>
         )}
       </aside>
@@ -999,10 +1208,6 @@ export default function App() {
             <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
           <PanelTitle title="Properties" subtitle="Move, resize and edit layers/safe zones." />
 
-          <div className="panel mt-3 text-sm text-slate-400">
-            Tool: <strong className="text-slate-100">{tool}</strong>
-          </div>
-
           {selectedLayer ? (
             <LayerProperties
               selectedLayer={selectedLayer}
@@ -1021,53 +1226,110 @@ export default function App() {
             </div>
           )}
 
-          <div className="panel mt-3">
-            <p className="mb-2 font-black">Layer list</p>
-            <div className="space-y-2">
-              {activePage.layers.map((layer, index) => (
+              <div className="panel mt-3">
                 <button
-                  key={layer.id}
-                  onClick={(e) => {
-                    selectLayer(layer.id, e.shiftKey);
-                    setTool("select");
-                  }}
-                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
-                      ? "bg-blue-600"
-                      : "bg-slate-950 hover:bg-slate-800"
-                    }`}
+                  className="flex w-full items-center justify-between text-left"
+                  onClick={() => setLayerListOpen((v) => !v)}
+                  title={layerListOpen ? "Collapse layer list" : "Expand layer list"}
                 >
-                  {index + 1}. {layer.kind}
-                  {layer.autoFlow && (
-                    <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
-                      flow
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+                  <div>
+                    <p className="font-black">Layer list</p>
+                    <p className="text-sm text-slate-400">
+                      {activePage.layers.length} layers
+                    </p>
+                  </div>
 
-          <div className="panel mt-3">
-            <p className="mb-2 font-black">Safe zones</p>
-            <div className="space-y-2">
-              {safeZones.map((zone) => (
-                <button
-                  key={zone.id}
-                  onClick={() => {
-                    setSelectedSafeZoneId(zone.id);
-                    setSelectedLayerId(null);
-                    setTool("safeZone");
-                  }}
-                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedSafeZoneId === zone.id
-                      ? "bg-emerald-600"
-                      : "bg-slate-950 hover:bg-slate-800"
-                    }`}
-                >
-                  {zone.label}
+                  <span className="text-lg text-slate-400">
+                    {layerListOpen ? "▾" : "▸"}
+                  </span>
                 </button>
-              ))}
-            </div>
-          </div>
+
+                {layerListOpen && (
+                  <div className="mt-3 space-y-2">
+                    {activePage.layers.map((layer, index) => (
+                      <button
+                        key={layer.id}
+                        onClick={(e) => {
+                          selectLayer(layer.id, e.shiftKey);
+                          setTool("select");
+                        }}
+                        className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
+                            ? "bg-blue-600"
+                            : "bg-slate-950 hover:bg-slate-800"
+                          }`}
+                      >
+                        <span className="mr-2 text-slate-400">{index + 1}.</span>
+
+                        {layer.kind === "text" && (
+                          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
+                            <Type size={13} />
+                          </span>
+                        )}
+
+                        {layer.kind === "image" && (
+                          <span className="mr-2 inline-flex h-5 items-center justify-center rounded bg-slate-700 px-1.5 text-[10px] font-black">
+                            IMG
+                          </span>
+                        )}
+
+                        <span className="truncate">
+                          {getLayerListLabel(layer).replace(/^T\s|^IMG\s/, "")}
+                        </span>
+
+                        {layer.autoFlow && (
+                          <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
+                            flow
+                          </span>
+                        )}
+
+                        {layer.id === "footer-info" && (
+                          <span className="ml-2 rounded bg-slate-700 px-1.5 py-0.5 text-[10px]">
+                            footer
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="panel mt-3">
+                <button
+                  className="flex w-full items-center justify-between text-left"
+                  onClick={() => setSafeZonesOpen((v) => !v)}
+                  title={safeZonesOpen ? "Collapse safe zones" : "Expand safe zones"}
+                >
+                  <div>
+                    <p className="font-black">Safe zones</p>
+                    <p className="text-sm text-slate-400">{safeZones.length} zones</p>
+                  </div>
+
+                  <span className="text-lg text-slate-400">
+                    {safeZonesOpen ? "▾" : "▸"}
+                  </span>
+                </button>
+
+                {safeZonesOpen && (
+                  <div className="mt-3 space-y-2">
+                    {safeZones.map((zone) => (
+                      <button
+                        key={zone.id}
+                        onClick={() => {
+                          setSelectedSafeZoneId(zone.id);
+                          selectLayer(null, false);
+                          setTool("safeZone");
+                        }}
+                        className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedSafeZoneId === zone.id
+                            ? "bg-emerald-600"
+                            : "bg-slate-950 hover:bg-slate-800"
+                          }`}
+                      >
+                        {zone.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
         </div>
       )}
     </aside>
@@ -1293,7 +1555,7 @@ function ReviewCanvas({
               onSelect={(e) => {
                 e.stopPropagation();
                 setSelectedSafeZoneId(zone.id);
-                setSelectedLayerId(null, false);
+                selectLayer(null, false);
               }}
               onChange={(patch) => updateSafeZone(zone.id, patch)}
             />
@@ -1499,8 +1761,9 @@ function PlacedLayer({ layer, selected, onSelect, onMove, isExporting }) {
     >
       {layer.kind === "text" ? (
         <div
-          className="vod-text whitespace-pre-wrap text-[#5f4e46] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
+          className="vod-text whitespace-pre-wrap drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
           style={{
+            color: layer.color || "#000000",
             fontSize: `${layer.fontSize / 10}cqw`,
             fontWeight: layer.weight,
             fontStyle: layer.italic ? "italic" : "normal",

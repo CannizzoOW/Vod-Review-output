@@ -11,9 +11,13 @@
     "slug": "black-cat",
     "template": "templates/Black Cat.png"
   },
+  "Black Panther": {
+    "slug": "black-panther",
+    "template": "templates/Black Panther.png"
+  },
   "Black Widow": {
-    "slug": "blackwidow",
-    "template": "templates/Black_Widow.png"
+    "slug": "black-widow",
+    "template": "templates/Black Widow.png"
   },
   "Blade": {
     "slug": "blade",
@@ -23,17 +27,21 @@
     "slug": "captain-america",
     "template": "templates/Captain America.png"
   },
-  "Cloak & Dagger": {
+  "Cloak Dagger": {
     "slug": "cloak-dagger",
     "template": "templates/Cloak & Dagger.png"
-  },
-  "Dpspool": {
-    "slug": "dpspool",
-    "template": "templates/DPSpool.png"
   },
   "Daredevil": {
     "slug": "daredevil",
     "template": "templates/Daredevil.png"
+  },
+  "Doctor Strange": {
+    "slug": "doctor-strange",
+    "template": "templates/Doctor Strange.png"
+  },
+  "Dpspool": {
+    "slug": "dpspool",
+    "template": "templates/Dpspool.png"
   },
   "Elsa Bloodstone": {
     "slug": "elsa-bloodstone",
@@ -91,10 +99,6 @@
     "slug": "loki",
     "template": "templates/Loki.png"
   },
-  "Luna Snow Example": {
-    "slug": "luna-snow-example",
-    "template": "templates/Luna Snow - Example.png"
-  },
   "Luna Snow": {
     "slug": "luna-snow",
     "template": "templates/Luna Snow.png"
@@ -123,13 +127,9 @@
     "slug": "namor",
     "template": "templates/Namor.png"
   },
-  "Panther": {
-    "slug": "panther",
-    "template": "templates/Panther.png"
-  },
-  "Peni": {
-    "slug": "peni",
-    "template": "templates/Peni.png"
+  "Peni Parker": {
+    "slug": "peni-parker",
+    "template": "templates/Peni Parker.png"
   },
   "Phoenix": {
     "slug": "phoenix",
@@ -139,13 +139,9 @@
     "slug": "psylocke",
     "template": "templates/Psylocke.png"
   },
-  "Punisher": {
-    "slug": "punisher",
-    "template": "templates/Punisher.png"
-  },
-  "Rocket": {
-    "slug": "rocket",
-    "template": "templates/Rocket.png"
+  "Rocket Raccoon": {
+    "slug": "rocket-raccoon",
+    "template": "templates/Rocket Raccoon.png"
   },
   "Rogue": {
     "slug": "rogue",
@@ -171,17 +167,17 @@
     "slug": "storm",
     "template": "templates/Storm.png"
   },
-  "Strange": {
-    "slug": "strange",
-    "template": "templates/Strange.png"
-  },
   "Tankpool": {
     "slug": "tankpool",
     "template": "templates/Tankpool.png"
   },
-  "Thing": {
-    "slug": "thing",
-    "template": "templates/Thing.png"
+  "The Punisher": {
+    "slug": "the-punisher",
+    "template": "templates/The Punisher.png"
+  },
+  "The Thing": {
+    "slug": "the-thing",
+    "template": "templates/The Thing.png"
   },
   "Thor": {
     "slug": "thor",
@@ -206,9 +202,5 @@
   "Wolverine": {
     "slug": "wolverine",
     "template": "templates/Wolverine.png"
-  },
-  "Default": {
-    "slug": "default",
-    "template": "templates/default.png"
   }
 }

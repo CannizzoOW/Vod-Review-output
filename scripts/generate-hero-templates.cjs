@@ -10,6 +10,7 @@ const allowedExtensions = [".png", ".jpg", ".jpeg", ".webp"];
 const nameOverrides = {
     "cloak-and-dagger": "Cloak & Dagger",
     "cloak dagger": "Cloak & Dagger",
+    "cnd": "Cloak & Dagger",
     "jeff-the-land-shark": "Jeff the Land Shark",
     "rocket-raccoon": "Rocket Raccoon",
     "doctor-strange": "Doctor Strange",
