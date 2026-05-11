@@ -1,5 +1,6 @@
 import React, { useEffect,useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { toPng } from "html-to-image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -269,6 +270,7 @@ export default function App() {
   const firstHero = HEROES[0] || "Cloak & Dagger";
   const fileInputRef = useRef(null);
   const canvasRef = useRef(null);
+  const exportRef = useRef(null);
 
   const [rawText, setRawText] = useState(SAMPLE_REVIEW);
   const [segments, setSegments] = useState(
@@ -301,6 +303,7 @@ export default function App() {
   const [gridEnabled, setGridEnabled] = useState(true);
   const [lockToRegions, setLockToRegions] = useState(false);
   const [pendingImage, setPendingImage] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   const activePage = pages.find((p) => p.id === activePageId) || pages[0];
   const selectedSegment = segments.find((s) => s.id === selectedSegmentId);
@@ -323,6 +326,12 @@ export default function App() {
         page.id === activePageId ? { ...page, layers: updater(page.layers) } : page
       )
     );
+  }
+
+  function deselectAll() {
+    setSelectedLayerId(null);
+    setSelectedLayerIds([]);
+    setSelectedSafeZoneId(null);
   }
 
   function setLayer(layerId, patch) {
@@ -410,14 +419,22 @@ export default function App() {
   function selectLayer(layerId, additive = false) {
     setSelectedSafeZoneId(null);
 
-    if (additive) {
-      setSelectedLayerIds((prev) =>
-        prev.includes(layerId)
-          ? prev.filter((id) => id !== layerId)
-          : [...prev, layerId]
-      );
+    if (!layerId) {
+      setSelectedLayerId(null);
+      setSelectedLayerIds([]);
+      return;
+    }
 
-      setSelectedLayerId(layerId);
+    if (additive) {
+      setSelectedLayerIds((prev) => {
+        const next = prev.includes(layerId)
+          ? prev.filter((id) => id !== layerId)
+          : [...prev, layerId];
+
+        setSelectedLayerId(next[next.length - 1] || null);
+        return next;
+      });
+
       return;
     }
 
@@ -644,8 +661,59 @@ export default function App() {
     setSelectedSafeZoneId(null);
   }
 
-  function exportPng() {
-    alert("PNG export is next step. Layout state is ready.");
+  async function exportPng() {
+    if (!exportRef.current) {
+      alert("Export canvas not found.");
+      return;
+    }
+
+    const wasGridEnabled = gridEnabled;
+    const wasLockToRegions = lockToRegions;
+
+    try {
+      setIsExporting(true);
+      setGridEnabled(false);
+      setLockToRegions(false);
+      deselectAll();
+
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const dataUrl = await toPng(exportRef.current, {
+        cacheBust: true,
+        pixelRatio: 1,
+        canvasWidth: PAGE_W,
+        canvasHeight: PAGE_H,
+        width: PAGE_W,
+        height: PAGE_H,
+        filter: (node) => {
+          return !node.classList?.contains("no-export");
+        },
+        style: {
+          width: `${PAGE_W}px`,
+          height: `${PAGE_H}px`,
+          borderRadius: "0px",
+          boxShadow: "none",
+          outline: "none",
+          transform: "none",
+        },
+      });
+
+      const safeHero = form.hero.replace(/[^\w-]+/g, "-").toLowerCase();
+      const safePlayer = form.player.replace(/[^\w-]+/g, "-").toLowerCase();
+
+      const link = document.createElement("a");
+      link.download = `vod-review-${safePlayer || "player"}-${safeHero || "hero"}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("PNG export failed:", error);
+      alert("PNG export failed. Check console for details.");
+    } finally {
+      setGridEnabled(wasGridEnabled);
+      setLockToRegions(wasLockToRegions);
+      setIsExporting(false);
+    }
   }
 
   useEffect(() => {
@@ -658,6 +726,11 @@ export default function App() {
       target.isContentEditable;
 
     if (isTyping) return;
+// MARK: Keyboard shortcuts
+    if (e.key === "Escape") {
+      e.preventDefault();
+      deselectAll();
+    }
 
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
@@ -891,13 +964,14 @@ export default function App() {
               >
                 <ReviewCanvas
                   refEl={canvasRef}
+                  exportRef={exportRef}
+                  isExporting={isExporting}
                   templateBackground={templateBackground}
                   layers={activePage.layers}
                   safeZones={safeZones}
                   selectedLayerId={selectedLayerId}
                   selectedLayerIds={selectedLayerIds}
                   selectedSafeZoneId={selectedSafeZoneId}
-                  selectLayer={selectLayer}
                   selectLayer={selectLayer}
                   setSelectedSafeZoneId={setSelectedSafeZoneId}
                   updateLayer={setLayer}
@@ -953,12 +1027,11 @@ export default function App() {
               {activePage.layers.map((layer, index) => (
                 <button
                   key={layer.id}
-                  onClick={() => {
-                    setSelectedLayerId(layer.id);
-                    setSelectedSafeZoneId(null);
+                  onClick={(e) => {
+                    selectLayer(layer.id, e.shiftKey);
                     setTool("select");
                   }}
-                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedLayerId === layer.id
+                  className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
                       ? "bg-blue-600"
                       : "bg-slate-950 hover:bg-slate-800"
                     }`}
@@ -1155,6 +1228,8 @@ function ToolButton({ active, icon, children, onClick }) {
 
 function ReviewCanvas({
   refEl,
+  exportRef,
+  isExporting,
   templateBackground,
   layers,
   safeZones,
@@ -1177,13 +1252,16 @@ function ReviewCanvas({
     <motion.div
       className="origin-top"
       style={{
-        width: "100%",
+        width: isExporting ? `${PAGE_W}px` : "100%",
       }}
     >
       <div
-        ref={refEl}
-        className={`editor-canvas relative aspect-[100/141.4286] w-full overflow-hidden rounded-2xl bg-[#efeae7] shadow-2xl ring-1 ring-white/10 ${cursor}`}
-        onClick={canvasClick}
+        ref={(node) => {
+          refEl.current = node;
+          exportRef.current = node;
+        }}
+        className={`editor-canvas relative aspect-[100/141.4286] w-full overflow-hidden bg-[#efeae7] ${isExporting ? "" : "rounded-2xl shadow-2xl ring-1 ring-white/10"
+          } ${cursor}`}
         style={{ containerType: "size" }}
       >
         <img
@@ -1195,7 +1273,7 @@ function ReviewCanvas({
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         />
 
-        {gridEnabled && (
+        {gridEnabled && !isExporting && (
           <div
             className="pointer-events-none absolute inset-0 opacity-20"
             style={{
@@ -1215,7 +1293,7 @@ function ReviewCanvas({
               onSelect={(e) => {
                 e.stopPropagation();
                 setSelectedSafeZoneId(zone.id);
-                setSelectedLayerId(null);
+                setSelectedLayerId(null, false);
               }}
               onChange={(patch) => updateSafeZone(zone.id, patch)}
             />
@@ -1225,7 +1303,8 @@ function ReviewCanvas({
           <PlacedLayer
             key={layer.id}
             layer={layer}
-            selected={selectedLayerIds.includes(layer.id)}
+            isExporting={isExporting}
+            selected={!isExporting && selectedLayerIds.includes(layer.id)}
             onSelect={(e) => {
               e.stopPropagation();
               selectLayer(layer.id, e.shiftKey);
@@ -1313,7 +1392,7 @@ function SafeZone({ zone, selected, onSelect, onChange }) {
   return (
     <div
       onPointerDown={startDrag}
-      className={`absolute cursor-move border bg-emerald-400/5 ${selected
+      className={`no-export absolute cursor-move border bg-emerald-400/5 ${selected
           ? "border-emerald-300 ring-2 ring-emerald-300"
           : "border-emerald-400/40"
         }`}
@@ -1334,7 +1413,7 @@ function SafeZone({ zone, selected, onSelect, onChange }) {
   );
 }
 
-function PlacedLayer({ layer, selected, onSelect, onMove }) {
+function PlacedLayer({ layer, selected, onSelect, onMove, isExporting }) {
   const startRef = useRef(null);
 
   const style = {
@@ -1412,7 +1491,9 @@ function PlacedLayer({ layer, selected, onSelect, onMove }) {
       onClick={onSelect}
       className={`absolute cursor-move rounded-sm text-left ${selected
           ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-blue-950"
-          : "hover:ring-2 hover:ring-white/50"
+          : isExporting
+            ? ""
+            : "hover:ring-2 hover:ring-white/50"
         }`}
       style={style}
     >
@@ -1443,10 +1524,10 @@ function PlacedLayer({ layer, selected, onSelect, onMove }) {
         </div>
       )}
 
-      {selected && (
+      {selected && !isExporting && (
         <button
           onPointerDown={startResize}
-          className="absolute -bottom-2 -right-2 h-5 w-5 rounded-full bg-blue-500 ring-2 ring-white"
+          className="no-export absolute -bottom-2 -right-2 h-5 w-5 rounded-full bg-blue-500 ring-2 ring-white"
           title="Resize"
         />
       )}
