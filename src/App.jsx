@@ -1969,7 +1969,9 @@ function PlacedLayer({ layer, selected, onSelect, onMove, isExporting }) {
           className="vod-text whitespace-pre-wrap drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
           style={{
             color: layer.color || "#000000",
-            fontSize: `${layer.fontSize / 10}cqw`,
+            fontSize: isExporting
+              ? `${layer.fontSize}px`
+              : `${layer.fontSize / 10}cqw`,
             fontWeight: layer.weight,
             fontStyle: layer.italic ? "italic" : "normal",
             lineHeight: 1.25,
@@ -1986,7 +1988,12 @@ function PlacedLayer({ layer, selected, onSelect, onMove, isExporting }) {
       ) : (
         <div className="overflow-hidden bg-slate-800 shadow-lg">
           <img src={layer.src} alt="Screenshot" className="aspect-video w-full object-cover" />
-          <div className="bg-[#25274f] px-3 py-2 text-center text-[1.1cqw] font-black uppercase leading-tight text-white">
+            <div
+              className="bg-[#25274f] px-3 py-2 text-center font-black uppercase leading-tight text-white"
+              style={{
+                fontSize: isExporting ? "12px" : "1.1cqw",
+              }}
+            >
             {layer.caption}
           </div>
         </div>
