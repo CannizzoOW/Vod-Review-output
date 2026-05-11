@@ -220,7 +220,7 @@ function makeFooterLayer(form) {
     kind: "text",
     color: "#e7e6e6",
     x: 0,
-    y: 1470,
+    y: 1475,
     w: 1080,
     h: 40,
     fontSize: 19,
