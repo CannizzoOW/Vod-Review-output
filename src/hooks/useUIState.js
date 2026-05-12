@@ -5,10 +5,10 @@ export function useUIState() {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
   const [pageTabsOpen, setPageTabsOpen] = useState(true);
-  const [segmentsOpen, setSegmentsOpen] = useState(true);
-  const [safeZonesOpen, setSafeZonesOpen] = useState(true);
+  const [segmentsOpen, setSegmentsOpen] = useState(false);
+  const [safeZonesOpen, setSafeZonesOpen] = useState(false);
   const [layerListOpen, setLayerListOpen] = useState(true);
-  const [gridEnabled, setGridEnabled] = useState(true);
+  const [gridEnabled, setGridEnabled] = useState(false);
   const [lockToRegions, setLockToRegions] = useState(false);
   const [pendingImage, setPendingImage] = useState("");
   const [isExporting, setIsExporting] = useState(false);
