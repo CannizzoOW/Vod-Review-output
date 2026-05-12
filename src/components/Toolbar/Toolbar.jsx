@@ -17,6 +17,7 @@ export function Toolbar({
   setGridEnabled,
   lockToRegions,
   setLockToRegions,
+  updateFooterLayer,
   loadPendingImage,
 }) {
   return (
@@ -41,6 +42,14 @@ export function Toolbar({
 
         <button className={`tool-btn ${lockToRegions ? "tool-btn-active" : ""}`} onClick={() => setLockToRegions(!lockToRegions)}>
           Safe zones
+        </button>
+
+        <button
+          className="tool-btn"
+          onClick={updateFooterLayer}
+          title="Update footer info"
+        >
+          Update footer
         </button>
       </div>
 

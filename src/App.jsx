@@ -446,17 +446,10 @@ export default function App() {
           </button>
           {uiState.leftPanelOpen && (
             <LeftPanel
-              form={form}
-              updateForm={updateForm}
-              heroes={HEROES}
-              rawText={rawText}
-              setRawText={setRawText}
               segments={segments}
               selectedSegmentId={selectedSegmentId}
               setSelectedSegmentId={setSelectedSegmentId}
               setTool={setTool}
-              updateFooterLayer={updateFooterLayer}
-              runParser={runParser}
               autoPlaceAllSegments={() => autoPlaceAllSegments(safeZones)}
               segmentsOpen={uiState.segmentsOpen}
               setSegmentsOpen={uiState.setSegmentsOpen}
@@ -474,6 +467,7 @@ export default function App() {
             setGridEnabled={uiState.setGridEnabled}
             lockToRegions={uiState.lockToRegions}
             setLockToRegions={uiState.setLockToRegions}
+            updateFooterLayer={updateFooterLayer}
             loadPendingImage={(file) => {
               if (!file) return;
               uiState.setPendingImage(URL.createObjectURL(file));

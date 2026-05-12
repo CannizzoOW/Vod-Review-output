@@ -1,65 +1,74 @@
-import { RefreshCcw } from "lucide-react";
-import { Field } from "../FormFields/Field.jsx";
-import { Label } from "../FormFields/Label.jsx";
-import { TextArea } from "../FormFields/TextArea.jsx";
 import { PanelTitle } from "./PanelTitle.jsx";
 
 export function LeftPanel({
-  form,
-  updateForm,
-  heroes,
-  rawText,
-  setRawText,
   segments,
   selectedSegmentId,
   setSelectedSegmentId,
   setTool,
-  updateFooterLayer,
-  runParser,
   autoPlaceAllSegments,
   segmentsOpen,
   setSegmentsOpen,
 }) {
   return (
     <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
-      <PanelTitle
-        title="Paste review"
-        subtitle="Bot JSON or pasted raw review text."
-      />
+      <div className="panel">
+        <p className="text-xs font-black uppercase tracking-wide text-blue-200">
+          Credits
+        </p>
 
-      <div className="panel mt-3">
-        <div className="mb-3 grid grid-cols-2 gap-2">
-          <Field label="Player" value={form.player} onChange={(v) => updateForm("player", v)} />
-          <Field label="Coach" value={form.reviewer} onChange={(v) => updateForm("reviewer", v)} />
+        <div className="mt-3 space-y-3">
+
+          <a
+            href="https://linktr.ee/CannizzoOW"
+            target="_blank"
+            rel="noreferrer"
+            className="group relative block h-36 overflow-hidden rounded-2xl border border-slate-800"
+          >
+            <img
+              src="https://linktr.ee/og/image/CannizzoOW.jpg"
+              alt="CannizzoOW"
+              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+            <div className="absolute bottom-0 left-0 p-4">
+              <p className="text-xs font-black uppercase tracking-wider text-blue-300">
+                Programming
+              </p>
+
+              <p className="text-lg font-black text-white">
+                Cannizzo
+              </p>
+            </div>
+          </a>
+
+          <a
+            href="https://linktr.ee/yupina"
+            target="_blank"
+            rel="noreferrer"
+            className="group relative block h-36 overflow-hidden rounded-2xl border border-slate-800"
+          >
+            <img
+              src="https://linktr.ee/og/image/yupina.jpg"
+              alt="yupina"
+              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+            <div className="absolute bottom-0 left-0 p-4">
+              <p className="text-xs font-black uppercase tracking-wider text-pink-300">
+                Templates
+              </p>
+
+              <p className="text-lg font-black text-white">
+                Yupina
+              </p>
+            </div>
+          </a>
+
         </div>
-
-        <Field label="Replay ID" value={form.replayId} onChange={(v) => updateForm("replayId", v)} />
-
-        <button className="btn-secondary mt-4 mb-3 w-full" onClick={updateFooterLayer}>
-          Update footer info
-        </button>
-
-        <label>
-          <Label>Hero template</Label>
-          <select className="input" value={form.hero} onChange={(e) => updateForm("hero", e.target.value)}>
-            {heroes.map((hero) => (
-              <option key={hero}>{hero}</option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="panel mt-3">
-        <Label>Raw Discord text fallback</Label>
-        <textarea
-          value={rawText}
-          onChange={(e) => setRawText(e.target.value)}
-          className="input min-h-40 resize-y font-mono text-xs"
-        />
-
-        <button className="btn-primary mt-3 w-full" onClick={runParser}>
-          <RefreshCcw size={16} /> Parse fallback text
-        </button>
       </div>
 
       <div className="mt-3 flex items-center justify-between gap-2">
@@ -103,6 +112,7 @@ export function LeftPanel({
                 <span className="text-xs font-black uppercase text-blue-200">
                   {segment.type}
                 </span>
+
                 {segment.timestamp && (
                   <span className="rounded bg-slate-800 px-2 py-0.5 text-xs">
                     {segment.timestamp}
@@ -111,6 +121,7 @@ export function LeftPanel({
               </div>
 
               <p className="text-sm font-bold">{segment.title}</p>
+
               <p className="mt-1 line-clamp-3 text-xs text-slate-400">
                 {segment.text}
               </p>
