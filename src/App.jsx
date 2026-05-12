@@ -1,692 +1,53 @@
-import React, { useEffect,useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import { Plus, FileInput, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { toPng } from "html-to-image";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import {
-  ClipboardList,
-  Download,
-  FileInput,
-  ImagePlus,
-  LayoutGrid,
-  MousePointer2,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightClose,
-  PanelRightOpen,
-  Plus,
-  RefreshCcw,
-  Save,
-  Trash2,
-  Type,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react";
 
-import heroTemplates from "./data/heroTemplates.json";
+// Hooks
+import { useReviewForm } from "./hooks/useReviewForm.js";
+import { usePages } from "./hooks/usePages.js";
+import { useSegments } from "./hooks/useSegments.js";
+import { useSelection } from "./hooks/useSelection.js";
+import { useLayers } from "./hooks/useLayers.js";
+import { useUIState } from "./hooks/useUIState.js";
+
+// Components
+import { Toolbar } from "./components/Toolbar/Toolbar.jsx";
+import { LeftPanel } from "./components/Panels/LeftPanel.jsx";
+import { RightPanel } from "./components/Panels/RightPanel.jsx";
+import { ReviewCanvas } from "./components/Canvas/ReviewCanvas.jsx";
+import { NewReviewWizard } from "./components/Modals/NewReviewWizard.jsx";
+import { EditReviewDetailsModal } from "./components/Modals/EditReviewDetailsModal.jsx";
+
+// Utils & Constants
+import { HEROES, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, heroTemplates } from "./utils/constants.js";
+import { parseDiscordReview } from "./utils/parsing.js";
+import { buildReviewPages } from "./utils/buildReviewPages.js";
+import { makeImageLayer, makePageTitleLayer } from "./utils/layerFactory.js";
+import { autoPlaceInZone } from "./utils/canvas.js";
 
 const PAGE_W = 1080;
 const PAGE_H = 1527;
-const HEROES = Object.keys(heroTemplates);
-const fallbackTemplate = `${import.meta.env.BASE_URL}templates/default.png`;
-
-const DEFAULT_SAFE_ZONES = [
-  {
-    id: "mainText",
-    label: "Main text",
-    x: 10,
-    y: 450,
-    w: 670,
-    h: 940,
-    layout: "flow",
-    padding: 28,
-    gap: 18,
-  },
-  {
-    id: "rightMedia",
-    label: "Screenshots",
-    x: 700,
-    y: 450,
-    w: 360,
-    h: 940,
-    layout: "stack",
-    padding: 16,
-    gap: 16,
-  },
-  {
-    id: "footerSafe",
-    label: "Footer",
-    x: 0,
-    y: 1450,
-    w: 1080,
-    h: 70,
-    layout: "fixed",
-    padding: 10,
-    gap: 10,
-  },
-];
-
-const SAMPLE_REVIEW = `Replay ID: 10903088673
-
-Abilities
-Dagger Storm is a very useful ability for creating space, but you’re not using it often enough.
-
-• 1:42 This would be a better time to use bubble instead of veil of light.
-• Around 3:00 onward, it looks like you start to panic and spam abilities.
-
-Teleport
-You use Cloak teleport to reposition, which is good.
-• 5:03 As shown here, Venom targets you within 1–2 seconds and eliminates you.
-
-Ult Usage
-Always ult as Cloak, not Dagger.`;
-
-function uid() {
-  return crypto.randomUUID();
-}
-
-function extractTimestamp(text) {
-  const match = text.match(/\b(?:around\s*)?(\d{1,2}:\d{2})\b/i);
-  return match ? match[1] : "";
-}
-
-function parseDiscordReview(raw) {
-  const lines = raw
-    .replace(/\r/g, "")
-    .split("\n")
-    .map((x) => x.trim())
-    .filter(Boolean);
-
-  const segments = [];
-  let section = "General";
-  let replayId = "";
-  let paragraph = [];
-
-  function flush() {
-    if (!paragraph.length) return;
-
-    const text = paragraph.join(" ");
-
-    segments.push({
-      id: uid(),
-      type: "paragraph",
-      title: section,
-      section,
-      timestamp: extractTimestamp(text),
-      text,
-      used: false,
-    });
-
-    paragraph = [];
-  }
-
-  for (const line of lines) {
-    const replay = line.match(/Replay ID:\s*(\d+)/i);
-
-    if (replay) {
-      replayId = replay[1];
-      continue;
-    }
-
-    const clean = line.replace(/^[-•*]\s*/, "").trim();
-    const isBullet = /^[-•*]\s*/.test(line);
-    const hasTime = extractTimestamp(line);
-
-    const isHeading =
-      clean.length <= 35 &&
-      !/[.!?]$/.test(clean) &&
-      !hasTime &&
-      !clean.includes(":");
-
-    if (isHeading) {
-      flush();
-      section = clean;
-
-      segments.push({
-        id: uid(),
-        type: "heading",
-        title: clean,
-        section,
-        timestamp: "",
-        text: clean,
-        used: false,
-      });
-
-      continue;
-    }
-
-    if (isBullet || hasTime) {
-      flush();
-
-      segments.push({
-        id: uid(),
-        type: "timestamp_note",
-        title: section,
-        section,
-        timestamp: extractTimestamp(line),
-        text: clean,
-        used: false,
-      });
-
-      continue;
-    }
-
-    paragraph.push(line);
-  }
-
-  flush();
-  return { replayId, segments };
-}
-
-function makeTextLayer(segment, x = 80, y = 380) {
-  return {
-    id: uid(),
-    kind: "text",
-    sourceSegmentId: segment.id,
-    color: "#000000",
-    x,
-    y,
-    w: segment.type === "heading" ? 420 : 560,
-    h: segment.type === "heading" ? 55 : 130,
-    fontSize: segment.type === "heading" ? 28 : 18,
-    weight: segment.type === "heading" ? 900 : 500,
-    italic: false,
-    markdown: true,
-    autoFlow: false,
-    zoneId: null,
-    text:
-      segment.type === "heading"
-        ? segment.text.toUpperCase()
-        : `${segment.timestamp ? `${segment.timestamp} — ` : ""}${segment.text}`,
-  };
-}
-
-function makeImageLayer(src, x = 700, y = 420) {
-  return {
-    id: uid(),
-    kind: "image",
-    x,
-    y,
-    w: 330,
-    h: 230,
-    src,
-    caption: "Screenshot note",
-  };
-}
-
-function makeFooterLayer(form) {
-  return {
-    id: "footer-info",
-    kind: "text",
-    color: "#e7e6e6",
-    x: 0,
-    y: 1475,
-    w: 1080,
-    h: 40,
-    fontSize: 19,
-    weight: 900,
-    align: "center",
-    italic: false,
-    markdown: false,
-    autoFlow: false,
-    zoneId: "footerSafe",
-    locked: true,
-    text: `VOD REVIEW  | @${form.player || "USERNAME"} | FOR QUESTIONS, PING @${form.reviewer || "COACH"} | REPLAY ID: ${form.replayId || ""}`,
-  };
-}
-
-function makePageTitleLayer(title) {
-  return {
-    id: "page-title",
-    kind: "text",
-    color: "#e7e6e6",
-    x: 415,
-    y: 394,
-    w: 614,
-    h: 66,
-    fontSize: 30,
-    weight: 900,
-    italic: false,
-    markdown: false,
-    autoFlow: false,
-    zoneId: null,
-    locked: true,
-    text: title || "VOD FEEDBACK",
-  };
-}
-
-function getLayerListLabel(layer) {
-  if (layer.kind === "text") {
-    const cleanText = (layer.text || "")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    const firstWords = cleanText
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .join(" ");
-
-    return `T ${firstWords || "Text"}`;
-  }
-
-  if (layer.kind === "image") {
-    return `IMG ${layer.caption || "Image"}`;
-  }
-
-  return layer.kind;
-}
-
-function snap(value, grid) {
-  return Math.round(value / grid) * grid;
-}
-
-function estimateTextHeight(text, width, fontSize) {
-  const avgCharWidth = fontSize * 0.52;
-  const charsPerLine = Math.max(18, Math.floor(width / avgCharWidth));
-  const lineCount = Math.ceil(text.length / charsPerLine);
-
-  return Math.max(fontSize * 2.2, lineCount * fontSize * 1.45);
-}
-
-function clampToZones(layer, safeZones) {
-  const zone =
-    layer.kind === "image"
-      ? safeZones.find((z) => z.id === "rightMedia") || safeZones[0]
-      : safeZones.find((z) => z.id === "mainText") || safeZones[0];
-
-  if (!zone) return layer;
-
-  return {
-    ...layer,
-    x: Math.min(Math.max(layer.x, zone.x), zone.x + zone.w - layer.w),
-    y: Math.min(Math.max(layer.y, zone.y), zone.y + zone.h - layer.h),
-  };
-}
-
-function autoPlaceInZone({ segment, zone, layers }) {
-  const padding = zone.padding || 20;
-  const gap = zone.gap || 16;
-
-  const zoneLayers = layers.filter(
-    (layer) => layer.zoneId === zone.id && layer.kind === "text"
-  );
-
-  const width = zone.w - padding * 2;
-
-  let y = zone.y + padding;
-
-  for (const layer of zoneLayers) {
-    y = Math.max(y, layer.y + layer.h + gap);
-  }
-
-  const layer = makeTextLayer(segment, zone.x + padding, y);
-
-  layer.zoneId = zone.id;
-  layer.autoFlow = true;
-  layer.w = width;
-  layer.h = estimateTextHeight(layer.text, width, layer.fontSize);
-
-  return layer;
-}
-
-function makeAutoTextLayerAtY({ segment, zone, y }) {
-  const padding = zone.padding || 20;
-  const width = zone.w - padding * 2;
-
-  const layer = makeTextLayer(segment, zone.x + padding, y);
-
-  layer.zoneId = zone.id;
-  layer.autoFlow = true;
-  layer.w = width;
-  layer.h = estimateTextHeight(layer.text, width, layer.fontSize);
-
-  return layer;
-}
 
 export default function App() {
-  const firstHero = heroTemplates["Cloak & Dagger"]
-    ? "Cloak & Dagger"
-    : HEROES[0];
-  const fileInputRef = useRef(null);
-  const canvasRef = useRef(null);
-  const exportRef = useRef(null);
+  const canvasRef = React.useRef(null);
+  const exportRef = React.useRef(null);
+  const fileInputRef = React.useRef(null);
 
-  const [rawText, setRawText] = useState(SAMPLE_REVIEW);
-  const [segments, setSegments] = useState(
-    () => parseDiscordReview(SAMPLE_REVIEW).segments
-  );
-  const [selectedSegmentId, setSelectedSegmentId] = useState(null);
+  // State management
+  const { form, setForm, updateForm } = useReviewForm(HEROES[0]);
+  const { pages, setPages, activePageId, setActivePageId, activePage, editingPageId, setEditingPageId, updateActivePageLayers, updatePageTitleLayer, updateFooterLayer, renamePage, getPageFallbackTitle, getNextPageTitle, removeActivePage, addPage } = usePages(form);
+  const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
+  const { selectedLayerId, setSelectedLayerId, selectedLayerIds, setSelectedLayerIds, selectedSafeZoneId, setSelectedSafeZoneId, selectedLayer, tool, setTool, deselectAll, selectLayer, selectSafeZone, deleteSelectedLayers } = useSelection(pages, activePageId, setPages);
+  const { safeZones, setSafeZones, selectedSafeZone, setLayer, setSafeZone, addLayer, removeLayer } = useLayers(pages, activePageId, setPages, useUIState().gridEnabled, useUIState().lockToRegions);
+  const uiState = useUIState();
 
-  const [form, setForm] = useState({
-    player: "rockstarcobra9",
-    hero: firstHero,
-    reviewer: "Phimmiezz",
-    replayId: "10903088673",
-    requestId: "",
-  });
-
-  const firstPage = useMemo(
-    () => ({
-      id: uid(),
-      title: "VOD FEEDBACK",
-      isCoverPage: true,
-      layers: [makePageTitleLayer("VOD FEEDBACK")],
-    }),
-    []
-  );
-  const [pages, setPages] = useState([firstPage]);
-  const [activePageId, setActivePageId] = useState(firstPage.id);
-
-  const [selectedLayerId, setSelectedLayerId] = useState(null);
-  const [selectedLayerIds, setSelectedLayerIds] = useState([]);
-  const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
-  const [selectedSafeZoneId, setSelectedSafeZoneId] = useState(null);
-
-  const [tool, setTool] = useState("select");
-  const [zoom, setZoom] = useState(0.9);
-  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const [pageTabsOpen, setPageTabsOpen] = useState(true);
-  const [editingPageId, setEditingPageId] = useState(null);
-  const [segmentsOpen, setSegmentsOpen] = useState(true);
-  const [safeZonesOpen, setSafeZonesOpen] = useState(true);
-  const [layerListOpen, setLayerListOpen] = useState(true);
-  const [gridEnabled, setGridEnabled] = useState(true);
-  const [lockToRegions, setLockToRegions] = useState(false);
-  const [pendingImage, setPendingImage] = useState("");
-  const [isExporting, setIsExporting] = useState(false);
-
-  const activePage = pages.find((p) => p.id === activePageId) || pages[0];
-  const selectedSegment = segments.find((s) => s.id === selectedSegmentId);
-  const selectedLayer = activePage?.layers.find((l) => l.id === selectedLayerId);
-  const selectedSafeZone = safeZones.find((z) => z.id === selectedSafeZoneId);
-
-  const templateBackground = useMemo(() => {
+  const templateBackground = React.useMemo(() => {
     const template = heroTemplates[form.hero]?.template;
-    if (!template) return fallbackTemplate;
+    if (!template) return FALLBACK_TEMPLATE;
     return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
   }, [form.hero]);
 
-  function updateForm(key, value) {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function updateActivePageLayers(updater) {
-    setPages((prev) =>
-      prev.map((page) =>
-        page.id === activePageId ? { ...page, layers: updater(page.layers) } : page
-      )
-    );
-  }
-
-  function updateFooterLayer() {
-    const footerLayer = makeFooterLayer(form);
-
-    updateActivePageLayers((layers) => {
-      const withoutOldFooter = layers.filter((layer) => layer.id !== "footer-info");
-      return [...withoutOldFooter, footerLayer];
-    });
-
-    setSelectedLayerId("footer-info");
-    setSelectedLayerIds(["footer-info"]);
-    setSelectedSafeZoneId(null);
-  }
-
-  function updatePageTitleLayer(title = activePage?.title || "VOD FEEDBACK") {
-    const titleLayer = makePageTitleLayer(title);
-
-    updateActivePageLayers((layers) => {
-      const withoutOldTitle = layers.filter((layer) => layer.id !== "page-title");
-      return [...withoutOldTitle, titleLayer];
-    });
-
-    setSelectedLayerId("page-title");
-    setSelectedLayerIds(["page-title"]);
-    setSelectedSafeZoneId(null);
-  }
-
-  function renamePage(pageId, title) {
-    setPages((prev) =>
-      prev.map((page) => {
-        if (page.id !== pageId) return page;
-
-        const nextTitle = title;
-
-        return {
-          ...page,
-          title: nextTitle,
-          layers: page.layers.some((layer) => layer.id === "page-title")
-            ? page.layers.map((layer) =>
-              layer.id === "page-title"
-                ? { ...layer, text: nextTitle }
-                : layer
-            )
-            : [...page.layers, makePageTitleLayer(nextTitle)],
-        };
-      })
-    );
-  }
-
-  function getPageFallbackTitle(pageIndex, pageId) {
-    const currentPage = pages.find((page) => page.id === pageId);
-
-    if (pageIndex === 0 || currentPage?.isCoverPage) {
-      return "VOD FEEDBACK";
-    }
-
-    const otherPages = pages.filter((page) => page.id !== pageId);
-    return getNextPageTitle(otherPages);
-  }
-
-  function deselectAll() {
-    setSelectedLayerId(null);
-    setSelectedLayerIds([]);
-    setSelectedSafeZoneId(null);
-  }
-
-  function setLayer(layerId, patch, options = {}) {
-    const shouldSnap = options.snapToGrid ?? false;
-
-    updateActivePageLayers((layers) =>
-      layers.map((layer) => {
-        if (layer.id !== layerId) return layer;
-
-        let next = { ...layer, ...patch };
-
-        if (next.kind === "text" && next.autoFlow) {
-          next.h = estimateTextHeight(next.text, next.w, next.fontSize);
-        }
-
-        if (gridEnabled && shouldSnap) {
-          next.x = snap(next.x, 10);
-          next.y = snap(next.y, 10);
-          next.w = snap(next.w, 10);
-          next.h = snap(next.h, 10);
-        }
-
-        if (lockToRegions) {
-          next = clampToZones(next, safeZones);
-        }
-
-        return next;
-      })
-    );
-  }
-
-  function setSafeZone(zoneId, patch, options = {}) {
-    const shouldSnap = options.snapToGrid ?? false;
-
-    setSafeZones((prev) =>
-      prev.map((zone) => {
-        if (zone.id !== zoneId) return zone;
-
-        let next = { ...zone, ...patch };
-
-        if (gridEnabled && shouldSnap) {
-          next.x = snap(next.x, 10);
-          next.y = snap(next.y, 10);
-          next.w = snap(next.w, 10);
-          next.h = snap(next.h, 10);
-        }
-
-        return next;
-      })
-    );
-  }
-
-  function markSegmentUsed(id, used) {
-    setSegments((prev) => prev.map((s) => (s.id === id ? { ...s, used } : s)));
-  }
-
-  function syncSegmentUsage(nextPages) {
-    const usedSegmentIds = new Set();
-
-    for (const page of nextPages) {
-      for (const layer of page.layers || []) {
-        if (layer.sourceSegmentId) {
-          usedSegmentIds.add(layer.sourceSegmentId);
-        }
-      }
-    }
-
-    setSegments((prev) =>
-      prev.map((segment) => ({
-        ...segment,
-        used: usedSegmentIds.has(segment.id),
-      }))
-    );
-  }
-
-  function addLayer(layer) {
-    let next = layer;
-
-    if (gridEnabled) {
-      next = {
-        ...next,
-        x: snap(next.x, 10),
-        y: snap(next.y, 10),
-      };
-    }
-
-    if (lockToRegions) {
-      next = clampToZones(next, safeZones);
-    }
-
-    updateActivePageLayers((layers) => [...layers, next]);
-    setSelectedLayerId(next.id);
-    setSelectedSafeZoneId(null);
-  }
-
-  function removeLayer(id) {
-    let nextPagesSnapshot = null;
-
-    setPages((prev) => {
-      nextPagesSnapshot = prev.map((page) =>
-        page.id === activePageId
-          ? {
-            ...page,
-            layers: page.layers.filter((layer) => layer.id !== id),
-          }
-          : page
-      );
-
-      return nextPagesSnapshot;
-    });
-
-    setTimeout(() => {
-      if (nextPagesSnapshot) {
-        syncSegmentUsage(nextPagesSnapshot);
-      }
-    }, 0);
-
-    setSelectedLayerId(null);
-    setSelectedLayerIds([]);
-  }
-
-  function selectLayer(layerId, additive = false) {
-    setSelectedSafeZoneId(null);
-
-    if (!layerId) {
-      setSelectedLayerId(null);
-      setSelectedLayerIds([]);
-      return;
-    }
-
-    if (additive) {
-      setSelectedLayerIds((prev) => {
-        const next = prev.includes(layerId)
-          ? prev.filter((id) => id !== layerId)
-          : [...prev, layerId];
-
-        setSelectedLayerId(next[next.length - 1] || null);
-        return next;
-      });
-
-      return;
-    }
-
-    setSelectedLayerId(layerId);
-    setSelectedLayerIds([layerId]);
-  }
-
-  function deleteSelectedLayers() {
-    const idsToDelete = selectedLayerIds.length
-      ? selectedLayerIds
-      : selectedLayerId
-        ? [selectedLayerId]
-        : [];
-
-    if (!idsToDelete.length) return;
-
-    let nextPagesSnapshot = null;
-
-    setPages((prev) => {
-      nextPagesSnapshot = prev.map((page) =>
-        page.id === activePageId
-          ? {
-            ...page,
-            layers: page.layers.filter(
-              (layer) => !idsToDelete.includes(layer.id)
-            ),
-          }
-          : page
-      );
-
-      return nextPagesSnapshot;
-    });
-
-    setTimeout(() => {
-      if (nextPagesSnapshot) {
-        syncSegmentUsage(nextPagesSnapshot);
-      }
-    }, 0);
-
-    setSelectedLayerId(null);
-    setSelectedLayerIds([]);
-  }
-
-  function removeActivePage() {
-    if (pages.length <= 1) {
-      alert("You need at least one page.");
-      return;
-    }
-
-    const currentIndex = pages.findIndex((page) => page.id === activePageId);
-    const nextPages = pages.filter((page) => page.id !== activePageId);
-
-    const nextIndex = Math.max(0, currentIndex - 1);
-    const nextActive = nextPages[nextIndex] || nextPages[0];
-
-    setPages(nextPages);
-    syncSegmentUsage(nextPages);
-
-    setActivePageId(nextActive.id);
-    setSelectedLayerId(null);
-    setSelectedLayerIds([]);
-    setSelectedSafeZoneId(null);
-  }
-
+  // Canvas event handlers
   function canvasClick(e) {
     if (tool === "select" || tool === "safeZone") return;
 
@@ -720,97 +81,13 @@ export default function App() {
       setTool("select");
     }
 
-    if (tool === "insertImage" && pendingImage) {
-      addLayer(makeImageLayer(pendingImage, Math.round(x), Math.round(y)));
+    if (tool === "insertImage" && uiState.pendingImage) {
+      addLayer(makeImageLayer(uiState.pendingImage, Math.round(x), Math.round(y)));
       setTool("select");
     }
   }
 
-  function autoPlaceAllSegments() {
-    const zone = safeZones.find((z) => z.id === "mainText") || safeZones[0];
-
-    if (!zone) return;
-
-    const segmentsToPlace = segments.filter((segment) => !segment.used);
-
-    if (!segmentsToPlace.length) {
-      alert("No unused segments to auto-place.");
-      return;
-    }
-
-    const padding = zone.padding || 20;
-    const gap = zone.gap || 16;
-    const startY = zone.y + padding;
-    const maxY = zone.y + zone.h - padding;
-
-    const activeIndex = pages.findIndex((page) => page.id === activePageId);
-    const basePages = [...pages];
-
-    let workingPages = basePages.map((page) => ({
-      ...page,
-      layers: [...page.layers],
-    }));
-
-    let pageIndex = activeIndex >= 0 ? activeIndex : 0;
-    let currentPage = workingPages[pageIndex];
-
-    let y = startY;
-
-    const existingZoneLayers = currentPage.layers.filter(
-      (layer) => layer.zoneId === zone.id && layer.kind === "text"
-    );
-
-    for (const layer of existingZoneLayers) {
-      y = Math.max(y, layer.y + layer.h + gap);
-    }
-
-    for (const segment of segmentsToPlace) {
-      let layer = makeAutoTextLayerAtY({ segment, zone, y });
-
-      if (layer.y + layer.h > maxY) {
-        const newPage = {
-          id: uid(),
-          layers: [],
-        };
-
-        workingPages.push(newPage);
-        pageIndex = workingPages.length - 1;
-        currentPage = workingPages[pageIndex];
-
-        y = startY;
-        layer = makeAutoTextLayerAtY({ segment, zone, y });
-      }
-
-      currentPage.layers.push(layer);
-      y = layer.y + layer.h + gap;
-    }
-
-    setPages(workingPages);
-    setActivePageId(workingPages[activeIndex >= 0 ? activeIndex : 0].id);
-
-    setSegments((prev) =>
-      prev.map((segment) =>
-        segmentsToPlace.some((placed) => placed.id === segment.id)
-          ? { ...segment, used: true }
-          : segment
-      )
-    );
-
-    deselectAll();
-    setTool("select");
-  }
-
-  function runParser() {
-    const parsed = parseDiscordReview(rawText);
-    setSegments(parsed.segments);
-
-    if (parsed.replayId) {
-      updateForm("replayId", parsed.replayId);
-    }
-
-    setSelectedSegmentId(parsed.segments[0]?.id || null);
-  }
-
+  // Import/Export handlers
   function importJson(file) {
     if (!file) return;
 
@@ -822,54 +99,62 @@ export default function App() {
         const request = data.request || data.meta?.request || data.meta || {};
         const coach = data.coach || {};
 
-        setForm((prev) => ({
-          ...prev,
-          player: request.player || request.username || prev.player,
-          hero: request.hero || request.heroes || prev.hero,
-          reviewer:
-            coach.displayName ||
-            coach.username ||
-            request.reviewer ||
-            prev.reviewer,
-          replayId:
-            request.replayId ||
-            request.replayID ||
-            request.replay_id ||
-            prev.replayId,
-          requestId: request.requestId || request.id || prev.requestId,
-        }));
+        const importedForm = {
+          player: request.player || request.username || form.player,
+          hero: request.hero || request.heroes || form.hero,
+          reviewer: coach.displayName || coach.username || request.reviewer || form.reviewer,
+          replayId: request.replayId || request.replayID || request.replay_id || form.replayId,
+          requestId: request.requestId || request.id || form.requestId,
+        };
+
+        let importedSegments = [];
 
         if (Array.isArray(data.segments)) {
-          setSegments(
-            data.segments.map((s) => ({
-              id: s.id || uid(),
-              type: s.type || "paragraph",
-              title: s.title || s.section || "General",
-              section: s.section || s.title || "General",
-              timestamp: s.timestamp || extractTimestamp(s.text || ""),
-              text: s.text || "",
-              used: false,
-            }))
-          );
+          importedSegments = data.segments.map((s) => ({
+            id: s.id || crypto.randomUUID(),
+            type: s.type || "paragraph",
+            title: s.title || s.section || "General",
+            section: s.section || s.title || "General",
+            timestamp: s.timestamp || "",
+            text: s.text || "",
+            used: true,
+          }));
         }
 
-        if (Array.isArray(data.pages)) {
+        setForm((prev) => ({ ...prev, ...importedForm }));
+        setSegments(importedSegments);
+
+        if (Array.isArray(data.pages) && data.pages.length) {
           const importedPages = data.pages.map((p) => ({
-            id: p.id || uid(),
+            id: p.id || crypto.randomUUID(),
             title: p.title || "Page",
+            isCoverPage: Boolean(p.isCoverPage),
             layers: Array.isArray(p.layers) ? p.layers : [],
           }));
 
           setPages(importedPages);
           setActivePageId(importedPages[0]?.id);
+        } else {
+          const generatedPages = buildReviewPages({
+            form: importedForm,
+            segments: importedSegments,
+            safeZones: Array.isArray(data.safeZones) ? data.safeZones : DEFAULT_SAFE_ZONES,
+          });
+
+          setPages(generatedPages);
+          setActivePageId(generatedPages[0]?.id);
         }
 
         if (Array.isArray(data.safeZones)) {
           setSafeZones(data.safeZones);
         }
 
-        alert("Review JSON imported.");
-      } catch {
+        deselectAll();
+        setTool("select");
+
+        alert("Review JSON imported and layout generated.");
+      } catch (error) {
+        console.error("Could not import JSON:", error);
         alert("Could not import JSON.");
       }
     };
@@ -908,58 +193,19 @@ export default function App() {
     setSafeZones(draft.safeZones || DEFAULT_SAFE_ZONES);
   }
 
-  function getNextPageTitle(pageList = pages) {
-    const usedNumbers = new Set();
-
-    for (const page of pageList) {
-      if (page.isCoverPage) continue;
-
-      const match = String(page.title || "").trim().match(/^Page\s+(\d+)$/i);
-
-      if (match) {
-        usedNumbers.add(Number(match[1]));
-      }
-    }
-
-    let nextNumber = 1;
-
-    while (usedNumbers.has(nextNumber)) {
-      nextNumber += 1;
-    }
-
-    return `Page ${nextNumber}`;
-  }
-
-  function addPage() {
-    const pageTitle = getNextPageTitle(pages);
-
-    const page = {
-      id: uid(),
-      title: pageTitle,
-      isCoverPage: false,
-      layers: [makePageTitleLayer(pageTitle)],
-    };
-
-    setPages((prev) => [...prev, page]);
-    setActivePageId(page.id);
-    setSelectedLayerId(null);
-    setSelectedLayerIds([]);
-    setSelectedSafeZoneId(null);
-  }
-
   async function exportPng() {
     if (!exportRef.current) {
       alert("Export canvas not found.");
       return;
     }
 
-    const wasGridEnabled = gridEnabled;
-    const wasLockToRegions = lockToRegions;
+    const wasGridEnabled = uiState.gridEnabled;
+    const wasLockToRegions = uiState.lockToRegions;
 
     try {
-      setIsExporting(true);
-      setGridEnabled(false);
-      setLockToRegions(false);
+      uiState.setIsExporting(true);
+      uiState.setGridEnabled(false);
+      uiState.setLockToRegions(false);
       deselectAll();
 
       await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -996,12 +242,57 @@ export default function App() {
       console.error("PNG export failed:", error);
       alert("PNG export failed. Check console for details.");
     } finally {
-      setGridEnabled(wasGridEnabled);
-      setLockToRegions(wasLockToRegions);
-      setIsExporting(false);
+      uiState.setGridEnabled(wasGridEnabled);
+      uiState.setLockToRegions(wasLockToRegions);
+      uiState.setIsExporting(false);
     }
   }
 
+  function finishWizardReview() {
+    const cleanForm = {
+      player: uiState.wizardForm.player.trim(),
+      reviewer: uiState.wizardForm.reviewer.trim(),
+      replayId: uiState.wizardForm.replayId.trim(),
+      hero: uiState.wizardForm.hero || HEROES[0],
+      requestId: "",
+    };
+
+    let nextSegments = [];
+
+    if (uiState.wizardSource === "paste") {
+      const parsed = parseDiscordReview(uiState.wizardRawText);
+
+      nextSegments = parsed.segments.map((segment) => ({
+        ...segment,
+        used: true,
+      }));
+
+      if (!cleanForm.replayId && parsed.replayId) {
+        cleanForm.replayId = parsed.replayId;
+      }
+    }
+
+    const generatedPages = buildReviewPages({
+      form: cleanForm,
+      segments: nextSegments,
+      safeZones: DEFAULT_SAFE_ZONES,
+    });
+
+    setForm((prev) => ({ ...prev, ...cleanForm }));
+    setPages(generatedPages);
+    setActivePageId(generatedPages[0]?.id);
+    setSegments(nextSegments);
+    deselectAll();
+    setSafeZones(DEFAULT_SAFE_ZONES);
+    setTool("select");
+    uiState.setWizardOpen(false);
+
+    if (uiState.wizardSource === "json") {
+      fileInputRef.current?.click();
+    }
+  }
+
+  // Effects
   useEffect(() => {
     updateActivePageLayers((layers) => {
       const hasFooter = layers.some((layer) => layer.id === "footer-info");
@@ -1012,7 +303,7 @@ export default function App() {
         layer.id === "footer-info"
           ? {
             ...layer,
-            text: makeFooterLayer(form).text,
+            text: `VOD REVIEW  | @${form.player || "USERNAME"} | FOR QUESTIONS, PING @${form.reviewer || "COACH"} | REPLAY ID: ${form.replayId || ""}`,
           }
           : layer
       );
@@ -1037,30 +328,30 @@ export default function App() {
   }, [activePage?.title, activePageId]);
 
   useEffect(() => {
-  function handleKeyDown(e) {
-    const target = e.target;
-    const isTyping =
-      target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.tagName === "SELECT" ||
-      target.isContentEditable;
+    function handleKeyDown(e) {
+      const target = e.target;
+      const isTyping =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable;
 
-    if (isTyping) return;
-// MARK: Keyboard shortcuts
-    if (e.key === "Escape") {
-      e.preventDefault();
-      deselectAll();
+      if (isTyping) return;
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        deselectAll();
+      }
+
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        deleteSelectedLayers(() => syncSegmentUsage(pages));
+      }
     }
 
-    if (e.key === "Delete" || e.key === "Backspace") {
-      e.preventDefault();
-      deleteSelectedLayers();
-    }
-  }
-
-  window.addEventListener("keydown", handleKeyDown);
-  return () => window.removeEventListener("keydown", handleKeyDown);
-}, [selectedLayerId, selectedLayerIds, activePageId, pages]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedLayerId, selectedLayerIds, activePageId, pages]);
 
   return (
     <div className="h-screen overflow-hidden bg-[#070b16] text-slate-100">
@@ -1079,10 +370,35 @@ export default function App() {
 
         <div className="flex gap-2">
           <button
-            className={`btn-secondary ${pageTabsOpen ? "ring-1 ring-blue-400" : ""}`}
-            onClick={() => setPageTabsOpen(!pageTabsOpen)}
+            className="btn-primary"
+            onClick={() => {
+              uiState.setWizardStep(1);
+              uiState.setWizardSource("json");
+              uiState.setWizardRawText("");
+              uiState.setWizardForm({
+                player: "",
+                reviewer: "",
+                replayId: "",
+                hero: HEROES[0],
+              });
+              uiState.setWizardOpen(true);
+            }}
           >
-            {pageTabsOpen ? "Hide Pages" : "Show Pages"}
+            <Plus size={16} /> New Review
+          </button>
+
+          <button
+            className="btn-secondary"
+            onClick={() => uiState.setDetailsEditorOpen(true)}
+          >
+            Edit Details
+          </button>
+
+          <button
+            className={`btn-secondary ${uiState.pageTabsOpen ? "ring-1 ring-blue-400" : ""}`}
+            onClick={() => uiState.setPageTabsOpen(!uiState.pageTabsOpen)}
+          >
+            {uiState.pageTabsOpen ? "Hide Pages" : "Show Pages"}
           </button>
 
           <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
@@ -1094,7 +410,10 @@ export default function App() {
             type="file"
             accept="application/json"
             className="hidden"
-            onChange={(e) => importJson(e.target.files?.[0])}
+            onChange={(e) => {
+              importJson(e.target.files?.[0]);
+              e.target.value = "";
+            }}
           />
 
           <button className="btn-secondary" onClick={saveDraft}>
@@ -1114,140 +433,56 @@ export default function App() {
       <div
         className="grid h-[calc(100vh-56px)] min-h-0 overflow-hidden transition-all duration-200"
         style={{
-          gridTemplateColumns: `${leftPanelOpen ? "330px" : "0px"} minmax(0, 1fr) ${rightPanelOpen ? "320px" : "0px"
-            }`,
+          gridTemplateColumns: `${uiState.leftPanelOpen ? "330px" : "0px"} minmax(0, 1fr) ${uiState.rightPanelOpen ? "320px" : "0px"}`,
         }}
       >
         <aside className="relative min-h-0 overflow-visible border-r border-slate-800 bg-[#111827]">
           <button
             className="absolute -right-4 top-[120px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-200 shadow-lg hover:bg-blue-600"
-            onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-            title={leftPanelOpen ? "Hide left panel" : "Show left panel"}
+            onClick={() => uiState.setLeftPanelOpen(!uiState.leftPanelOpen)}
+            title={uiState.leftPanelOpen ? "Hide left panel" : "Show left panel"}
           >
-            {leftPanelOpen ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+            {uiState.leftPanelOpen ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
           </button>
-          {leftPanelOpen && (
-            <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
-    <PanelTitle
-      icon={<ClipboardList />}
-      title="Paste review"
-      subtitle="Bot JSON or pasted raw review text."
-    />
-
-          <div className="panel mt-3">
-            <div className="mb-3 grid grid-cols-2 gap-2">
-              <Field label="Player" value={form.player} onChange={(v) => updateForm("player", v)} />
-              <Field label="Coach" value={form.reviewer} onChange={(v) => updateForm("reviewer", v)} />
-            </div>
-
-                <Field label="Replay ID" value={form.replayId} onChange={(v) => updateForm("replayId", v)} />
-
-                <button className="btn-secondary mt-4 mb-3 w-full" onClick={updateFooterLayer}>
-                  Update footer info
-                </button>
-
-                <label>
-                  <Label>Hero template</Label>
-              <select className="input" value={form.hero} onChange={(e) => updateForm("hero", e.target.value)}>
-                {HEROES.map((hero) => (
-                  <option key={hero}>{hero}</option>
-                ))}
-              </select>
-            </label>
-          </div>
-
-          <div className="panel mt-3">
-            <Label>Raw Discord text fallback</Label>
-            <textarea
-              value={rawText}
-              onChange={(e) => setRawText(e.target.value)}
-              className="input min-h-40 resize-y font-mono text-xs"
+          {uiState.leftPanelOpen && (
+            <LeftPanel
+              form={form}
+              updateForm={updateForm}
+              heroes={HEROES}
+              rawText={rawText}
+              setRawText={setRawText}
+              segments={segments}
+              selectedSegmentId={selectedSegmentId}
+              setSelectedSegmentId={setSelectedSegmentId}
+              setTool={setTool}
+              updateFooterLayer={updateFooterLayer}
+              runParser={runParser}
+              autoPlaceAllSegments={() => autoPlaceAllSegments(safeZones)}
+              segmentsOpen={uiState.segmentsOpen}
+              setSegmentsOpen={uiState.setSegmentsOpen}
             />
+          )}
+        </aside>
 
-            <button className="btn-primary mt-3 w-full" onClick={runParser}>
-              <RefreshCcw size={16} /> Parse fallback text
-            </button>
-          </div>
-
-              <div className="mt-3 flex items-center justify-between gap-2">
-                <button
-                  className="flex min-w-0 flex-1 items-center justify-between rounded-xl px-2 py-1 text-left hover:bg-slate-800"
-                  onClick={() => setSegmentsOpen((v) => !v)}
-                  title={segmentsOpen ? "Collapse segments" : "Expand segments"}
-                >
-                  <div>
-                    <p className="font-black">Segments</p>
-                    <p className="text-sm text-slate-400">{segments.length} blocks</p>
-                  </div>
-
-                  <span className="text-lg text-slate-400">
-                    {segmentsOpen ? "▾" : "▸"}
-                  </span>
-                </button>
-
-                <button className="btn-secondary px-3" onClick={autoPlaceAllSegments}>
-                  Auto-place all
-                </button>
-              </div>
-
-              {segmentsOpen && (
-                <div className="mt-2 space-y-2">
-                  {segments.map((segment) => (
-              <button
-                key={segment.id}
-                onClick={() => {
-                  setSelectedSegmentId(segment.id);
-                  setTool("insertText");
-                }}
-                className={`w-full rounded-xl border p-3 text-left transition ${selectedSegmentId === segment.id
-                    ? "border-blue-400 bg-blue-600/25"
-                    : segment.used
-                      ? "border-slate-700 bg-slate-900 opacity-45 grayscale"
-                      : "border-slate-800 bg-slate-950 hover:border-slate-600"
-                  }`}
-              >
-                <div className="mb-1 flex justify-between gap-2">
-                  <span className="text-xs font-black uppercase text-blue-200">
-                    {segment.type}
-                  </span>
-                  {segment.timestamp && (
-                    <span className="rounded bg-slate-800 px-2 py-0.5 text-xs">
-                      {segment.timestamp}
-                    </span>
-                  )}
-                </div>
-
-                <p className="text-sm font-bold">{segment.title}</p>
-                <p className="mt-1 line-clamp-3 text-xs text-slate-400">
-                  {segment.text}
-                </p>
-              </button>
-            ))}
-          </div>
-              )}
-        </div>
-        )}
-      </aside>
         <main className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-[radial-gradient(circle_at_top,#263450_0%,#101522_45%,#070b16_100%)]">
           <Toolbar
             tool={tool}
             setTool={setTool}
-            zoom={zoom}
-            setZoom={setZoom}
-            gridEnabled={gridEnabled}
-            setGridEnabled={setGridEnabled}
-            lockToRegions={lockToRegions}
-            setLockToRegions={setLockToRegions}
+            zoom={uiState.zoom}
+            setZoom={uiState.setZoom}
+            gridEnabled={uiState.gridEnabled}
+            setGridEnabled={uiState.setGridEnabled}
+            lockToRegions={uiState.lockToRegions}
+            setLockToRegions={uiState.setLockToRegions}
             loadPendingImage={(file) => {
               if (!file) return;
-              setPendingImage(URL.createObjectURL(file));
+              uiState.setPendingImage(URL.createObjectURL(file));
               setTool("insertImage");
             }}
           />
 
-          {pageTabsOpen && (
+          {uiState.pageTabsOpen && (
             <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 bg-[#0b1020] p-2">
-              
               {pages.map((page, index) => (
                 <div
                   key={page.id}
@@ -1264,47 +499,12 @@ export default function App() {
                       placeholder={`Page ${index + 1}`}
                       onChange={(e) => {
                         const nextTitle = e.target.value || `Page ${index + 1}`;
-
-                        setPages((prev) =>
-                          prev.map((p) =>
-                            p.id === page.id
-                              ? {
-                                ...p,
-                                title: nextTitle,
-                                layers: p.layers.some((layer) => layer.id === "page-title")
-                                  ? p.layers.map((layer) =>
-                                    layer.id === "page-title"
-                                      ? { ...layer, text: nextTitle }
-                                      : layer
-                                  )
-                                  : [...p.layers, makePageTitleLayer(nextTitle)],
-                              }
-                              : p
-                          )
-                        );
+                        renamePage(page.id, nextTitle);
                       }}
                       onBlur={() => {
                         const fallbackTitle = getPageFallbackTitle(index, page.id);
                         const finalTitle = (page.title || "").trim() || fallbackTitle;
-
-                        setPages((prev) =>
-                          prev.map((p) =>
-                            p.id === page.id
-                              ? {
-                                ...p,
-                                title: finalTitle,
-                                layers: p.layers.some((layer) => layer.id === "page-title")
-                                  ? p.layers.map((layer) =>
-                                    layer.id === "page-title"
-                                      ? { ...layer, text: finalTitle }
-                                      : layer
-                                  )
-                                  : [...p.layers, makePageTitleLayer(finalTitle)],
-                              }
-                              : p
-                          )
-                        );
-
+                        renamePage(page.id, finalTitle);
                         setEditingPageId(null);
                       }}
                       onKeyDown={(e) => {
@@ -1321,9 +521,7 @@ export default function App() {
                     <button
                       onClick={() => {
                         setActivePageId(page.id);
-                        setSelectedLayerId(null);
-                        setSelectedLayerIds([]);
-                        setSelectedSafeZoneId(null);
+                        deselectAll();
                       }}
                       onDoubleClick={() => {
                         setActivePageId(page.id);
@@ -1365,14 +563,15 @@ export default function App() {
             >
               <div
                 style={{
-                  width: `${860 * zoom}px`,
+                  width: `${860 * uiState.zoom}px`,
                 }}
               >
                 <ReviewCanvas
                   refEl={canvasRef}
                   exportRef={exportRef}
                   deselectAll={deselectAll}
-                  isExporting={isExporting}
+                  selectSafeZone={selectSafeZone}
+                  isExporting={uiState.isExporting}
                   templateBackground={templateBackground}
                   layers={activePage.layers}
                   safeZones={safeZones}
@@ -1380,14 +579,13 @@ export default function App() {
                   selectedLayerIds={selectedLayerIds}
                   selectedSafeZoneId={selectedSafeZoneId}
                   selectLayer={selectLayer}
-                  setSelectedSafeZoneId={setSelectedSafeZoneId}
                   updateLayer={setLayer}
                   updateSafeZone={setSafeZone}
                   canvasClick={canvasClick}
                   tool={tool}
-                  zoom={zoom}
-                  gridEnabled={gridEnabled}
-                  lockToRegions={lockToRegions}
+                  zoom={uiState.zoom}
+                  gridEnabled={uiState.gridEnabled}
+                  lockToRegions={uiState.lockToRegions}
                 />
               </div>
             </div>
@@ -1397,671 +595,90 @@ export default function App() {
         <aside className="relative min-h-0 overflow-visible border-l border-slate-800 bg-[#111827]">
           <button
             className="absolute -left-4 top-[120px] z-50 flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-slate-200 shadow-lg hover:bg-blue-600"
-            onClick={() => setRightPanelOpen(!rightPanelOpen)}
-            title={rightPanelOpen ? "Hide right panel" : "Show right panel"}
+            onClick={() => uiState.setRightPanelOpen(!uiState.rightPanelOpen)}
+            title={uiState.rightPanelOpen ? "Hide right panel" : "Show right panel"}
           >
-            {rightPanelOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+            {uiState.rightPanelOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
           </button>
-          {rightPanelOpen && (
-            <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
-          <PanelTitle title="Properties" subtitle="Move, resize and edit layers/safe zones." />
-
-          {selectedLayer ? (
-            <LayerProperties
+          {uiState.rightPanelOpen && (
+            <RightPanel
               selectedLayer={selectedLayer}
               setLayer={setLayer}
-              removeLayer={removeLayer}
-            />
-          ) : selectedSafeZone ? (
-            <SafeZoneProperties
-              zone={selectedSafeZone}
+              removeLayer={(id) => removeLayer(id, () => syncSegmentUsage(pages))}
+              selectedSafeZone={selectedSafeZone}
               setSafeZone={setSafeZone}
-              resetSafeZones={() => setSafeZones(DEFAULT_SAFE_ZONES)}
+              activePage={activePage}
+              selectedLayerIds={selectedLayerIds}
+              selectLayer={selectLayer}
+              setTool={setTool}
+              safeZones={safeZones}
+              selectedSafeZoneId={selectedSafeZoneId}
+              setSelectedSafeZoneId={setSelectedSafeZoneId}
+              setSelectedLayerId={setSelectedLayerId}
+              setSelectedLayerIds={setSelectedLayerIds}
+              layerListOpen={uiState.layerListOpen}
+              setLayerListOpen={uiState.setLayerListOpen}
+              safeZonesOpen={uiState.safeZonesOpen}
+              setSafeZonesOpen={uiState.setSafeZonesOpen}
             />
-          ) : (
-            <div className="panel mt-3 text-sm text-slate-400">
-              Select a layer or safe zone to edit it.
-            </div>
           )}
-
-              <div className="panel mt-3">
-                <button
-                  className="flex w-full items-center justify-between text-left"
-                  onClick={() => setLayerListOpen((v) => !v)}
-                  title={layerListOpen ? "Collapse layer list" : "Expand layer list"}
-                >
-                  <div>
-                    <p className="font-black">Layer list</p>
-                    <p className="text-sm text-slate-400">
-                      {activePage.layers.length} layers
-                    </p>
-                  </div>
-
-                  <span className="text-lg text-slate-400">
-                    {layerListOpen ? "▾" : "▸"}
-                  </span>
-                </button>
-
-                {layerListOpen && (
-                  <div className="mt-3 space-y-2">
-                    {activePage.layers.map((layer, index) => (
-                      <button
-                        key={layer.id}
-                        onClick={(e) => {
-                          selectLayer(layer.id, e.shiftKey);
-                          setTool("select");
-                        }}
-                        className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
-                            ? "bg-blue-600"
-                            : "bg-slate-950 hover:bg-slate-800"
-                          }`}
-                      >
-                        <span className="mr-2 text-slate-400">{index + 1}.</span>
-
-                        {layer.kind === "text" && (
-                          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
-                            <Type size={13} />
-                          </span>
-                        )}
-
-                        {layer.kind === "image" && (
-                          <span className="mr-2 inline-flex h-5 items-center justify-center rounded bg-slate-700 px-1.5 text-[10px] font-black">
-                            IMG
-                          </span>
-                        )}
-
-                        <span className="truncate">
-                          {getLayerListLabel(layer).replace(/^T\s|^IMG\s/, "")}
-                        </span>
-
-                        {layer.autoFlow && (
-                          <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
-                            flow
-                          </span>
-                        )}
-
-                        {layer.id === "footer-info" && (
-                          <span className="ml-2 rounded bg-slate-700 px-1.5 py-0.5 text-[10px]">
-                            footer
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="panel mt-3">
-                <button
-                  className="flex w-full items-center justify-between text-left"
-                  onClick={() => setSafeZonesOpen((v) => !v)}
-                  title={safeZonesOpen ? "Collapse safe zones" : "Expand safe zones"}
-                >
-                  <div>
-                    <p className="font-black">Safe zones</p>
-                    <p className="text-sm text-slate-400">{safeZones.length} zones</p>
-                  </div>
-
-                  <span className="text-lg text-slate-400">
-                    {safeZonesOpen ? "▾" : "▸"}
-                  </span>
-                </button>
-
-                {safeZonesOpen && (
-                  <div className="mt-3 space-y-2">
-                    {safeZones.map((zone) => (
-                      <button
-                        key={zone.id}
-                        onClick={() => {
-                          setSelectedLayerId(null);
-                          setSelectedLayerIds([]);
-                          setSelectedSafeZoneId(zone.id);
-                          setTool("safeZone");
-                        }}
-                        className={`w-full rounded-xl px-3 py-2 text-left text-sm ${selectedSafeZoneId === zone.id
-                            ? "bg-emerald-600"
-                            : "bg-slate-950 hover:bg-slate-800"
-                          }`}
-                      >
-                        {zone.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-        </div>
-      )}
-    </aside>
-    </div>
-    </div>
-  );
-}
-
-function LayerProperties({ selectedLayer, setLayer, removeLayer }) {
-  return (
-    <div className="panel mt-3">
-      <div className="mb-3 flex items-center justify-between">
-        <p className="font-black">Selected {selectedLayer.kind}</p>
-        <button
-          onClick={() => removeLayer(selectedLayer.id)}
-          className="rounded-lg p-2 text-red-300 hover:bg-red-500/10"
-        >
-          <Trash2 size={16} />
-        </button>
+        </aside>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <NumberField label="X" value={selectedLayer.x} onChange={(v) => setLayer(selectedLayer.id, { x: v })} />
-        <NumberField label="Y" value={selectedLayer.y} onChange={(v) => setLayer(selectedLayer.id, { y: v })} />
-        <NumberField label="Width" value={selectedLayer.w} onChange={(v) => setLayer(selectedLayer.id, { w: v })} />
-        <NumberField label="Height" value={selectedLayer.h} onChange={(v) => setLayer(selectedLayer.id, { h: v })} />
-      </div>
-
-      {selectedLayer.kind === "text" && (
-        <>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <NumberField label="Font size" value={selectedLayer.fontSize} onChange={(v) => setLayer(selectedLayer.id, { fontSize: v })} />
-            <NumberField label="Weight" value={selectedLayer.weight} onChange={(v) => setLayer(selectedLayer.id, { weight: v })} />
-          </div>
-
-          <div className="mt-3 flex gap-2">
-            <button
-              className={`tool-btn ${selectedLayer.weight >= 700 ? "tool-btn-active" : ""}`}
-              onClick={() =>
-                setLayer(selectedLayer.id, {
-                  weight: selectedLayer.weight >= 700 ? 500 : 900,
-                })
-              }
-            >
-              Bold
-            </button>
-
-            <button
-              className={`tool-btn ${selectedLayer.italic ? "tool-btn-active" : ""}`}
-              onClick={() => setLayer(selectedLayer.id, { italic: !selectedLayer.italic })}
-            >
-              Italic
-            </button>
-
-            <button
-              className={`tool-btn ${selectedLayer.autoFlow ? "tool-btn-active" : ""}`}
-              onClick={() =>
-                setLayer(selectedLayer.id, {
-                  autoFlow: !selectedLayer.autoFlow,
-                })
-              }
-            >
-              Flow
-            </button>
-          </div>
-
-          <TextArea label="Markdown Text" value={selectedLayer.text} onChange={(v) => setLayer(selectedLayer.id, { text: v })} />
-        </>
+      {uiState.wizardOpen && (
+        <NewReviewWizard
+          step={uiState.wizardStep}
+          setStep={uiState.setWizardStep}
+          wizardSource={uiState.wizardSource}
+          setWizardSource={uiState.setWizardSource}
+          wizardRawText={uiState.wizardRawText}
+          setWizardRawText={uiState.setWizardRawText}
+          wizardForm={uiState.wizardForm}
+          setWizardForm={uiState.setWizardForm}
+          heroes={HEROES}
+          onClose={() => uiState.setWizardOpen(false)}
+          onFinish={finishWizardReview}
+        />
       )}
 
-      {selectedLayer.kind === "image" && (
-        <Field label="Caption" value={selectedLayer.caption} onChange={(v) => setLayer(selectedLayer.id, { caption: v })} />
-      )}
-    </div>
-  );
-}
+      {uiState.detailsEditorOpen && (
+        <EditReviewDetailsModal
+          form={form}
+          setForm={setForm}
+          rawText={rawText}
+          setRawText={setRawText}
+          heroes={HEROES}
+          onRegenerateFromText={(nextForm, nextRawText) => {
+            const parsed = parseDiscordReview(nextRawText);
 
-function SafeZoneProperties({ zone, setSafeZone, resetSafeZones }) {
-  return (
-    <div className="panel mt-3">
-      <p className="mb-3 font-black">Safe zone: {zone.label}</p>
+            const nextSegments = parsed.segments.map((segment) => ({
+              ...segment,
+              used: true,
+            }));
 
-      <Field label="Label" value={zone.label} onChange={(v) => setSafeZone(zone.id, { label: v })} />
+            const formWithReplay = {
+              ...nextForm,
+              replayId: nextForm.replayId || parsed.replayId,
+            };
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <NumberField label="X" value={zone.x} onChange={(v) => setSafeZone(zone.id, { x: v })} />
-        <NumberField label="Y" value={zone.y} onChange={(v) => setSafeZone(zone.id, { y: v })} />
-        <NumberField label="Width" value={zone.w} onChange={(v) => setSafeZone(zone.id, { w: v })} />
-        <NumberField label="Height" value={zone.h} onChange={(v) => setSafeZone(zone.id, { h: v })} />
-      </div>
+            const generatedPages = buildReviewPages({
+              form: formWithReplay,
+              segments: nextSegments,
+              safeZones: DEFAULT_SAFE_ZONES,
+            });
 
-      <button className="btn-secondary mt-3 w-full" onClick={resetSafeZones}>
-        Reset safe zones
-      </button>
-    </div>
-  );
-}
-
-function Toolbar({
-  tool,
-  setTool,
-  zoom,
-  setZoom,
-  gridEnabled,
-  setGridEnabled,
-  lockToRegions,
-  setLockToRegions,
-  loadPendingImage,
-}) {
-  return (
-    <div className="flex h-14 items-center justify-between border-b border-slate-800 bg-[#0b1020] px-3">
-      <div className="flex items-center gap-2">
-        <ToolButton active={tool === "select"} onClick={() => setTool("select")} icon={<MousePointer2 />}>
-          Select
-        </ToolButton>
-
-        <ToolButton active={tool === "insertText"} onClick={() => setTool("insertText")} icon={<Type />}>
-          Insert text
-        </ToolButton>
-
-        <label className={`tool-btn ${tool === "insertImage" ? "tool-btn-active" : ""}`}>
-          <ImagePlus size={16} /> Insert image
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => loadPendingImage(e.target.files?.[0])} />
-        </label>
-
-        <button className={`tool-btn ${gridEnabled ? "tool-btn-active" : ""}`} onClick={() => setGridEnabled(!gridEnabled)}>
-          <LayoutGrid size={16} /> Grid
-        </button>
-
-        <button className={`tool-btn ${lockToRegions ? "tool-btn-active" : ""}`} onClick={() => setLockToRegions(!lockToRegions)}>
-          Safe zones
-        </button>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.max(0.45, Number((z - 0.1).toFixed(2))))}>
-          <ZoomOut size={16} />
-        </button>
-
-        <span className="w-16 text-center text-sm">{Math.round(zoom * 100)}%</span>
-
-        <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.min(2, Number((z + 0.1).toFixed(2))))}>
-          <ZoomIn size={16} />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ToolButton({ active, icon, children, onClick }) {
-  return (
-    <button onClick={onClick} className={`tool-btn ${active ? "tool-btn-active" : ""}`}>
-      {React.cloneElement(icon, { size: 16 })}
-      {children}
-    </button>
-  );
-}
-
-function ReviewCanvas({
-  refEl,
-  exportRef,
-  deselectAll,
-  isExporting,
-  templateBackground,
-  layers,
-  safeZones,
-  selectedLayerId,
-  selectedLayerIds,
-  selectedSafeZoneId,
-  selectLayer,
-  setSelectedSafeZoneId,
-  updateLayer,
-  updateSafeZone,
-  canvasClick,
-  tool,
-  zoom,
-  gridEnabled,
-  lockToRegions,
-}) {
-  const cursor = tool === "insertText" || tool === "insertImage" ? "cursor-crosshair" : "cursor-default";
-
-  return (
-    <motion.div
-      className="origin-top"
-      style={{
-        width: isExporting ? `${PAGE_W}px` : "100%",
-      }}
-    >
-      <div
-        ref={(node) => {
-          refEl.current = node;
-          exportRef.current = node;
-        }}
-        onPointerDown={(e) => {
-          if (e.target !== e.currentTarget) return;
-
-          if (tool === "select" || tool === "safeZone") {
+            setForm(formWithReplay);
+            setRawText(nextRawText);
+            setSegments(nextSegments);
+            setPages(generatedPages);
+            setActivePageId(generatedPages[0]?.id);
             deselectAll();
-          }
-        }}
-        className={`editor-canvas relative aspect-[100/141.4286] w-full overflow-hidden bg-[#efeae7] ${isExporting ? "" : "rounded-2xl shadow-2xl ring-1 ring-white/10"
-          } ${cursor}`}
-        style={{ containerType: "size" }}
-      >
-        <img
-          src={templateBackground}
-          alt="Hero template"
-          onError={(e) => {
-            e.currentTarget.src = fallbackTemplate;
+            setSafeZones(DEFAULT_SAFE_ZONES);
+            setTool("select");
           }}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        />
-
-        {gridEnabled && !isExporting && (
-          <div
-            className="pointer-events-none absolute inset-0 opacity-20"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
-              backgroundSize: "20px 20px",
-            }}
-          />
-        )}
-
-        {lockToRegions &&
-          safeZones.map((zone) => (
-            <SafeZone
-              key={zone.id}
-              zone={zone}
-              selected={selectedSafeZoneId === zone.id}
-              onSelect={(e) => {
-                e.stopPropagation();
-                setSelectedSafeZoneId(zone.id);
-                selectLayer(null, false);
-              }}
-              onChange={(patch) => updateSafeZone(zone.id, patch, { snapToGrid: true })}
-            />
-          ))}
-
-        {layers.map((layer) => (
-          <PlacedLayer
-            key={layer.id}
-            layer={layer}
-            isExporting={isExporting}
-            selected={!isExporting && selectedLayerIds.includes(layer.id)}
-            onSelect={(e) => {
-              e.stopPropagation();
-              selectLayer(layer.id, e.shiftKey);
-            }}
-            onMove={(patch) => updateLayer(layer.id, patch, { snapToGrid: true })}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-function SafeZone({ zone, selected, onSelect, onChange }) {
-  const startRef = useRef(null);
-
-  const style = {
-    left: `${(zone.x / PAGE_W) * 100}%`,
-    top: `${(zone.y / PAGE_H) * 100}%`,
-    width: `${(zone.w / PAGE_W) * 100}%`,
-    height: `${(zone.h / PAGE_H) * 100}%`,
-  };
-
-  function startDrag(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    onSelect(e);
-
-    startRef.current = {
-      mode: "drag",
-      pointerX: e.clientX,
-      pointerY: e.clientY,
-      x: zone.x,
-      y: zone.y,
-    };
-
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
-  }
-
-  function startResize(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    onSelect(e);
-
-    startRef.current = {
-      mode: "resize",
-      pointerX: e.clientX,
-      pointerY: e.clientY,
-      w: zone.w,
-      h: zone.h,
-    };
-
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
-  }
-
-  function move(e) {
-    const start = startRef.current;
-    if (!start) return;
-
-    const dx = ((e.clientX - start.pointerX) / 860) * PAGE_W;
-    const dy = ((e.clientY - start.pointerY) / 1212) * PAGE_H;
-
-    if (start.mode === "drag") {
-      onChange({
-        x: Math.round(start.x + dx),
-        y: Math.round(start.y + dy),
-      });
-    }
-
-    if (start.mode === "resize") {
-      onChange({
-        w: Math.max(40, Math.round(start.w + dx)),
-        h: Math.max(30, Math.round(start.h + dy)),
-      });
-    }
-  }
-
-  function stop() {
-    startRef.current = null;
-    window.removeEventListener("pointermove", move);
-    window.removeEventListener("pointerup", stop);
-  }
-
-  return (
-    <div
-      onPointerDown={startDrag}
-      className={`no-export absolute cursor-move border bg-emerald-400/5 ${selected
-          ? "border-emerald-300 ring-2 ring-emerald-300"
-          : "border-emerald-400/40"
-        }`}
-      style={style}
-    >
-      <div className="absolute left-1 top-1 rounded bg-emerald-500/80 px-2 py-0.5 text-[10px] font-bold text-white">
-        {zone.label}
-      </div>
-
-      {selected && (
-        <button
-          onPointerDown={startResize}
-          className="absolute -bottom-2 -right-2 h-5 w-5 rounded-full bg-emerald-400 ring-2 ring-white"
-          title="Resize safe zone"
+          onClose={() => uiState.setDetailsEditorOpen(false)}
         />
       )}
     </div>
-  );
-}
-
-function PlacedLayer({ layer, selected, onSelect, onMove, isExporting }) {
-  const startRef = useRef(null);
-
-  const style = {
-    left: `${(layer.x / PAGE_W) * 100}%`,
-    top: `${(layer.y / PAGE_H) * 100}%`,
-    width: `${(layer.w / PAGE_W) * 100}%`,
-    minHeight: `${(layer.h / PAGE_H) * 100}%`,
-  };
-
-  function startDrag(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    onSelect(e);
-
-    startRef.current = {
-      mode: "drag",
-      pointerX: e.clientX,
-      pointerY: e.clientY,
-      x: layer.x,
-      y: layer.y,
-    };
-
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
-  }
-
-  function startResize(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    onSelect(e);
-
-    startRef.current = {
-      mode: "resize",
-      pointerX: e.clientX,
-      pointerY: e.clientY,
-      w: layer.w,
-      h: layer.h,
-    };
-
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
-  }
-
-  function move(e) {
-    const start = startRef.current;
-    if (!start) return;
-
-    const dx = ((e.clientX - start.pointerX) / 860) * PAGE_W;
-    const dy = ((e.clientY - start.pointerY) / 1212) * PAGE_H;
-
-    if (start.mode === "drag") {
-      onMove({
-        x: Math.round(start.x + dx),
-        y: Math.round(start.y + dy),
-      });
-    }
-
-    if (start.mode === "resize") {
-      onMove({
-        w: Math.max(60, Math.round(start.w + dx)),
-        h: Math.max(40, Math.round(start.h + dy)),
-      });
-    }
-  }
-
-  function stop() {
-    startRef.current = null;
-    window.removeEventListener("pointermove", move);
-    window.removeEventListener("pointerup", stop);
-  }
-
-  return (
-    <div
-      onPointerDown={startDrag}
-      onClick={onSelect}
-      className={`absolute cursor-move rounded-sm text-left ${selected
-          ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-blue-950"
-          : isExporting
-            ? ""
-            : "hover:ring-2 hover:ring-white/50"
-        }`}
-      style={style}
-    >
-      {layer.kind === "text" ? (
-        <div
-          className="vod-text whitespace-pre-wrap drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
-          style={{
-            color: layer.color || "#000000",
-            fontSize: isExporting
-              ? `${layer.fontSize}px`
-              : `${layer.fontSize / 10}cqw`,
-            fontWeight: layer.weight,
-            fontStyle: layer.italic ? "italic" : "normal",
-            lineHeight: 1.25,
-            textAlign: layer.align || "left",
-          }}
-        >
-          {layer.markdown ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {layer.text}
-            </ReactMarkdown>
-          ) : (
-            layer.text
-          )}
-        </div>
-      ) : (
-        <div className="overflow-hidden bg-slate-800 shadow-lg">
-          <img src={layer.src} alt="Screenshot" className="aspect-video w-full object-cover" />
-            <div
-              className="bg-[#25274f] px-3 py-2 text-center font-black uppercase leading-tight text-white"
-              style={{
-                fontSize: isExporting ? "12px" : "1.1cqw",
-              }}
-            >
-            {layer.caption}
-          </div>
-        </div>
-      )}
-
-      {selected && !isExporting && (
-        <button
-          onPointerDown={startResize}
-          className="no-export absolute -bottom-2 -right-2 h-5 w-5 rounded-full bg-blue-500 ring-2 ring-white"
-          title="Resize"
-        />
-      )}
-    </div>
-  );
-}
-
-function PanelTitle({ icon, title, subtitle }) {
-  return (
-    <div>
-      <div className="flex items-center gap-2">
-        {icon && React.cloneElement(icon, { className: "h-4 w-4 text-blue-300" })}
-        <h2 className="font-black">{title}</h2>
-      </div>
-      {subtitle && <p className="mt-1 text-sm text-slate-400">{subtitle}</p>}
-    </div>
-  );
-}
-
-function Label({ children }) {
-  return (
-    <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400">
-      {children}
-    </span>
-  );
-}
-
-function Field({ label, value, onChange }) {
-  return (
-    <label className="block">
-      <Label>{label}</Label>
-      <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
-    </label>
-  );
-}
-
-function NumberField({ label, value, onChange, step = 1 }) {
-  return (
-    <label className="block">
-      <Label>{label}</Label>
-      <input
-        className="input"
-        type="number"
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </label>
-  );
-}
-
-function TextArea({ label, value, onChange }) {
-  return (
-    <label className="mt-3 block">
-      <Label>{label}</Label>
-      <textarea className="input min-h-32 resize-y" value={value} onChange={(e) => onChange(e.target.value)} />
-    </label>
   );
 }
