@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { parseDiscordReview } from "../utils/parsing.js";
-import { autoPlaceInZone, makeAutoTextLayerAtY } from "../utils/canvas.js";
+import { makeAutoTextLayerAtY } from "../utils/canvas.js";
 import { SAMPLE_REVIEW } from "../utils/constants.js";
+import { makeTextSegmentGroupPatch } from "../utils/layerFactory.js";
 
 export function useSegments(pages, activePageId, setPages) {
   const [rawText, setRawText] = useState(SAMPLE_REVIEW);
@@ -58,9 +59,6 @@ export function useSegments(pages, activePageId, setPages) {
     const startY = zone.y + padding;
     const maxY = zone.y + zone.h - padding;
 
-    const PAGE_W = 1080;
-    const PAGE_H = 1527;
-
     const activeIndex = pages.findIndex((page) => page.id === activePageId);
     const basePages = [...pages];
 
@@ -71,6 +69,7 @@ export function useSegments(pages, activePageId, setPages) {
 
     let pageIndex = activeIndex >= 0 ? activeIndex : 0;
     let currentPage = workingPages[pageIndex];
+    let currentTextGroup = getPageTextSegmentGroup(currentPage);
 
     let y = startY;
 
@@ -94,12 +93,16 @@ export function useSegments(pages, activePageId, setPages) {
         workingPages.push(newPage);
         pageIndex = workingPages.length - 1;
         currentPage = workingPages[pageIndex];
+        currentTextGroup = makeTextSegmentGroupPatch();
 
         y = startY;
         layer = makeAutoTextLayerAtY({ segment, zone, y });
       }
 
-      currentPage.layers.push(layer);
+      currentPage.layers.push({
+        ...layer,
+        ...currentTextGroup,
+      });
       y = layer.y + layer.h + gap;
     }
 
@@ -112,6 +115,19 @@ export function useSegments(pages, activePageId, setPages) {
           : segment
       )
     );
+  }
+
+  function getPageTextSegmentGroup(page) {
+    const existingGroup = page.layers.find(
+      (layer) => layer.kind === "text" && layer.sourceSegmentId && layer.groupId
+    );
+
+    return existingGroup
+      ? {
+        groupId: existingGroup.groupId,
+        groupName: existingGroup.groupName || "Text segments",
+      }
+      : makeTextSegmentGroupPatch();
   }
 
   return {

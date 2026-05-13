@@ -1,4 +1,5 @@
-import { ArrowDown, ArrowUp, Box, ChevronsDown, ChevronsUp, Copy, Eye, EyeOff, Lock, LockOpen, Smile, Trash2, Type } from "lucide-react";
+import { useState } from "react";
+import { ArrowDown, ArrowUp, Box, ChevronDown, ChevronRight, ChevronsDown, ChevronsUp, Copy, Eye, EyeOff, Folder, Layers, Lock, LockOpen, Smile, Trash2, Type } from "lucide-react";
 import { PanelTitle } from "./PanelTitle.jsx";
 import { Field } from "../FormFields/Field.jsx";
 import { NumberField } from "../FormFields/NumberField.jsx";
@@ -24,6 +25,10 @@ export function RightPanel({
   setSelectedLayerIds,
   duplicateSelectedLayers,
   reorderSelectedLayers,
+  deleteSelectedLayers,
+  setAllLayerVisibility,
+  setAllLayerLocks,
+  groupSelectedLayers,
   timestampGutterWidth,
   setTimestampGutterWidth,
   timestampFontSize,
@@ -35,6 +40,165 @@ export function RightPanel({
   safeZonesOpen,
   setSafeZonesOpen,
 }) {
+  const [collapsedGroups, setCollapsedGroups] = useState({});
+  const layerEntries = buildLayerEntries(activePage.layers || []);
+
+  function getLayerGroupKey(layer) {
+    if (!layer.groupId) return "";
+
+    return layer.groupName === "Text segments"
+      ? `name:${layer.groupName}`
+      : `id:${layer.groupId}`;
+  }
+
+  function buildLayerEntries(layers) {
+    const topFirstLayers = [...layers].reverse();
+    const seenGroups = new Set();
+    const entries = [];
+
+    for (const layer of topFirstLayers) {
+      const groupKey = getLayerGroupKey(layer);
+
+      if (!groupKey) {
+        entries.push({ type: "layer", layer, indented: false });
+        continue;
+      }
+
+      if (seenGroups.has(groupKey)) continue;
+
+      seenGroups.add(groupKey);
+
+      const groupLayers = topFirstLayers.filter(
+        (candidate) => getLayerGroupKey(candidate) === groupKey
+      );
+
+      entries.push({
+        type: "group",
+        id: groupKey,
+        name: layer.groupName || "Group",
+        layers: groupLayers,
+      });
+    }
+
+    return entries;
+  }
+
+  function setGroupPatch(layers, patch) {
+    for (const layer of layers) {
+      setLayer(layer.id, patch);
+    }
+  }
+
+  function selectGroup(layers) {
+    const layerIds = layers.map((layer) => layer.id);
+
+    setSelectedSafeZoneId(null);
+    setSelectedLayerIds(layerIds);
+    setSelectedLayerId(layerIds[0] || null);
+    setTool("select");
+  }
+
+  function toggleGroupCollapsed(groupId) {
+    setCollapsedGroups((prev) => ({
+      ...prev,
+      [groupId]: !prev[groupId],
+    }));
+  }
+
+  function renderLayerRow(layer, indented = false) {
+    return (
+      <button
+        key={layer.id}
+        onClick={(e) => {
+          selectLayer(layer.id, e.shiftKey);
+          setTool("select");
+        }}
+        className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
+            ? "bg-blue-600"
+            : "bg-slate-950 hover:bg-slate-800"
+          } ${layer.visible === false ? "opacity-45" : ""} ${indented ? "ml-5 w-[calc(100%-1.25rem)] border-l border-slate-700" : ""}`}
+      >
+        <span
+          role="button"
+          tabIndex={0}
+          className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+          title={layer.visible === false ? "Show layer" : "Hide layer"}
+          onClick={(e) => {
+            e.stopPropagation();
+            setLayer(layer.id, { visible: layer.visible === false });
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            e.stopPropagation();
+            setLayer(layer.id, { visible: layer.visible === false });
+          }}
+        >
+          {layer.visible === false ? <EyeOff size={15} /> : <Eye size={15} />}
+        </span>
+
+        <span
+          role="button"
+          tabIndex={0}
+          className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+          title={layer.locked ? "Unlock layer" : "Lock layer"}
+          onClick={(e) => {
+            e.stopPropagation();
+            setLayer(layer.id, { locked: !layer.locked });
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            e.stopPropagation();
+            setLayer(layer.id, { locked: !layer.locked });
+          }}
+        >
+          {layer.locked ? <Lock size={15} /> : <LockOpen size={15} />}
+        </span>
+
+        {layer.kind === "text" && (
+          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
+            <Type size={13} />
+          </span>
+        )}
+
+        {layer.kind === "image" && (
+          <span className="mr-2 inline-flex h-5 items-center justify-center rounded bg-slate-700 px-1.5 text-[10px] font-black">
+            IMG
+          </span>
+        )}
+
+        {layer.kind === "emoji" && (
+          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
+            <Smile size={13} />
+          </span>
+        )}
+
+        {layer.kind === "shape" && (
+          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
+            <Box size={13} />
+          </span>
+        )}
+
+        <span className="truncate">
+          {getLayerListLabel(layer).replace(/^T\s|^IMG\s|^EMOJI\s|^S\s/, "")}
+        </span>
+
+        {layer.autoFlow && (
+          <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
+            flow
+          </span>
+        )}
+
+        {layer.id === "footer-info" && (
+          <span className="ml-2 rounded bg-slate-700 px-1.5 py-0.5 text-[10px]">
+            footer
+          </span>
+        )}
+      </button>
+    );
+  }
+
   return (
     <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden p-3">
       <PanelTitle title="Properties" subtitle="Move, resize and edit layers/safe zones." />
@@ -228,28 +392,64 @@ export function RightPanel({
 
         {layerListOpen && (
           <div className="mt-3 space-y-2">
+            <div className="grid grid-cols-2 gap-1 rounded-xl bg-slate-950 p-1">
+              <button
+                className="tool-btn h-9 px-2"
+                onClick={() => setAllLayerVisibility(false)}
+                title="Hide all layers"
+              >
+                <EyeOff size={15} /> Hide all
+              </button>
+              <button
+                className="tool-btn h-9 px-2"
+                onClick={() => setAllLayerVisibility(true)}
+                title="Show all layers"
+              >
+                <Eye size={15} /> Show all
+              </button>
+              <button
+                className="tool-btn h-9 px-2"
+                onClick={() => setAllLayerLocks(true)}
+                title="Lock all layers"
+              >
+                <Lock size={15} /> Lock all
+              </button>
+              <button
+                className="tool-btn h-9 px-2"
+                onClick={() => setAllLayerLocks(false)}
+                title="Unlock all layers"
+              >
+                <LockOpen size={15} /> Unlock all
+              </button>
+            </div>
+
             {selectedLayerIds.length > 0 && (
-              <div className="grid grid-cols-5 gap-1 rounded-xl bg-slate-950 p-1">
+              <div className="rounded-xl bg-slate-950 p-1">
+                <div className="mb-1 grid grid-cols-2 gap-1">
+                  <button
+                    className="tool-btn h-9 px-2 text-red-200 hover:bg-red-500/20"
+                    onClick={deleteSelectedLayers}
+                    title="Delete selected layers"
+                  >
+                    <Trash2 size={15} /> Delete
+                  </button>
+                  <button
+                    className="tool-btn h-9 px-2 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={selectedLayerIds.length < 2}
+                    onClick={groupSelectedLayers}
+                    title="Group selected layers"
+                  >
+                    <Layers size={15} /> Group
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-5 gap-1">
                 <button
                   className="tool-btn h-9 px-0"
-                  onClick={() => reorderSelectedLayers("back")}
-                  title="Send to back"
+                  onClick={() => reorderSelectedLayers("front")}
+                  title="Bring to front"
                 >
-                  <ChevronsDown size={16} />
-                </button>
-                <button
-                  className="tool-btn h-9 px-0"
-                  onClick={() => reorderSelectedLayers("backward")}
-                  title="Send backward"
-                >
-                  <ArrowDown size={16} />
-                </button>
-                <button
-                  className="tool-btn h-9 px-0"
-                  onClick={duplicateSelectedLayers}
-                  title="Duplicate selected layer"
-                >
-                  <Copy size={16} />
+                  <ChevronsUp size={16} />
                 </button>
                 <button
                   className="tool-btn h-9 px-0"
@@ -260,113 +460,120 @@ export function RightPanel({
                 </button>
                 <button
                   className="tool-btn h-9 px-0"
-                  onClick={() => reorderSelectedLayers("front")}
-                  title="Bring to front"
+                  onClick={duplicateSelectedLayers}
+                  title="Duplicate selected layer"
                 >
-                  <ChevronsUp size={16} />
+                  <Copy size={16} />
                 </button>
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={() => reorderSelectedLayers("backward")}
+                  title="Send backward"
+                >
+                  <ArrowDown size={16} />
+                </button>
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={() => reorderSelectedLayers("back")}
+                  title="Send to back"
+                >
+                  <ChevronsDown size={16} />
+                </button>
+                </div>
               </div>
             )}
 
-            {activePage.layers.map((layer, index) => (
-              <button
-                key={layer.id}
-                onClick={(e) => {
-                  selectLayer(layer.id, e.shiftKey);
-                  setTool("select");
-                }}
-                className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
-                    ? "bg-blue-600"
-                    : "bg-slate-950 hover:bg-slate-800"
-                  } ${layer.visible === false ? "opacity-45" : ""}`}
-              >
-                <span
-                  role="button"
-                  tabIndex={0}
-                  className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
-                  title={layer.visible === false ? "Show layer" : "Hide layer"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLayer(layer.id, { visible: layer.visible === false });
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key !== "Enter" && e.key !== " ") return;
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setLayer(layer.id, { visible: layer.visible === false });
-                  }}
-                >
-                  {layer.visible === false ? <EyeOff size={15} /> : <Eye size={15} />}
-                </span>
+            {layerEntries.map((entry) => {
+              if (entry.type === "layer") {
+                return renderLayerRow(entry.layer, entry.indented);
+              }
 
-                <span
-                  role="button"
-                  tabIndex={0}
-                  className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
-                  title={layer.locked ? "Unlock layer" : "Lock layer"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setLayer(layer.id, { locked: !layer.locked });
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key !== "Enter" && e.key !== " ") return;
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setLayer(layer.id, { locked: !layer.locked });
-                  }}
-                >
-                  {layer.locked ? <Lock size={15} /> : <LockOpen size={15} />}
-                </span>
+              const groupVisible = entry.layers.some((layer) => layer.visible !== false);
+              const groupLocked = entry.layers.every((layer) => layer.locked);
+              const groupSelected = entry.layers.some((layer) =>
+                selectedLayerIds.includes(layer.id)
+              );
+              const collapsed = Boolean(collapsedGroups[entry.id]);
 
-                <span className="mr-2 text-slate-400">{index + 1}.</span>
+              return (
+                <div key={entry.id} className="space-y-1">
+                  <button
+                    onClick={() => selectGroup(entry.layers)}
+                    className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+                      groupSelected ? "bg-indigo-600" : "bg-slate-900 hover:bg-slate-800"
+                    } ${groupVisible ? "" : "opacity-45"}`}
+                  >
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+                      title={groupVisible ? "Hide group" : "Show group"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGroupPatch(entry.layers, { visible: !groupVisible });
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter" && e.key !== " ") return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setGroupPatch(entry.layers, { visible: !groupVisible });
+                      }}
+                    >
+                      {groupVisible ? <Eye size={15} /> : <EyeOff size={15} />}
+                    </span>
 
-                {layer.kind === "text" && (
-                  <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
-                    <Type size={13} />
-                  </span>
-                )}
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+                      title={groupLocked ? "Unlock group" : "Lock group"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGroupPatch(entry.layers, { locked: !groupLocked });
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter" && e.key !== " ") return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setGroupPatch(entry.layers, { locked: !groupLocked });
+                      }}
+                    >
+                      {groupLocked ? <Lock size={15} /> : <LockOpen size={15} />}
+                    </span>
 
-                {layer.kind === "image" && (
-                  <span className="mr-2 inline-flex h-5 items-center justify-center rounded bg-slate-700 px-1.5 text-[10px] font-black">
-                    IMG
-                  </span>
-                )}
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+                      title={collapsed ? "Expand group" : "Collapse group"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleGroupCollapsed(entry.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key !== "Enter" && e.key !== " ") return;
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleGroupCollapsed(entry.id);
+                      }}
+                    >
+                      {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
+                    </span>
 
-                {layer.kind === "emoji" && (
-                  <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
-                    <Smile size={13} />
-                  </span>
-                )}
+                    <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-indigo-700 text-indigo-50">
+                      <Folder size={13} />
+                    </span>
 
-                {layer.kind === "shape" && (
-                  <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
-                    <Box size={13} />
-                  </span>
-                )}
+                    <span className="truncate font-bold">{entry.name}</span>
+                    <span className="ml-2 rounded bg-indigo-900 px-1.5 py-0.5 text-[10px] text-indigo-100">
+                      {entry.layers.length}
+                    </span>
+                  </button>
 
-                <span className="truncate">
-                  {getLayerListLabel(layer).replace(/^T\s|^IMG\s|^EMOJI\s|^S\s/, "")}
-                </span>
-
-                {layer.autoFlow && (
-                  <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
-                    flow
-                  </span>
-                )}
-
-                {layer.id === "footer-info" && (
-                  <span className="ml-2 rounded bg-slate-700 px-1.5 py-0.5 text-[10px]">
-                    footer
-                  </span>
-                )}
-
-                {layer.locked && (
-                  <span className="ml-2 rounded bg-slate-700 px-1.5 py-0.5 text-[10px]">
-                    locked
-                  </span>
-                )}
-              </button>
-            ))}
+                  {!collapsed && entry.layers.map((layer) => renderLayerRow(layer, true))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -20,7 +20,7 @@ export function useUIState() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [wizardStep, setWizardStep] = useState(1);
   const [wizardRawText, setWizardRawText] = useState("");
-  const [wizardSource, setWizardSource] = useState("json");
+  const [wizardSource, setWizardSource] = useState("blank");
   const [wizardForm, setWizardForm] = useState({
     player: "",
     reviewer: "",

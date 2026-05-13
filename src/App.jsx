@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { ChevronLeft, ChevronRight, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Redo2, Undo2 } from "lucide-react";
 import { exportAllPages } from "./utils/exportAllPages.js";
 
-// Hooks
+// MARK: Hooks
 import { useReviewForm } from "./hooks/useReviewForm.js";
 import { usePages } from "./hooks/usePages.js";
 import { useSegments } from "./hooks/useSegments.js";
@@ -10,7 +10,7 @@ import { useSelection } from "./hooks/useSelection.js";
 import { useLayers } from "./hooks/useLayers.js";
 import { useUIState } from "./hooks/useUIState.js";
 
-// Components
+// MARK: Components
 import { Toolbar } from "./components/Toolbar/Toolbar.jsx";
 import { LeftPanel } from "./components/Panels/LeftPanel.jsx";
 import { RightPanel } from "./components/Panels/RightPanel.jsx";
@@ -19,11 +19,11 @@ import { NewReviewWizard } from "./components/Modals/NewReviewWizard.jsx";
 import { EditReviewDetailsModal } from "./components/Modals/EditReviewDetailsModal.jsx";
 import { TextEditorModal } from "./components/Modals/TextEditorModal.jsx";
 
-// Utils & Constants
+// MARK: Utils & Constants
 import { HEROES, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, heroTemplates } from "./utils/constants.js";
 import { parseDiscordReview } from "./utils/parsing.js";
 import { buildReviewPages } from "./utils/buildReviewPages.js";
-import { makeEmojiLayer, makeImageLayer, makeShapeLayer, syncPageTitleLayers } from "./utils/layerFactory.js";
+import { makeEmojiLayer, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
 import { autoPlaceInZone } from "./utils/canvas.js";
 
 const PAGE_W = 1080;
@@ -37,7 +37,7 @@ export default function App() {
   const skipHistoryRef = React.useRef(false);
   const [textEditorLayerId, setTextEditorLayerId] = React.useState(null);
 
-  // State management
+  // MARK: State management
   const { form, setForm, updateForm } = useReviewForm(HEROES[0]);
   const { pages, setPages, activePageId, setActivePageId, activePage, editingPageId, setEditingPageId, updateActivePageLayers, updatePageTitleLayer, updateFooterLayer, renamePage, getPageFallbackTitle, getNextPageTitle, removeActivePage, addPage } = usePages(form);
   const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
@@ -229,7 +229,74 @@ export default function App() {
     );
   }
 
-  // Canvas event handlers
+  function setAllLayerVisibility(visible) {
+    setPages((prev) =>
+      prev.map((page) =>
+        page.id === activePageId
+          ? {
+            ...page,
+            layers: page.layers.map((layer) => ({ ...layer, visible })),
+          }
+          : page
+      )
+    );
+  }
+
+  function setAllLayerLocks(locked) {
+    setPages((prev) =>
+      prev.map((page) =>
+        page.id === activePageId
+          ? {
+            ...page,
+            layers: page.layers.map((layer) => ({ ...layer, locked })),
+          }
+          : page
+      )
+    );
+  }
+
+  function groupSelectedLayers() {
+    const ids = selectedLayerIds.length
+      ? selectedLayerIds
+      : selectedLayerId
+        ? [selectedLayerId]
+        : [];
+
+    if (ids.length < 2) return;
+
+    const groupId = crypto.randomUUID();
+    const groupName = `Group ${new Set((activePage?.layers || []).map((layer) => layer.groupId).filter(Boolean)).size + 1}`;
+
+    setPages((prev) =>
+      prev.map((page) =>
+        page.id === activePageId
+          ? {
+            ...page,
+            layers: page.layers.map((layer) =>
+              ids.includes(layer.id)
+                ? { ...layer, groupId, groupName }
+                : layer
+            ),
+          }
+          : page
+      )
+    );
+  }
+
+  function getActivePageTextSegmentGroup() {
+    const existingGroup = (activePage?.layers || []).find(
+      (layer) => layer.kind === "text" && layer.sourceSegmentId && layer.groupId
+    );
+
+    return existingGroup
+      ? {
+        groupId: existingGroup.groupId,
+        groupName: existingGroup.groupName || "Text segments",
+      }
+      : makeTextSegmentGroupPatch();
+  }
+
+  // MARK: Canvas event handlers
   function canvasClick(e) {
     if (tool === "select" || tool === "safeZone") return;
 
@@ -258,7 +325,10 @@ export default function App() {
         layers: activePage.layers,
       });
 
-      addLayer(layer);
+      addLayer({
+        ...layer,
+        ...getActivePageTextSegmentGroup(),
+      });
       markSegmentUsed(selectedSegment.id, true);
       setTool("select");
     }
@@ -275,7 +345,7 @@ export default function App() {
     }
   }
 
-  // Import/Export handlers
+  // MARK: Import/Export handlers
   function importJson(file) {
     if (!file) return;
 
@@ -405,7 +475,7 @@ export default function App() {
     };
 
     let nextSegments = [];
-    const nextRawText = uiState.wizardSource === "paste"
+    const nextRawText = uiState.wizardSource === "paste" || uiState.wizardSource === "blank"
       ? uiState.wizardRawText
       : "";
 
@@ -420,6 +490,20 @@ export default function App() {
       if (!cleanForm.replayId && parsed.replayId) {
         cleanForm.replayId = parsed.replayId;
       }
+    }
+
+    if (uiState.wizardSource === "blank" && nextRawText.trim()) {
+      nextSegments = [
+        {
+          id: crypto.randomUUID(),
+          type: "paragraph",
+          title: "Starter text",
+          section: "Starter text",
+          timestamp: "",
+          text: nextRawText.trim(),
+          used: true,
+        },
+      ];
     }
 
     const generatedPages = buildReviewPages({
@@ -438,12 +522,9 @@ export default function App() {
     setTool("select");
     uiState.setWizardOpen(false);
 
-    if (uiState.wizardSource === "json") {
-      fileInputRef.current?.click();
-    }
   }
 
-  // Effects
+  // MARK: Effects
   useEffect(() => {
     const snapshot = cloneSnapshot({ pages, activePageId });
     const history = historyRef.current;
@@ -557,7 +638,7 @@ export default function App() {
             className="btn-primary"
             onClick={() => {
               uiState.setWizardStep(1);
-              uiState.setWizardSource("json");
+              uiState.setWizardSource("blank");
               uiState.setWizardRawText("");
               uiState.setWizardForm({
                 player: "",
@@ -832,6 +913,10 @@ export default function App() {
               setSelectedLayerIds={setSelectedLayerIds}
               duplicateSelectedLayers={duplicateSelectedLayers}
               reorderSelectedLayers={reorderSelectedLayers}
+              deleteSelectedLayers={() => deleteSelectedLayers(() => syncSegmentUsage(pages))}
+              setAllLayerVisibility={setAllLayerVisibility}
+              setAllLayerLocks={setAllLayerLocks}
+              groupSelectedLayers={groupSelectedLayers}
               timestampGutterWidth={uiState.timestampGutterWidth}
               setTimestampGutterWidth={uiState.setTimestampGutterWidth}
               timestampFontSize={uiState.timestampFontSize}

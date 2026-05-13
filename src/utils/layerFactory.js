@@ -9,6 +9,14 @@ const PAGE_TITLE_TEXT_H = 40;
 const PAGE_TITLE_FONT_SIZE = 30;
 const PAGE_TITLE_HORIZONTAL_PADDING = 52;
 const PAGE_TITLE_MAX_W = 920;
+const TEXT_SEGMENT_GROUP_NAME = "Text segments";
+
+export function makeTextSegmentGroupPatch(groupId = uid()) {
+  return {
+    groupId,
+    groupName: TEXT_SEGMENT_GROUP_NAME,
+  };
+}
 
 export function getPageTitleLayout(title = "VOD FEEDBACK") {
   const text = String(title || "VOD FEEDBACK").trim() || "VOD FEEDBACK";

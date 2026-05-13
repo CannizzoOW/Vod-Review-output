@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -45,6 +45,19 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
   function update(patch) {
     setDraft((prev) => ({ ...prev, ...patch }));
   }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key !== "Escape") return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      onClose();
+    }
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
+  }, [onClose]);
 
   function wrapSelection(before, after = before, placeholder = "text") {
     const textarea = textareaRef.current;

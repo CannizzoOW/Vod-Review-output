@@ -22,6 +22,8 @@ export function NewReviewWizard({
       id: "json",
       title: "Import JSON",
       description: "Use a review file exported by the Discord bot.",
+      disabled: true,
+      message: "JSON import will be re-enabled when the bot is operational.",
     },
     {
       id: "paste",
@@ -60,6 +62,19 @@ export function NewReviewWizard({
     });
   }, [wizardSource, parsedPreview.replayId, setWizardForm]);
 
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key !== "Escape") return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      onClose();
+    }
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
+  }, [onClose]);
+
   function updateWizardForm(key, value) {
     setWizardForm((prev) => ({
       ...prev,
@@ -68,12 +83,14 @@ export function NewReviewWizard({
   }
 
   function goNext() {
+    if (wizardSource === "json") return;
+
     if (step === 1) {
       setStep(2);
       return;
     }
 
-    if (step === 2 && wizardSource === "paste") {
+    if (step === 2 && (wizardSource === "paste" || wizardSource === "blank")) {
       setStep(3);
       return;
     }
@@ -95,7 +112,15 @@ export function NewReviewWizard({
       return "Continue";
     }
 
+    if (step === 2 && wizardSource === "blank") {
+      return "Continue";
+    }
+
     return "Create Review";
+  }
+
+  function getStepCount() {
+    return wizardSource === "paste" || wizardSource === "blank" ? 3 : 2;
   }
 
   return (
@@ -110,13 +135,15 @@ export function NewReviewWizard({
             <h2 className="mt-1 text-2xl font-black">
               {step === 1 && "Choose source"}
               {step === 2 && "Review details"}
-              {step === 3 && "Paste review text"}
+              {step === 3 && wizardSource === "paste" && "Paste review text"}
+              {step === 3 && wizardSource === "blank" && "Starter text"}
             </h2>
 
             <p className="mt-2 text-sm text-slate-400">
               {step === 1 && "Start by choosing where the review data should come from."}
               {step === 2 && "Fill in the basic review information before creating the workspace."}
-              {step === 3 && "Paste the Discord review text. The editor will parse and auto-place it."}
+              {step === 3 && wizardSource === "paste" && "Paste the Discord review text. The editor will parse and auto-place it."}
+              {step === 3 && wizardSource === "blank" && "Optionally add starter text. You can edit it later with the full text editor."}
             </p>
           </div>
 
@@ -134,16 +161,27 @@ export function NewReviewWizard({
             {options.map((option) => (
               <button
                 key={option.id}
-                onClick={() => setWizardSource(option.id)}
-                className={`w-full rounded-2xl border p-4 text-left transition ${wizardSource === option.id
+                disabled={option.disabled}
+                onClick={() => {
+                  if (option.disabled) return;
+                  setWizardSource(option.id);
+                }}
+                className={`w-full rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-55 ${wizardSource === option.id
                     ? "border-blue-400 bg-blue-600/20"
-                    : "border-slate-700 bg-slate-950 hover:border-slate-500"
+                    : option.disabled
+                      ? "border-slate-800 bg-slate-950"
+                      : "border-slate-700 bg-slate-950 hover:border-slate-500"
                   }`}
               >
                 <p className="font-black">{option.title}</p>
                 <p className="mt-1 text-sm text-slate-400">
                   {option.description}
                 </p>
+                {option.message && (
+                  <p className="mt-2 rounded-lg border border-yellow-600/40 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-100">
+                    {option.message}
+                  </p>
+                )}
               </button>
             ))}
           </div>
@@ -187,9 +225,9 @@ export function NewReviewWizard({
             <div className="rounded-2xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-400">
               <p className="font-bold text-slate-200">Selected source</p>
               <p className="mt-1">
-                {wizardSource === "json" && "Import JSON after setup."}
+                {wizardSource === "json" && "JSON import will be re-enabled when the bot is operational."}
                 {wizardSource === "paste" && "Paste raw Discord review text after setup."}
-                {wizardSource === "blank" && "Start with a clean empty review."}
+                {wizardSource === "blank" && "Start with a clean review and optional starter text."}
               </p>
             </div>
           </div>
@@ -260,9 +298,26 @@ export function NewReviewWizard({
           </div>
         )}
 
+        {step === 3 && wizardSource === "blank" && (
+          <div className="space-y-3">
+            <RichTextArea
+              label="Starter text"
+              value={wizardRawText}
+              onChange={setWizardRawText}
+              placeholder="Optional notes for the first page..."
+              previewTitle="Formatted preview"
+            />
+
+            <p className="rounded-2xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-400">
+              Leave this empty to create a clean sheet with just the title area.
+              Starter text can be edited later by double-clicking the text layer.
+            </p>
+          </div>
+        )}
+
         <div className="mt-6 flex items-center justify-between">
           <p className="text-xs text-slate-500">
-            Step {step} of {wizardSource === "paste" ? 3 : 2}
+            Step {step} of {getStepCount()}
           </p>
 
           <div className="flex gap-2">
@@ -278,7 +333,7 @@ export function NewReviewWizard({
 
             <button
               className="btn-primary disabled:cursor-not-allowed disabled:opacity-40"
-              disabled={step === 3 && wizardSource === "paste" && !wizardRawText.trim()}
+              disabled={wizardSource === "json" || (step === 3 && wizardSource === "paste" && !wizardRawText.trim())}
               onClick={goNext}
             >
               {getPrimaryButtonText()}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Field } from "../FormFields/Field.jsx";
 import { Label } from "../FormFields/Label.jsx";
 import { RichTextArea } from "../FormFields/RichTextArea.jsx";
@@ -27,6 +27,19 @@ export function EditReviewDetailsModal({
       [key]: value,
     }));
   }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key !== "Escape") return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      onClose();
+    }
+
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
+  }, [onClose]);
 
   function save() {
     setForm((prev) => ({

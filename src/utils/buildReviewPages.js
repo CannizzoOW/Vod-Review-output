@@ -1,5 +1,5 @@
 import { uid } from "./parsing.js";
-import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer } from "./layerFactory.js";
+import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer, makeTextSegmentGroupPatch } from "./layerFactory.js";
 import { makeAutoTextLayerAtY } from "./canvas.js";
 
 export function buildReviewPages({ form, segments = [], safeZones = [] }) {
@@ -26,6 +26,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
 
   let pages = [firstPage];
   let currentPage = firstPage;
+  let currentTextGroup = makeTextSegmentGroupPatch();
   let y = startY;
 
   for (let i = 0; i < segments.length; i++) {
@@ -70,6 +71,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
 
           pages.push(newPage);
           currentPage = newPage;
+          currentTextGroup = makeTextSegmentGroupPatch();
 
           y = startY;
 
@@ -102,6 +104,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
 
       pages.push(newPage);
       currentPage = newPage;
+      currentTextGroup = makeTextSegmentGroupPatch();
 
       y = startY;
 
@@ -112,7 +115,10 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
       });
     }
 
-    currentPage.layers.push(layer);
+    currentPage.layers.push({
+      ...layer,
+      ...currentTextGroup,
+    });
 
     y = layer.y + layer.h + gap;
   }
