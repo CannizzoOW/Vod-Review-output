@@ -1,3 +1,5 @@
+import { getShapeLabel } from "./shapeRenderer.js";
+
 export function estimateTextHeight(text, width, fontSize) {
   const avgCharWidth = fontSize * 0.52;
   const charsPerLine = Math.max(18, Math.floor(width / avgCharWidth));
@@ -23,6 +25,14 @@ export function getLayerListLabel(layer) {
 
   if (layer.kind === "image") {
     return `IMG ${layer.caption || "Image"}`;
+  }
+
+  if (layer.kind === "emoji") {
+    return `EMOJI ${layer.name || "Emoji"}`;
+  }
+
+  if (layer.kind === "shape") {
+    return `S ${getShapeLabel(layer.shapeType)}`;
   }
 
   return layer.kind;

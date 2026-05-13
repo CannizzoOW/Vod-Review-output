@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { PAGE_W, PAGE_H, FALLBACK_TEMPLATE } from "../../utils/constants.js";
 import { SafeZone } from "./SafeZone.jsx";
 import { PlacedLayer } from "./PlacedLayer.jsx";
 
 export function ReviewCanvas({
-  refEl,
+  canvasRef,
   exportRef,
   deselectAll,
   selectSafeZone,
@@ -12,19 +13,24 @@ export function ReviewCanvas({
   templateBackground,
   layers,
   safeZones,
-  selectedLayerId,
   selectedLayerIds,
   selectedSafeZoneId,
   selectLayer,
+  editTextLayer,
   updateLayer,
   updateSafeZone,
   canvasClick,
   tool,
-  zoom,
   gridEnabled,
   lockToRegions,
+  timestampGutterWidth,
+  timestampFontSize,
+  timestampColor,
 }) {
-  const cursor = tool === "insertText" || tool === "insertImage" ? "cursor-crosshair" : "cursor-default";
+  const [snapGuides, setSnapGuides] = useState([]);
+  const cursor = tool === "insertText" || tool === "insertImage" || tool.startsWith("insertShape:")
+    ? "cursor-crosshair"
+    : "cursor-default";
 
   return (
     <motion.div
@@ -35,7 +41,7 @@ export function ReviewCanvas({
     >
       <div
         ref={(node) => {
-          refEl.current = node;
+          canvasRef.current = node;
           exportRef.current = node;
         }}
         onClick={canvasClick}
@@ -84,7 +90,29 @@ export function ReviewCanvas({
             />
           ))}
 
-        {layers.map((layer) => (
+        {snapGuides.map((guide, index) => (
+          <div
+            key={`${guide.axis}-${guide.value}-${index}`}
+            className="pointer-events-none absolute z-30 bg-fuchsia-400 shadow-[0_0_8px_rgba(232,121,249,0.9)]"
+            style={
+              guide.axis === "x"
+                ? {
+                  left: `${(guide.value / PAGE_W) * 100}%`,
+                  top: 0,
+                  width: "1px",
+                  height: "100%",
+                }
+                : {
+                  left: 0,
+                  top: `${(guide.value / PAGE_H) * 100}%`,
+                  width: "100%",
+                  height: "1px",
+                }
+            }
+          />
+        ))}
+
+        {layers.filter((layer) => layer.visible !== false).map((layer) => (
           <PlacedLayer
             key={layer.id}
             layer={layer}
@@ -95,6 +123,12 @@ export function ReviewCanvas({
               selectLayer(layer.id, e.shiftKey);
             }}
             onMove={(patch) => updateLayer(layer.id, patch, { snapToGrid: true })}
+            onEdit={editTextLayer}
+            onGuideChange={setSnapGuides}
+            layers={layers}
+            timestampGutterWidth={timestampGutterWidth}
+            timestampFontSize={timestampFontSize}
+            timestampColor={timestampColor}
           />
         ))}
       </div>

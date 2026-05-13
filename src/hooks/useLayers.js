@@ -28,7 +28,11 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
         let next = { ...layer, ...patch };
 
         if (next.kind === "text" && next.autoFlow) {
-          next.h = estimateTextHeight(next.text, next.w, next.fontSize);
+          next.h = estimateTextHeight(
+            next.text,
+            next.w - (next.timestampGutter || 0),
+            next.fontSize
+          );
         }
 
         if (gridEnabled && shouldSnap) {

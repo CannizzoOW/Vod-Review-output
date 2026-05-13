@@ -10,6 +10,9 @@ export function useUIState() {
   const [layerListOpen, setLayerListOpen] = useState(true);
   const [gridEnabled, setGridEnabled] = useState(false);
   const [lockToRegions, setLockToRegions] = useState(false);
+  const [timestampGutterWidth, setTimestampGutterWidth] = useState(84);
+  const [timestampFontSize, setTimestampFontSize] = useState(13);
+  const [timestampColor, setTimestampColor] = useState("#1d4ed8");
   const [pendingImage, setPendingImage] = useState("");
   const [isExporting, setIsExporting] = useState(false);
 
@@ -47,6 +50,12 @@ export function useUIState() {
     setGridEnabled,
     lockToRegions,
     setLockToRegions,
+    timestampGutterWidth,
+    setTimestampGutterWidth,
+    timestampFontSize,
+    setTimestampFontSize,
+    timestampColor,
+    setTimestampColor,
     pendingImage,
     setPendingImage,
     isExporting,

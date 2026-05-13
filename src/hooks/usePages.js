@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { uid } from "../utils/parsing.js";
-import { makePageTitleLayer, makeFooterLayer } from "../utils/layerFactory.js";
+import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer, syncPageTitleLayers } from "../utils/layerFactory.js";
 
 export function usePages(form) {
   const firstPage = useMemo(
@@ -8,7 +8,7 @@ export function usePages(form) {
       id: uid(),
       title: "VOD FEEDBACK",
       isCoverPage: true,
-      layers: [makePageTitleLayer("VOD FEEDBACK")],
+      layers: [makeDefaultBackgroundRectLayer("VOD FEEDBACK"), makePageTitleLayer("VOD FEEDBACK")],
     }),
     []
   );
@@ -28,12 +28,7 @@ export function usePages(form) {
   }
 
   function updatePageTitleLayer(title = activePage?.title || "VOD FEEDBACK") {
-    const titleLayer = makePageTitleLayer(title);
-
-    updateActivePageLayers((layers) => {
-      const withoutOldTitle = layers.filter((layer) => layer.id !== "page-title");
-      return [...withoutOldTitle, titleLayer];
-    });
+    updateActivePageLayers((layers) => syncPageTitleLayers(layers, title));
   }
 
   function updateFooterLayer() {
@@ -55,13 +50,7 @@ export function usePages(form) {
         return {
           ...page,
           title: nextTitle,
-          layers: page.layers.some((layer) => layer.id === "page-title")
-            ? page.layers.map((layer) =>
-              layer.id === "page-title"
-                ? { ...layer, text: nextTitle }
-                : layer
-            )
-            : [...page.layers, makePageTitleLayer(nextTitle)],
+          layers: syncPageTitleLayers(page.layers, nextTitle),
         };
       })
     );
@@ -123,7 +112,7 @@ export function usePages(form) {
       id: uid(),
       title: pageTitle,
       isCoverPage: false,
-      layers: [makePageTitleLayer(pageTitle)],
+      layers: [makeDefaultBackgroundRectLayer(pageTitle), makePageTitleLayer(pageTitle)],
     };
 
     setPages((prev) => [...prev, page]);

@@ -1,5 +1,5 @@
 import { uid } from "./parsing.js";
-import { makePageTitleLayer, makeFooterLayer } from "./layerFactory.js";
+import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer } from "./layerFactory.js";
 import { makeAutoTextLayerAtY } from "./canvas.js";
 
 export function buildReviewPages({ form, segments = [], safeZones = [] }) {
@@ -12,7 +12,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
     id: uid(),
     title: "VOD FEEDBACK",
     isCoverPage: true,
-    layers: [titleLayer, footerLayer],
+    layers: [makeDefaultBackgroundRectLayer("VOD FEEDBACK"), titleLayer, footerLayer],
   };
 
   if (!mainZone || !segments.length) {
@@ -62,6 +62,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
             title: pageTitle,
             isCoverPage: false,
             layers: [
+              makeDefaultBackgroundRectLayer(pageTitle),
               makePageTitleLayer(pageTitle),
               makeFooterLayer(form),
             ],
@@ -93,6 +94,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
         title: pageTitle,
         isCoverPage: false,
         layers: [
+          makeDefaultBackgroundRectLayer(pageTitle),
           makePageTitleLayer(pageTitle),
           makeFooterLayer(form),
         ],

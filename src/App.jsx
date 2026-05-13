@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { Plus, FileInput, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
-import { toPng } from "html-to-image";
+import { ChevronLeft, ChevronRight, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Redo2, Undo2 } from "lucide-react";
+import { exportAllPages } from "./utils/exportAllPages.js";
 
 // Hooks
 import { useReviewForm } from "./hooks/useReviewForm.js";
@@ -17,12 +17,13 @@ import { RightPanel } from "./components/Panels/RightPanel.jsx";
 import { ReviewCanvas } from "./components/Canvas/ReviewCanvas.jsx";
 import { NewReviewWizard } from "./components/Modals/NewReviewWizard.jsx";
 import { EditReviewDetailsModal } from "./components/Modals/EditReviewDetailsModal.jsx";
+import { TextEditorModal } from "./components/Modals/TextEditorModal.jsx";
 
 // Utils & Constants
 import { HEROES, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, heroTemplates } from "./utils/constants.js";
 import { parseDiscordReview } from "./utils/parsing.js";
 import { buildReviewPages } from "./utils/buildReviewPages.js";
-import { makeImageLayer, makePageTitleLayer } from "./utils/layerFactory.js";
+import { makeEmojiLayer, makeImageLayer, makeShapeLayer, syncPageTitleLayers } from "./utils/layerFactory.js";
 import { autoPlaceInZone } from "./utils/canvas.js";
 
 const PAGE_W = 1080;
@@ -32,20 +33,201 @@ export default function App() {
   const canvasRef = React.useRef(null);
   const exportRef = React.useRef(null);
   const fileInputRef = React.useRef(null);
+  const historyRef = React.useRef({ past: [], future: [], last: null });
+  const skipHistoryRef = React.useRef(false);
+  const [textEditorLayerId, setTextEditorLayerId] = React.useState(null);
 
   // State management
   const { form, setForm, updateForm } = useReviewForm(HEROES[0]);
   const { pages, setPages, activePageId, setActivePageId, activePage, editingPageId, setEditingPageId, updateActivePageLayers, updatePageTitleLayer, updateFooterLayer, renamePage, getPageFallbackTitle, getNextPageTitle, removeActivePage, addPage } = usePages(form);
   const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
   const { selectedLayerId, setSelectedLayerId, selectedLayerIds, setSelectedLayerIds, selectedSafeZoneId, setSelectedSafeZoneId, selectedLayer, tool, setTool, deselectAll, selectLayer, selectSafeZone, deleteSelectedLayers } = useSelection(pages, activePageId, setPages);
-  const { safeZones, setSafeZones, selectedSafeZone, setLayer, setSafeZone, addLayer, removeLayer } = useLayers(pages, activePageId, setPages, useUIState().gridEnabled, useUIState().lockToRegions);
   const uiState = useUIState();
+
+  const {
+    safeZones,
+    setSafeZones,
+    selectedSafeZone,
+    setLayer,
+    setSafeZone,
+    addLayer,
+    removeLayer,
+  } = useLayers(
+    pages,
+    activePageId,
+    setPages,
+    uiState.gridEnabled,
+    uiState.lockToRegions
+  );
 
   const templateBackground = React.useMemo(() => {
     const template = heroTemplates[form.hero]?.template;
     if (!template) return FALLBACK_TEMPLATE;
     return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
   }, [form.hero]);
+
+  const selectedLayers = React.useMemo(
+    () =>
+      (activePage?.layers || []).filter((layer) =>
+        selectedLayerIds.includes(layer.id)
+      ),
+    [activePage?.layers, selectedLayerIds]
+  );
+  const textEditorLayer = React.useMemo(
+    () =>
+      (activePage?.layers || []).find(
+        (layer) => layer.id === textEditorLayerId && layer.kind === "text"
+      ),
+    [activePage?.layers, textEditorLayerId]
+  );
+  const textEditorPreviewBackgroundLayer = React.useMemo(() => {
+    if (textEditorLayer?.id !== "page-title") return null;
+
+    return (activePage?.layers || []).find(
+      (layer) => layer.id === "default-background-rect"
+    ) || null;
+  }, [activePage?.layers, textEditorLayer?.id]);
+  const activePageIndex = pages.findIndex((page) => page.id === activePageId);
+  const canGoPrevPage = activePageIndex > 0;
+  const canGoNextPage = activePageIndex >= 0 && activePageIndex < pages.length - 1;
+
+  function goToPageOffset(offset) {
+    const nextPage = pages[activePageIndex + offset];
+    if (!nextPage) return;
+
+    setActivePageId(nextPage.id);
+    deselectAll();
+  }
+
+  function cloneSnapshot(snapshot) {
+    return JSON.parse(JSON.stringify(snapshot));
+  }
+
+  function restoreSnapshot(snapshot) {
+    skipHistoryRef.current = true;
+    setPages(snapshot.pages);
+    setActivePageId(snapshot.activePageId);
+    deselectAll();
+  }
+
+  function undo() {
+    const history = historyRef.current;
+    const previous = history.past.pop();
+
+    if (!previous) return;
+
+    if (history.last) {
+      history.future.unshift(cloneSnapshot(history.last));
+    }
+
+    history.last = cloneSnapshot(previous);
+    restoreSnapshot(previous);
+  }
+
+  function redo() {
+    const history = historyRef.current;
+    const next = history.future.shift();
+
+    if (!next) return;
+
+    if (history.last) {
+      history.past.push(cloneSnapshot(history.last));
+    }
+
+    history.last = cloneSnapshot(next);
+    restoreSnapshot(next);
+  }
+
+  function duplicateSelectedLayers() {
+    const idsToDuplicate = selectedLayerIds.length
+      ? selectedLayerIds
+      : selectedLayerId
+        ? [selectedLayerId]
+        : [];
+
+    if (!idsToDuplicate.length) return;
+
+    const duplicates = (activePage?.layers || [])
+      .filter((layer) => idsToDuplicate.includes(layer.id))
+      .map((layer) => {
+        const duplicate = {
+          ...layer,
+          id: crypto.randomUUID(),
+          x: layer.x + 20,
+          y: layer.y + 20,
+          locked: false,
+        };
+
+        delete duplicate.sourceSegmentId;
+        return duplicate;
+      });
+
+    if (!duplicates.length) return;
+
+    const nextSelectedIds = duplicates.map((layer) => layer.id);
+
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== activePageId) return page;
+        return {
+          ...page,
+          layers: [...page.layers, ...duplicates],
+        };
+      })
+    );
+
+    setSelectedLayerIds(nextSelectedIds);
+    setSelectedLayerId(nextSelectedIds[nextSelectedIds.length - 1] || null);
+  }
+
+  function reorderSelectedLayers(mode) {
+    const ids = new Set(selectedLayerIds.length ? selectedLayerIds : selectedLayerId ? [selectedLayerId] : []);
+    if (!ids.size) return;
+
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== activePageId) return page;
+
+        const layers = [...page.layers];
+
+        if (mode === "front") {
+          return {
+            ...page,
+            layers: [
+              ...layers.filter((layer) => !ids.has(layer.id)),
+              ...layers.filter((layer) => ids.has(layer.id)),
+            ],
+          };
+        }
+
+        if (mode === "back") {
+          return {
+            ...page,
+            layers: [
+              ...layers.filter((layer) => ids.has(layer.id)),
+              ...layers.filter((layer) => !ids.has(layer.id)),
+            ],
+          };
+        }
+
+        if (mode === "forward") {
+          for (let index = layers.length - 2; index >= 0; index--) {
+            if (!ids.has(layers[index].id) || ids.has(layers[index + 1].id)) continue;
+            [layers[index], layers[index + 1]] = [layers[index + 1], layers[index]];
+          }
+        }
+
+        if (mode === "backward") {
+          for (let index = 1; index < layers.length; index++) {
+            if (!ids.has(layers[index].id) || ids.has(layers[index - 1].id)) continue;
+            [layers[index], layers[index - 1]] = [layers[index - 1], layers[index]];
+          }
+        }
+
+        return { ...page, layers };
+      })
+    );
+  }
 
   // Canvas event handlers
   function canvasClick(e) {
@@ -83,6 +265,12 @@ export default function App() {
 
     if (tool === "insertImage" && uiState.pendingImage) {
       addLayer(makeImageLayer(uiState.pendingImage, Math.round(x), Math.round(y)));
+      setTool("select");
+    }
+
+    if (tool.startsWith("insertShape:")) {
+      const shapeType = tool.replace("insertShape:", "");
+      addLayer(makeShapeLayer(shapeType, Math.round(x), Math.round(y)));
       setTool("select");
     }
   }
@@ -194,58 +382,17 @@ export default function App() {
   }
 
   async function exportPng() {
-    if (!exportRef.current) {
-      alert("Export canvas not found.");
-      return;
-    }
-
-    const wasGridEnabled = uiState.gridEnabled;
-    const wasLockToRegions = uiState.lockToRegions;
-
-    try {
-      uiState.setIsExporting(true);
-      uiState.setGridEnabled(false);
-      uiState.setLockToRegions(false);
-      deselectAll();
-
-      await new Promise((resolve) => requestAnimationFrame(resolve));
-      await new Promise((resolve) => setTimeout(resolve, 50));
-
-      const dataUrl = await toPng(exportRef.current, {
-        cacheBust: true,
-        pixelRatio: 1,
-        canvasWidth: PAGE_W,
-        canvasHeight: PAGE_H,
-        width: PAGE_W,
-        height: PAGE_H,
-        filter: (node) => {
-          return !node.classList?.contains("no-export");
-        },
-        style: {
-          width: `${PAGE_W}px`,
-          height: `${PAGE_H}px`,
-          borderRadius: "0px",
-          boxShadow: "none",
-          outline: "none",
-          transform: "none",
-        },
-      });
-
-      const safeHero = form.hero.replace(/[^\w-]+/g, "-").toLowerCase();
-      const safePlayer = form.player.replace(/[^\w-]+/g, "-").toLowerCase();
-
-      const link = document.createElement("a");
-      link.download = `vod-review-${safePlayer || "player"}-${safeHero || "hero"}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error("PNG export failed:", error);
-      alert("PNG export failed. Check console for details.");
-    } finally {
-      uiState.setGridEnabled(wasGridEnabled);
-      uiState.setLockToRegions(wasLockToRegions);
-      uiState.setIsExporting(false);
-    }
+    await exportAllPages({
+      pages,
+      activePageId,
+      setActivePageId,
+      exportRef,
+      form,
+      uiState,
+      deselectAll,
+      PAGE_W,
+      PAGE_H,
+    });
   }
 
   function finishWizardReview() {
@@ -258,9 +405,12 @@ export default function App() {
     };
 
     let nextSegments = [];
+    const nextRawText = uiState.wizardSource === "paste"
+      ? uiState.wizardRawText
+      : "";
 
     if (uiState.wizardSource === "paste") {
-      const parsed = parseDiscordReview(uiState.wizardRawText);
+      const parsed = parseDiscordReview(nextRawText);
 
       nextSegments = parsed.segments.map((segment) => ({
         ...segment,
@@ -282,6 +432,7 @@ export default function App() {
     setPages(generatedPages);
     setActivePageId(generatedPages[0]?.id);
     setSegments(nextSegments);
+    setRawText(nextRawText);
     deselectAll();
     setSafeZones(DEFAULT_SAFE_ZONES);
     setTool("select");
@@ -293,6 +444,27 @@ export default function App() {
   }
 
   // Effects
+  useEffect(() => {
+    const snapshot = cloneSnapshot({ pages, activePageId });
+    const history = historyRef.current;
+
+    if (skipHistoryRef.current) {
+      skipHistoryRef.current = false;
+      history.last = snapshot;
+      return;
+    }
+
+    if (!history.last) {
+      history.last = snapshot;
+      return;
+    }
+
+    history.past.push(history.last);
+    history.past = history.past.slice(-60);
+    history.future = [];
+    history.last = snapshot;
+  }, [pages, activePageId]);
+
   useEffect(() => {
     updateActivePageLayers((layers) => {
       const hasFooter = layers.some((layer) => layer.id === "footer-info");
@@ -316,14 +488,7 @@ export default function App() {
 
       if (!hasTitle) return layers;
 
-      return layers.map((layer) =>
-        layer.id === "page-title"
-          ? {
-            ...layer,
-            text: activePage?.title || "VOD FEEDBACK",
-          }
-          : layer
-      );
+      return syncPageTitleLayers(layers, activePage?.title || "VOD FEEDBACK");
     });
   }, [activePage?.title, activePageId]);
 
@@ -341,6 +506,25 @@ export default function App() {
       if (e.key === "Escape") {
         e.preventDefault();
         deselectAll();
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+        e.preventDefault();
+        redo();
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        duplicateSelectedLayers();
       }
 
       if (e.key === "Delete" || e.key === "Backspace") {
@@ -401,8 +585,12 @@ export default function App() {
             {uiState.pageTabsOpen ? "Hide Pages" : "Show Pages"}
           </button>
 
-          <button className="btn-secondary" onClick={() => fileInputRef.current?.click()}>
-            <FileInput size={16} /> Import JSON
+          <button className="btn-secondary px-3" onClick={undo} title="Undo (Ctrl+Z)">
+            <Undo2 size={16} /> Undo
+          </button>
+
+          <button className="btn-secondary px-3" onClick={redo} title="Redo (Ctrl+Y)">
+            <Redo2 size={16} /> Redo
           </button>
 
           <input
@@ -451,6 +639,10 @@ export default function App() {
               setSelectedSegmentId={setSelectedSegmentId}
               setTool={setTool}
               autoPlaceAllSegments={() => autoPlaceAllSegments(safeZones)}
+              onAddEmoji={(emoji) => {
+                addLayer(makeEmojiLayer(emoji));
+                setTool("select");
+              }}
               segmentsOpen={uiState.segmentsOpen}
               setSegmentsOpen={uiState.setSegmentsOpen}
             />
@@ -461,6 +653,9 @@ export default function App() {
           <Toolbar
             tool={tool}
             setTool={setTool}
+            selectedLayer={selectedLayer}
+            selectedLayers={selectedLayers}
+            setLayer={setLayer}
             zoom={uiState.zoom}
             setZoom={uiState.setZoom}
             gridEnabled={uiState.gridEnabled}
@@ -546,7 +741,27 @@ export default function App() {
             </div>
           )}
 
-          <div className="flex-1 min-h-0 min-w-0 overflow-scroll">
+          <div className="group/canvasnav relative flex-1 min-h-0 min-w-0 overflow-scroll">
+            {canGoPrevPage && (
+              <button
+                className="absolute left-5 top-1/2 z-40 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700 bg-slate-950/85 text-slate-100 opacity-0 shadow-2xl backdrop-blur transition hover:bg-blue-600 group-hover/canvasnav:opacity-100"
+                onClick={() => goToPageOffset(-1)}
+                title="Previous page"
+              >
+                <ChevronLeft size={28} />
+              </button>
+            )}
+
+            {canGoNextPage && (
+              <button
+                className="absolute right-5 top-1/2 z-40 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700 bg-slate-950/85 text-slate-100 opacity-0 shadow-2xl backdrop-blur transition hover:bg-blue-600 group-hover/canvasnav:opacity-100"
+                onClick={() => goToPageOffset(1)}
+                title="Next page"
+              >
+                <ChevronRight size={28} />
+              </button>
+            )}
+
             <div
               className="flex justify-center"
               style={{
@@ -561,18 +776,19 @@ export default function App() {
                 }}
               >
                 <ReviewCanvas
-                  refEl={canvasRef}
+                  canvasRef={canvasRef}
                   exportRef={exportRef}
                   deselectAll={deselectAll}
                   selectSafeZone={selectSafeZone}
                   isExporting={uiState.isExporting}
                   templateBackground={templateBackground}
-                  layers={activePage.layers}
+                  layers={activePage?.layers || []}
                   safeZones={safeZones}
                   selectedLayerId={selectedLayerId}
                   selectedLayerIds={selectedLayerIds}
                   selectedSafeZoneId={selectedSafeZoneId}
                   selectLayer={selectLayer}
+                  editTextLayer={setTextEditorLayerId}
                   updateLayer={setLayer}
                   updateSafeZone={setSafeZone}
                   canvasClick={canvasClick}
@@ -580,6 +796,9 @@ export default function App() {
                   zoom={uiState.zoom}
                   gridEnabled={uiState.gridEnabled}
                   lockToRegions={uiState.lockToRegions}
+                  timestampGutterWidth={uiState.timestampGutterWidth}
+                  timestampFontSize={uiState.timestampFontSize}
+                  timestampColor={uiState.timestampColor}
                 />
               </div>
             </div>
@@ -601,15 +820,24 @@ export default function App() {
               removeLayer={(id) => removeLayer(id, () => syncSegmentUsage(pages))}
               selectedSafeZone={selectedSafeZone}
               setSafeZone={setSafeZone}
-              activePage={activePage}
+              activePage={activePage || { layers: [] }}
               selectedLayerIds={selectedLayerIds}
               selectLayer={selectLayer}
               setTool={setTool}
               safeZones={safeZones}
+              lockToRegions={uiState.lockToRegions}
               selectedSafeZoneId={selectedSafeZoneId}
               setSelectedSafeZoneId={setSelectedSafeZoneId}
               setSelectedLayerId={setSelectedLayerId}
               setSelectedLayerIds={setSelectedLayerIds}
+              duplicateSelectedLayers={duplicateSelectedLayers}
+              reorderSelectedLayers={reorderSelectedLayers}
+              timestampGutterWidth={uiState.timestampGutterWidth}
+              setTimestampGutterWidth={uiState.setTimestampGutterWidth}
+              timestampFontSize={uiState.timestampFontSize}
+              setTimestampFontSize={uiState.setTimestampFontSize}
+              timestampColor={uiState.timestampColor}
+              setTimestampColor={uiState.setTimestampColor}
               layerListOpen={uiState.layerListOpen}
               setLayerListOpen={uiState.setLayerListOpen}
               safeZonesOpen={uiState.safeZonesOpen}
@@ -671,6 +899,24 @@ export default function App() {
             setTool("select");
           }}
           onClose={() => uiState.setDetailsEditorOpen(false)}
+        />
+      )}
+
+      {textEditorLayer && (
+        <TextEditorModal
+          key={textEditorLayer.id}
+          layer={textEditorLayer}
+          previewBackgroundLayer={textEditorPreviewBackgroundLayer}
+          onClose={() => setTextEditorLayerId(null)}
+          onSave={(layerId, patch) => {
+            if (layerId === "page-title") {
+              renamePage(activePageId, patch.text || "VOD FEEDBACK");
+              setLayer(layerId, patch);
+              return;
+            }
+
+            setLayer(layerId, patch);
+          }}
         />
       )}
     </div>

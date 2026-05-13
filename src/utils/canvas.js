@@ -41,7 +41,11 @@ export function autoPlaceInZone({ segment, zone, layers }) {
   layer.zoneId = zone.id;
   layer.autoFlow = true;
   layer.w = width;
-  layer.h = estimateTextHeight(layer.text, width, layer.fontSize);
+  layer.h = estimateTextHeight(
+    layer.text,
+    width - (layer.timestampGutter || 0),
+    layer.fontSize
+  );
 
   return layer;
 }
@@ -55,7 +59,11 @@ export function makeAutoTextLayerAtY({ segment, zone, y }) {
   layer.zoneId = zone.id;
   layer.autoFlow = true;
   layer.w = width;
-  layer.h = estimateTextHeight(layer.text, width, layer.fontSize);
+  layer.h = estimateTextHeight(
+    layer.text,
+    width - (layer.timestampGutter || 0),
+    layer.fontSize
+  );
 
   return layer;
 }

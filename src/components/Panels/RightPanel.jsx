@@ -1,9 +1,8 @@
-import { Trash2, Type } from "lucide-react";
+import { ArrowDown, ArrowUp, Box, ChevronsDown, ChevronsUp, Copy, Eye, EyeOff, Lock, LockOpen, Smile, Trash2, Type } from "lucide-react";
 import { PanelTitle } from "./PanelTitle.jsx";
-import { Label } from "../FormFields/Label.jsx";
 import { Field } from "../FormFields/Field.jsx";
 import { NumberField } from "../FormFields/NumberField.jsx";
-import { TextArea } from "../FormFields/TextArea.jsx";
+import { ShapeControls } from "./ShapeControls.jsx";
 import { DEFAULT_SAFE_ZONES } from "../../utils/constants.js";
 import { getLayerListLabel } from "../../utils/textUtils.js";
 
@@ -18,10 +17,19 @@ export function RightPanel({
   selectLayer,
   setTool,
   safeZones,
+  lockToRegions,
   selectedSafeZoneId,
   setSelectedSafeZoneId,
   setSelectedLayerId,
   setSelectedLayerIds,
+  duplicateSelectedLayers,
+  reorderSelectedLayers,
+  timestampGutterWidth,
+  setTimestampGutterWidth,
+  timestampFontSize,
+  setTimestampFontSize,
+  timestampColor,
+  setTimestampColor,
   layerListOpen,
   setLayerListOpen,
   safeZonesOpen,
@@ -43,57 +51,61 @@ export function RightPanel({
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <NumberField label="X" value={selectedLayer.x} onChange={(v) => setLayer(selectedLayer.id, { x: v })} />
-            <NumberField label="Y" value={selectedLayer.y} onChange={(v) => setLayer(selectedLayer.id, { y: v })} />
-            <NumberField label="Width" value={selectedLayer.w} onChange={(v) => setLayer(selectedLayer.id, { w: v })} />
-            <NumberField label="Height" value={selectedLayer.h} onChange={(v) => setLayer(selectedLayer.id, { h: v })} />
-          </div>
+          {selectedLayer.locked ? (
+            <div className="rounded-xl bg-slate-950 p-3 text-sm text-slate-400">
+              Unlock this layer to move or resize it.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <NumberField label="X" value={selectedLayer.x} onChange={(v) => setLayer(selectedLayer.id, { x: v })} />
+              <NumberField label="Y" value={selectedLayer.y} onChange={(v) => setLayer(selectedLayer.id, { y: v })} />
+              <NumberField label="Width" value={selectedLayer.w} onChange={(v) => setLayer(selectedLayer.id, { w: v })} />
+              <NumberField label="Height" value={selectedLayer.h} onChange={(v) => setLayer(selectedLayer.id, { h: v })} />
+            </div>
+          )}
 
           {selectedLayer.kind === "text" && (
-            <>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <NumberField label="Font size" value={selectedLayer.fontSize} onChange={(v) => setLayer(selectedLayer.id, { fontSize: v })} />
-                <NumberField label="Weight" value={selectedLayer.weight} onChange={(v) => setLayer(selectedLayer.id, { weight: v })} />
-              </div>
-
-              <div className="mt-3 flex gap-2">
-                <button
-                  className={`tool-btn ${selectedLayer.weight >= 700 ? "tool-btn-active" : ""}`}
-                  onClick={() =>
-                    setLayer(selectedLayer.id, {
-                      weight: selectedLayer.weight >= 700 ? 500 : 900,
-                    })
-                  }
-                >
-                  Bold
-                </button>
-
-                <button
-                  className={`tool-btn ${selectedLayer.italic ? "tool-btn-active" : ""}`}
-                  onClick={() => setLayer(selectedLayer.id, { italic: !selectedLayer.italic })}
-                >
-                  Italic
-                </button>
-
-                <button
-                  className={`tool-btn ${selectedLayer.autoFlow ? "tool-btn-active" : ""}`}
-                  onClick={() =>
-                    setLayer(selectedLayer.id, {
-                      autoFlow: !selectedLayer.autoFlow,
-                    })
-                  }
-                >
-                  Flow
-                </button>
-              </div>
-
-              <TextArea label="Markdown Text" value={selectedLayer.text} onChange={(v) => setLayer(selectedLayer.id, { text: v })} />
-            </>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <NumberField label="Font size" value={selectedLayer.fontSize} onChange={(v) => setLayer(selectedLayer.id, { fontSize: v })} />
+              <NumberField label="Weight" value={selectedLayer.weight} onChange={(v) => setLayer(selectedLayer.id, { weight: v })} />
+            </div>
           )}
 
           {selectedLayer.kind === "image" && (
             <Field label="Caption" value={selectedLayer.caption} onChange={(v) => setLayer(selectedLayer.id, { caption: v })} />
+          )}
+
+          {selectedLayer.kind === "emoji" && (
+            <>
+              <div className="mt-3 rounded-xl bg-slate-950 p-3 text-sm text-slate-300">
+                <p className="font-bold">{selectedLayer.name || "Rivals emoji"}</p>
+                {selectedLayer.href && (
+                  <a
+                    href={selectedLayer.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-1 inline-block text-blue-200 hover:text-blue-100"
+                  >
+                    View source
+                  </a>
+                )}
+              </div>
+
+              <div className="mt-3">
+                <NumberField
+                  label="Rotation"
+                  value={selectedLayer.rotation || 0}
+                  onChange={(v) => setLayer(selectedLayer.id, { rotation: ((v % 360) + 360) % 360 })}
+                />
+              </div>
+            </>
+          )}
+
+          {selectedLayer.kind === "shape" && (
+            <ShapeControls
+              layer={selectedLayer}
+              onChange={(patch) => setLayer(selectedLayer.id, patch)}
+            />
           )}
         </div>
       ) : selectedSafeZone ? (
@@ -113,11 +125,88 @@ export function RightPanel({
             Reset safe zones
           </button>
         </div>
-      ) : (
-        <div className="panel mt-3 text-sm text-slate-400">
-          Select a layer or safe zone to edit it.
+      ) : null}
+
+      <div className="panel mt-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="font-black">Timestamp gutter</p>
+            <p className="h-5 max-w-[190px] truncate text-sm text-slate-400">
+              {timestampGutterWidth > 0
+                ? `On, ${timestampGutterWidth}px`
+                : "Off, inline timestamps"}
+            </p>
+          </div>
+
+          <button
+            className={`relative h-7 w-12 rounded-full border transition ${
+              timestampGutterWidth > 0
+                ? "border-blue-400 bg-blue-600"
+                : "border-slate-700 bg-slate-950"
+            }`}
+            onClick={() => setTimestampGutterWidth(timestampGutterWidth > 0 ? 0 : 84)}
+            title={timestampGutterWidth > 0 ? "Disable timestamp gutter" : "Enable timestamp gutter"}
+          >
+            <span
+              className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                timestampGutterWidth > 0 ? "left-6" : "left-1"
+              }`}
+            />
+          </button>
         </div>
-      )}
+
+        <div className="mt-3 h-6">
+          <input
+            className={`w-full accent-blue-500 transition-opacity ${
+              timestampGutterWidth > 0 ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+            type="range"
+            min="40"
+            max="150"
+            step="2"
+            value={timestampGutterWidth || 84}
+            onChange={(e) => setTimestampGutterWidth(Number(e.target.value))}
+            aria-hidden={timestampGutterWidth <= 0}
+            tabIndex={timestampGutterWidth > 0 ? 0 : -1}
+          />
+        </div>
+
+        <div
+          className={`mt-3 grid grid-cols-2 gap-2 transition-opacity ${
+            timestampGutterWidth > 0 ? "opacity-100" : "pointer-events-none opacity-40"
+          }`}
+        >
+          <label className="block">
+            <span className="mb-1 block text-xs font-black uppercase text-slate-400">
+              Size
+            </span>
+            <input
+              className="w-full accent-blue-500"
+              type="range"
+              min="8"
+              max="28"
+              step="1"
+              value={timestampFontSize}
+              onChange={(e) => setTimestampFontSize(Number(e.target.value))}
+              tabIndex={timestampGutterWidth > 0 ? 0 : -1}
+            />
+            <span className="text-xs text-slate-400">{timestampFontSize}px</span>
+          </label>
+
+          <label className="block">
+            <span className="mb-1 block text-xs font-black uppercase text-slate-400">
+              Color
+            </span>
+            <input
+              className="h-9 w-full cursor-pointer rounded border border-slate-700 bg-transparent p-1"
+              type="color"
+              value={timestampColor}
+              onChange={(e) => setTimestampColor(e.target.value)}
+              tabIndex={timestampGutterWidth > 0 ? 0 : -1}
+            />
+          </label>
+        </div>
+      </div>
 
       <div className="panel mt-3">
         <button
@@ -139,6 +228,46 @@ export function RightPanel({
 
         {layerListOpen && (
           <div className="mt-3 space-y-2">
+            {selectedLayerIds.length > 0 && (
+              <div className="grid grid-cols-5 gap-1 rounded-xl bg-slate-950 p-1">
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={() => reorderSelectedLayers("back")}
+                  title="Send to back"
+                >
+                  <ChevronsDown size={16} />
+                </button>
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={() => reorderSelectedLayers("backward")}
+                  title="Send backward"
+                >
+                  <ArrowDown size={16} />
+                </button>
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={duplicateSelectedLayers}
+                  title="Duplicate selected layer"
+                >
+                  <Copy size={16} />
+                </button>
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={() => reorderSelectedLayers("forward")}
+                  title="Bring forward"
+                >
+                  <ArrowUp size={16} />
+                </button>
+                <button
+                  className="tool-btn h-9 px-0"
+                  onClick={() => reorderSelectedLayers("front")}
+                  title="Bring to front"
+                >
+                  <ChevronsUp size={16} />
+                </button>
+              </div>
+            )}
+
             {activePage.layers.map((layer, index) => (
               <button
                 key={layer.id}
@@ -149,8 +278,46 @@ export function RightPanel({
                 className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
                     ? "bg-blue-600"
                     : "bg-slate-950 hover:bg-slate-800"
-                  }`}
+                  } ${layer.visible === false ? "opacity-45" : ""}`}
               >
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+                  title={layer.visible === false ? "Show layer" : "Hide layer"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLayer(layer.id, { visible: layer.visible === false });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter" && e.key !== " ") return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setLayer(layer.id, { visible: layer.visible === false });
+                  }}
+                >
+                  {layer.visible === false ? <EyeOff size={15} /> : <Eye size={15} />}
+                </span>
+
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+                  title={layer.locked ? "Unlock layer" : "Lock layer"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLayer(layer.id, { locked: !layer.locked });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter" && e.key !== " ") return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setLayer(layer.id, { locked: !layer.locked });
+                  }}
+                >
+                  {layer.locked ? <Lock size={15} /> : <LockOpen size={15} />}
+                </span>
+
                 <span className="mr-2 text-slate-400">{index + 1}.</span>
 
                 {layer.kind === "text" && (
@@ -165,8 +332,20 @@ export function RightPanel({
                   </span>
                 )}
 
+                {layer.kind === "emoji" && (
+                  <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
+                    <Smile size={13} />
+                  </span>
+                )}
+
+                {layer.kind === "shape" && (
+                  <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-slate-700 text-slate-200">
+                    <Box size={13} />
+                  </span>
+                )}
+
                 <span className="truncate">
-                  {getLayerListLabel(layer).replace(/^T\s|^IMG\s/, "")}
+                  {getLayerListLabel(layer).replace(/^T\s|^IMG\s|^EMOJI\s|^S\s/, "")}
                 </span>
 
                 {layer.autoFlow && (
@@ -180,12 +359,19 @@ export function RightPanel({
                     footer
                   </span>
                 )}
+
+                {layer.locked && (
+                  <span className="ml-2 rounded bg-slate-700 px-1.5 py-0.5 text-[10px]">
+                    locked
+                  </span>
+                )}
               </button>
             ))}
           </div>
         )}
       </div>
 
+      {lockToRegions && (
       <div className="panel mt-3">
         <button
           className="flex w-full items-center justify-between text-left"
@@ -224,6 +410,7 @@ export function RightPanel({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

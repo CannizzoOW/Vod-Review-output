@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Field } from "../FormFields/Field.jsx";
 import { Label } from "../FormFields/Label.jsx";
-import { TextArea } from "../FormFields/TextArea.jsx";
+import { RichTextArea } from "../FormFields/RichTextArea.jsx";
 
 export function EditReviewDetailsModal({
   form,
@@ -41,7 +41,7 @@ export function EditReviewDetailsModal({
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 p-6">
-      <div className="w-full max-w-xl rounded-3xl border border-slate-700 bg-[#0f172a] p-6 shadow-2xl">
+      <div className="w-full max-w-5xl rounded-3xl border border-slate-700 bg-[#0f172a] p-6 shadow-2xl">
         <div className="mb-5 flex items-start justify-between">
           <div>
             <p className="text-sm font-black uppercase tracking-wider text-blue-300">
@@ -103,16 +103,13 @@ export function EditReviewDetailsModal({
             </select>
           </label>
 
-          <label className="block">
-            <Label>Raw review text</Label>
-
-            <textarea
-              className="input min-h-52 resize-y font-mono text-xs"
-              value={localRawText}
-              onChange={(e) => setLocalRawText(e.target.value)}
-              placeholder="Edit the pasted Discord review text here..."
-            />
-          </label>
+          <RichTextArea
+            label="Raw review text"
+            value={localRawText}
+            onChange={setLocalRawText}
+            placeholder="Edit the pasted Discord review text here..."
+            previewTitle="Formatted preview"
+          />
 
           <div className="rounded-2xl border border-yellow-600/40 bg-yellow-500/10 p-4 text-sm text-yellow-100">
             <p className="font-bold">Regenerate warning</p>

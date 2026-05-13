@@ -1,4 +1,4 @@
-import { PanelTitle } from "./PanelTitle.jsx";
+import { EmojiPicker } from "./EmojiPicker.jsx";
 
 export function LeftPanel({
   segments,
@@ -6,6 +6,7 @@ export function LeftPanel({
   setSelectedSegmentId,
   setTool,
   autoPlaceAllSegments,
+  onAddEmoji,
   segmentsOpen,
   setSegmentsOpen,
 }) {
@@ -30,15 +31,15 @@ export function LeftPanel({
               className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-300 group-hover:opacity-0" />
 
-            <div className="absolute bottom-0 left-0 p-4">
+            <div className="absolute bottom-0 left-0 p-4 transition-opacity duration-300 group-hover:opacity-0">
               <p className="text-xs font-black uppercase tracking-wider text-blue-300">
                 Programming
               </p>
 
               <p className="text-lg font-black text-white">
-                Cannizzo
+                CannizzoOW
               </p>
             </div>
           </a>
@@ -55,9 +56,9 @@ export function LeftPanel({
               className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-opacity duration-300 group-hover:opacity-0" />
 
-            <div className="absolute bottom-0 left-0 p-4">
+            <div className="absolute bottom-0 left-0 p-4 transition-opacity duration-300 group-hover:opacity-0">
               <p className="text-xs font-black uppercase tracking-wider text-pink-300">
                 Templates
               </p>
@@ -129,6 +130,8 @@ export function LeftPanel({
           ))}
         </div>
       )}
+
+      <EmojiPicker onAddEmoji={onAddEmoji} />
     </div>
   );
 }

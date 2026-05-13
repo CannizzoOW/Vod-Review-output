@@ -7,6 +7,12 @@ export function extractTimestamp(text) {
   return match ? match[1] : "";
 }
 
+export function removeLeadingTimestamp(text) {
+  return text
+    .replace(/^(?:around\s*)?\d{1,2}:\d{2}\s*(?:[-–—:|]\s*)?/i, "")
+    .trim();
+}
+
 export function parseDiscordReview(raw) {
   const lines = raw
     .replace(/\r/g, "")
@@ -23,14 +29,15 @@ export function parseDiscordReview(raw) {
     if (!paragraph.length) return;
 
     const text = paragraph.join(" ");
+    const timestamp = extractTimestamp(text);
 
     segments.push({
       id: uid(),
       type: "paragraph",
       title: section,
       section,
-      timestamp: extractTimestamp(text),
-      text,
+      timestamp,
+      text: timestamp ? removeLeadingTimestamp(text) : text,
       used: false,
     });
 
@@ -74,14 +81,15 @@ export function parseDiscordReview(raw) {
 
     if (isBullet || hasTime) {
       flush();
+      const timestamp = extractTimestamp(clean);
 
       segments.push({
         id: uid(),
         type: "timestamp_note",
         title: section,
         section,
-        timestamp: extractTimestamp(line),
-        text: clean,
+        timestamp,
+        text: timestamp ? removeLeadingTimestamp(clean) : clean,
         used: false,
       });
 

@@ -1,8 +1,8 @@
 import { useMemo, useEffect } from "react";
-import { Plus } from "lucide-react";
 import { parseDiscordReview } from "../../utils/parsing.js";
 import { Field } from "../FormFields/Field.jsx";
 import { Label } from "../FormFields/Label.jsx";
+import { RichTextArea } from "../FormFields/RichTextArea.jsx";
 
 export function NewReviewWizard({
   step,
@@ -100,7 +100,7 @@ export function NewReviewWizard({
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 p-6">
-      <div className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-[#0f172a] p-6 shadow-2xl">
+      <div className="w-full max-w-5xl rounded-3xl border border-slate-700 bg-[#0f172a] p-6 shadow-2xl">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-black uppercase tracking-wider text-blue-300">
@@ -197,16 +197,13 @@ export function NewReviewWizard({
 
         {step === 3 && wizardSource === "paste" && (
           <div className="space-y-3">
-            <label className="block">
-              <Label>Discord review text</Label>
-
-              <textarea
-                className="input min-h-56 resize-y font-mono text-xs"
-                value={wizardRawText}
-                onChange={(e) => setWizardRawText(e.target.value)}
-                placeholder="Paste the full Discord review here..."
-              />
-            </label>
+            <RichTextArea
+              label="Discord review text"
+              value={wizardRawText}
+              onChange={setWizardRawText}
+              placeholder="Paste the full Discord review here..."
+              previewTitle="Formatted preview"
+            />
 
             <div className="rounded-2xl border border-slate-700 bg-slate-950 p-4 text-sm">
               <div className="flex items-center justify-between gap-3">
