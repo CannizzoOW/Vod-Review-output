@@ -70,8 +70,8 @@ export function getPageTitleLayout(title = "VOD FEEDBACK", templateStyle = "") {
   };
 }
 
-export function syncPageTitleLayers(layers, title = "VOD FEEDBACK", templateStyle = "") {
-  const nextRect = makeDefaultBackgroundRectLayer(title, templateStyle);
+export function syncPageTitleLayers(layers, title = "VOD FEEDBACK", templateStyle = "", titleBackgroundColor) {
+  const nextRect = makeDefaultBackgroundRectLayer(title, templateStyle, titleBackgroundColor);
   const nextTitle = makePageTitleLayer(title, templateStyle);
   const hasRect = layers.some((layer) => layer.id === "default-background-rect");
   const hasTitle = layers.some((layer) => layer.id === "page-title");
@@ -276,7 +276,7 @@ export function makeShapeLayer(shapeType = "rectangle", x = 430, y = 610) {
   };
 }
 
-export function makeDefaultBackgroundRectLayer(title = "VOD FEEDBACK", templateStyle = "") {
+export function makeDefaultBackgroundRectLayer(title = "VOD FEEDBACK", templateStyle = "", backgroundColor = "#75819a") {
   const layout = getPageTitleLayout(title, templateStyle);
 
   return {
@@ -290,9 +290,9 @@ export function makeDefaultBackgroundRectLayer(title = "VOD FEEDBACK", templateS
     h: layout.rect.h,
     rotation: 0,
     fillMode: "filled",
-    fillColor: "#75819a",
+    fillColor: backgroundColor,
     fillOpacity: 1,
-    strokeColor: "#75819a",
+    strokeColor: backgroundColor,
     strokeOpacity: 0,
     strokeWidth: 1,
     groupId: PAGE_TITLE_GROUP_ID,

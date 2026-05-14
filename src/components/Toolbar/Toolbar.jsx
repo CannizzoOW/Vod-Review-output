@@ -104,7 +104,15 @@ export function Toolbar({
 
         <label className={`tool-btn ${tool === "insertImage" ? "tool-btn-active" : ""}`}>
           <ImagePlus size={16} /> Insert image
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => loadPendingImage(e.target.files?.[0])} />
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              loadPendingImage(e.target.files?.[0]);
+              e.target.value = "";
+            }}
+          />
         </label>
 
         <div className="group relative border-l border-slate-700 pl-2">

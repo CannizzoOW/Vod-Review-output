@@ -2,6 +2,42 @@ export const RIVALS_EMOJI_SOURCE = "https://rivalskins.com/?type=emoji";
 
 export const RIVALS_EMOJIS = [
   {
+    "id": "3312",
+    "name": "DD DANCE",
+    "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_dd-dance.png",
+    "href": "https://rivalskins.com/item/3312/universal-emoji-dd-dance/"
+  },
+  {
+    "id": "3313",
+    "name": "MONSTER CHUCKLE",
+    "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_monster-chuckle.png",
+    "href": "https://rivalskins.com/item/3313/universal-emoji-monster-chuckle/"
+  },
+  {
+    "id": "3314",
+    "name": "BIG SOFTIE",
+    "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_big-softie.png",
+    "href": "https://rivalskins.com/item/3314/universal-emoji-big-softie/"
+  },
+  {
+    "id": "3315",
+    "name": "DINO-CHOMP",
+    "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_dino-chomp.png",
+    "href": "https://rivalskins.com/item/3315/universal-emoji-dino-chomp/"
+  },
+  {
+    "id": "3316",
+    "name": "DINO APPROVED",
+    "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_dino-approved.png",
+    "href": "https://rivalskins.com/item/3316/universal-emoji-dino-approved/"
+  },
+  {
+    "id": "3317",
+    "name": "CLAWS OUT",
+    "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_claws-out.png",
+    "href": "https://rivalskins.com/item/3317/universal-emoji-claws-out/"
+  },
+  {
     "id": "3208",
     "name": "JUST BUSINESS",
     "src": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_just-business.png",

@@ -30,6 +30,8 @@ import { autoPlaceInZone } from "./utils/canvas.js";
 
 const PAGE_W = 1080;
 const PAGE_H = 1527;
+const FOOTER_SAMPLE_TOP = 1482;
+const FOOTER_SAMPLE_H = 39;
 
 export default function App() {
   const canvasRef = React.useRef(null);
@@ -46,6 +48,7 @@ export default function App() {
     timer: null,
   });
   const [textEditorLayerId, setTextEditorLayerId] = React.useState(null);
+  const [templateFooterColors, setTemplateFooterColors] = React.useState({});
 
   // MARK: State management
   const { form, setForm, updateForm } = useReviewForm(DEFAULT_HERO);
@@ -139,6 +142,12 @@ export default function App() {
 
     if (!template) return FALLBACK_TEMPLATE;
     return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
+  }
+
+  function getPageTitleBackgroundColor(pageIndex) {
+    const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pageIndex);
+
+    return templateFooterColors[getTemplateColorKey(form.hero, pageTemplateStyle)];
   }
 
   function cloneSnapshot(snapshot) {
@@ -638,13 +647,17 @@ export default function App() {
   }
 
   function rotateLayerGroup({ layers, draggedLayer, patch, bounds }) {
-    const rotationDelta = getRotationDelta(draggedLayer.rotation || 0, patch.rotation || 0);
+    const sourceLayers = patch.groupLayers || layers;
+    const sourceDraggedLayer =
+      sourceLayers.find((layer) => layer.id === draggedLayer.id) ||
+      draggedLayer;
+    const rotationDelta = getRotationDelta(sourceDraggedLayer.rotation || 0, patch.rotation || 0);
     const radians = rotationDelta * (Math.PI / 180);
     const cos = Math.cos(radians);
     const sin = Math.sin(radians);
 
     return new Map(
-      layers.map((layer) => {
+      sourceLayers.map((layer) => {
         const layerCenterX = layer.x + layer.w / 2;
         const layerCenterY = layer.y + layer.h / 2;
         const offsetX = layerCenterX - bounds.centerX;
@@ -1035,6 +1048,7 @@ export default function App() {
     setPages((prev) =>
       prev.map((page, pageIndex) => {
         const hasTitle = page.layers.some((layer) => layer.id === "page-title");
+        const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pageIndex);
 
         if (!hasTitle) return page;
 
@@ -1043,12 +1057,52 @@ export default function App() {
           layers: syncPageTitleLayers(
             page.layers,
             page.title || "VOD FEEDBACK",
-            getPageTemplateStyle(form.hero, form.templateStyle, pageIndex)
+            pageTemplateStyle,
+            getPageTitleBackgroundColor(pageIndex)
           ),
         };
       })
     );
-  }, [activePage?.title, activePageId, form.hero, form.templateStyle]);
+  }, [activePage?.title, activePageId, form.hero, form.templateStyle, templateFooterColors]);
+
+  useEffect(() => {
+    const pageTemplateStyles = [
+      ...new Set(
+        pages.map((_, pageIndex) =>
+          getPageTemplateStyle(form.hero, form.templateStyle, pageIndex)
+        )
+      ),
+    ];
+    const missingTemplateStyles = pageTemplateStyles.filter(
+      (templateStyle) => !templateFooterColors[getTemplateColorKey(form.hero, templateStyle)]
+    );
+
+    if (!missingTemplateStyles.length) return undefined;
+
+    let cancelled = false;
+
+    Promise.all(
+      missingTemplateStyles.map(async (templateStyle) => {
+        const template = getHeroTemplatePath(form.hero, templateStyle);
+        const src = template
+          ? `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`
+          : FALLBACK_TEMPLATE;
+
+        return [getTemplateColorKey(form.hero, templateStyle), await sampleTemplateFooterColor(src)];
+      })
+    ).then((entries) => {
+      if (cancelled) return;
+
+      setTemplateFooterColors((prev) => ({
+        ...prev,
+        ...Object.fromEntries(entries),
+      }));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [form.hero, form.templateStyle, pages, templateFooterColors]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -1134,8 +1188,8 @@ export default function App() {
 
   return (
     <div className="app-shell h-screen overflow-hidden bg-[#070b16] text-slate-100">
-      <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-[#0f172a] px-4">
-        <div className="flex items-center gap-3">
+      <header className="flex h-14 items-center gap-5 border-b border-slate-800 bg-[#0f172a] px-4">
+        <div className="flex shrink-0 items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-400/40 bg-blue-600/20 text-lg font-black text-blue-200 shadow-lg">
             R
           </div>
@@ -1147,7 +1201,8 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-4 overflow-hidden">
+          <div className="flex min-w-0 items-center gap-2 overflow-x-auto">
           <button
             className="btn-primary"
             data-tutorial="new-review"
@@ -1176,7 +1231,7 @@ export default function App() {
           </button>
 
           <button
-            className={`btn-secondary ${uiState.pageTabsOpen ? "ring-1 ring-blue-400" : ""}`}
+            className="btn-secondary"
             onClick={() => uiState.setPageTabsOpen(!uiState.pageTabsOpen)}
           >
             {uiState.pageTabsOpen ? "Hide Pages" : "Show Pages"}
@@ -1190,6 +1245,23 @@ export default function App() {
             <Redo2 size={16} /> Redo
           </button>
 
+          <button className="btn-secondary" onClick={saveDraft}>
+            <Save size={16} /> Save draft
+          </button>
+
+          <button className="btn-secondary" onClick={loadDraft}>
+            <RefreshCcw size={16} /> Load draft
+          </button>
+
+          <button
+            className="btn-secondary px-3"
+            onClick={tutorial.startTutorial}
+            title="Restart tutorial"
+          >
+            <HelpCircle size={16} /> Tutorial
+          </button>
+          </div>
+
           <input
             ref={fileInputRef}
             type="file"
@@ -1201,15 +1273,7 @@ export default function App() {
             }}
           />
 
-          <div className="flex gap-2" data-tutorial="export-actions">
-            <button className="btn-secondary" onClick={saveDraft}>
-              <Save size={16} /> Save draft
-            </button>
-
-            <button className="btn-secondary" onClick={loadDraft}>
-              <RefreshCcw size={16} /> Load draft
-            </button>
-
+          <div className="flex shrink-0 gap-2" data-tutorial="export-actions">
             <button className="btn-primary" onClick={exportPng}>
               <Download size={16} /> Export PNG
             </button>
@@ -1218,14 +1282,6 @@ export default function App() {
               <Printer size={16} /> Print
             </button>
           </div>
-
-          <button
-            className="btn-secondary px-3"
-            onClick={tutorial.startTutorial}
-            title="Restart tutorial"
-          >
-            <HelpCircle size={16} /> Tutorial
-          </button>
         </div>
       </header>
 
@@ -1413,6 +1469,9 @@ export default function App() {
                   timestampFontSize={uiState.timestampFontSize}
                   timestampColor={uiState.timestampColor}
                 />
+                <p className="mt-4 text-center text-xs font-semibold text-slate-400">
+                  Copyright (c) 2026 Cannizzo. This tool is created for Pathfinders and is not affiliated with Marvel Rivals, NetEase, or any official Marvel Rivals service.
+                </p>
               </div>
             </div>
           </div>
@@ -1600,4 +1659,73 @@ export default function App() {
       )}
     </div>
   );
+}
+
+function sampleTemplateFooterColor(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+
+    image.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d", { willReadFrequently: true });
+
+        if (!context) {
+          resolve("#75819a");
+          return;
+        }
+
+        canvas.width = image.naturalWidth || PAGE_W;
+        canvas.height = image.naturalHeight || PAGE_H;
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        const sampleY = Math.round((FOOTER_SAMPLE_TOP / PAGE_H) * canvas.height);
+        const sampleH = Math.max(1, Math.round((FOOTER_SAMPLE_H / PAGE_H) * canvas.height));
+        const imageData = context.getImageData(0, sampleY, canvas.width, sampleH);
+        const data = imageData.data;
+        let red = 0;
+        let green = 0;
+        let blue = 0;
+        let count = 0;
+
+        for (let index = 0; index < data.length; index += 4) {
+          const alpha = data[index + 3];
+
+          if (alpha < 16) continue;
+
+          red += data[index];
+          green += data[index + 1];
+          blue += data[index + 2];
+          count += 1;
+        }
+
+        if (!count) {
+          resolve("#75819a");
+          return;
+        }
+
+        resolve(rgbToHex(
+          Math.round(red / count),
+          Math.round(green / count),
+          Math.round(blue / count)
+        ));
+      } catch (error) {
+        console.warn("Could not sample template footer color:", error);
+        resolve("#75819a");
+      }
+    };
+
+    image.onerror = () => resolve("#75819a");
+    image.src = src;
+  });
+}
+
+function getTemplateColorKey(hero, templateStyle) {
+  return `${hero || ""}::${templateStyle || ""}`;
+}
+
+function rgbToHex(red, green, blue) {
+  return `#${[red, green, blue]
+    .map((value) => value.toString(16).padStart(2, "0"))
+    .join("")}`;
 }

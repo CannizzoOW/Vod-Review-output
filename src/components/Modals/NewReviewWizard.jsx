@@ -3,7 +3,7 @@ import { parseDiscordReview } from "../../utils/parsing.js";
 import { Field } from "../FormFields/Field.jsx";
 import { Label } from "../FormFields/Label.jsx";
 import { RichTextArea } from "../FormFields/RichTextArea.jsx";
-import { getDefaultTemplateStyle, getHeroTemplateStyles } from "../../utils/constants.js";
+import { FALLBACK_TEMPLATE, getDefaultTemplateStyle, getHeroTemplatePath, getHeroTemplateStyles } from "../../utils/constants.js";
 
 export function NewReviewWizard({
   step,
@@ -49,6 +49,15 @@ export function NewReviewWizard({
     return parseDiscordReview(wizardRawText || "");
   }, [wizardSource, wizardRawText]);
   const templateStyles = getHeroTemplateStyles(wizardForm.hero);
+  const selectedTemplateStyle = wizardForm.templateStyle || getDefaultTemplateStyle(wizardForm.hero);
+  const selectedTemplateLabel =
+    templateStyles.find((style) => style.value === selectedTemplateStyle)?.label ||
+    selectedTemplateStyle ||
+    "Default";
+  const selectedTemplatePath = getHeroTemplatePath(wizardForm.hero, selectedTemplateStyle);
+  const selectedTemplatePreview = selectedTemplatePath
+    ? `${import.meta.env.BASE_URL}${selectedTemplatePath.replace(/^\/+/, "")}`
+    : FALLBACK_TEMPLATE;
 
   useEffect(() => {
     if (wizardSource !== "paste") return;
@@ -198,64 +207,85 @@ export function NewReviewWizard({
         )}
 
         {step === 2 && (
-          <div className="space-y-3" data-tutorial="wizard-template">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field
-                label="Player"
-                value={wizardForm.player}
-                onChange={(v) => updateWizardForm("player", v)}
-              />
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]" data-tutorial="wizard-template">
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field
+                  label="Player"
+                  value={wizardForm.player}
+                  onChange={(v) => updateWizardForm("player", v)}
+                />
+
+                <Field
+                  label="Coach"
+                  value={wizardForm.reviewer}
+                  onChange={(v) => updateWizardForm("reviewer", v)}
+                />
+              </div>
 
               <Field
-                label="Coach"
-                value={wizardForm.reviewer}
-                onChange={(v) => updateWizardForm("reviewer", v)}
+                label="Replay ID"
+                value={wizardForm.replayId}
+                onChange={(v) => updateWizardForm("replayId", v)}
               />
-            </div>
 
-            <Field
-              label="Replay ID"
-              value={wizardForm.replayId}
-              onChange={(v) => updateWizardForm("replayId", v)}
-            />
-
-            <label className="block">
-              <Label>Hero template</Label>
-              <select
-                className="input"
-                value={wizardForm.hero}
-                onChange={(e) => updateHero(e.target.value)}
-              >
-                {heroes.map((hero) => (
-                  <option key={hero}>{hero}</option>
-                ))}
-              </select>
-            </label>
-
-            {templateStyles.length > 1 && (
               <label className="block">
-                <Label>Template style</Label>
+                <Label>Hero template</Label>
                 <select
                   className="input"
-                  value={wizardForm.templateStyle || getDefaultTemplateStyle(wizardForm.hero)}
-                  onChange={(e) => updateWizardForm("templateStyle", e.target.value)}
+                  value={wizardForm.hero}
+                  onChange={(e) => updateHero(e.target.value)}
                 >
-                  {templateStyles.map((style) => (
-                    <option key={style.value} value={style.value}>
-                      {style.label}
-                    </option>
+                  {heroes.map((hero) => (
+                    <option key={hero}>{hero}</option>
                   ))}
                 </select>
               </label>
-            )}
 
-            <div className="rounded-2xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-400">
-              <p className="font-bold text-slate-200">Selected source</p>
-              <p className="mt-1">
-                {wizardSource === "json" && "JSON import will be re-enabled when the bot is operational."}
-                {wizardSource === "paste" && "Paste raw Discord review text after setup."}
-                {wizardSource === "blank" && "Start with a clean review and optional starter text."}
-              </p>
+              {templateStyles.length > 1 && (
+                <label className="block">
+                  <Label>Template style</Label>
+                  <select
+                    className="input"
+                    value={selectedTemplateStyle}
+                    onChange={(e) => updateWizardForm("templateStyle", e.target.value)}
+                  >
+                    {templateStyles.map((style) => (
+                      <option key={style.value} value={style.value}>
+                        {style.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+
+              <div className="rounded-2xl border border-slate-700 bg-slate-950 p-4 text-sm text-slate-400">
+                <p className="font-bold text-slate-200">Selected source</p>
+                <p className="mt-1">
+                  {wizardSource === "json" && "JSON import will be re-enabled when the bot is operational."}
+                  {wizardSource === "paste" && "Paste raw Discord review text after setup."}
+                  {wizardSource === "blank" && "Start with a clean review and optional starter text."}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3">
+              <div className="mb-2">
+                <p className="text-sm font-black text-slate-100">{wizardForm.hero}</p>
+                <p className="text-xs text-slate-400">{selectedTemplateLabel}</p>
+              </div>
+
+              <div className="aspect-[1080/1527] overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+                <img
+                  key={`${wizardForm.hero}-${selectedTemplateStyle}`}
+                  src={selectedTemplatePreview}
+                  alt={`${wizardForm.hero} ${selectedTemplateLabel} template preview`}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = FALLBACK_TEMPLATE;
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}

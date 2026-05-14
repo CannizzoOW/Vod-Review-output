@@ -142,6 +142,9 @@ export function PlacedLayer({
       pointerAngle,
       rotation: layer.rotation || 0,
       groupBounds: selectedLayers.length > 1 ? getLayerBounds(selectedLayers) : null,
+      groupLayers: selectedLayers.length > 1
+        ? selectedLayers.map((selectedLayer) => ({ ...selectedLayer }))
+        : null,
     };
 
     window.addEventListener("pointermove", move);
@@ -185,6 +188,7 @@ export function PlacedLayer({
       onMove({
         rotation: normalizeDegrees(rotation),
         ...(start.groupBounds ? { groupBounds: start.groupBounds } : {}),
+        ...(start.groupLayers ? { groupLayers: start.groupLayers } : {}),
       });
     }
   }
@@ -453,7 +457,8 @@ export function PlacedLayer({
             <img
               src={layer.src}
               alt={layer.name || "Screenshot"}
-              className="h-full w-full object-contain"
+              className="h-full w-full object-fill"
+              style={{ width: "100%", height: "100%", objectFit: "fill" }}
               draggable={false}
             />
           ) : (
@@ -479,7 +484,8 @@ export function PlacedLayer({
         <img
           src={layer.src}
           alt={layer.name || "Rivals emoji"}
-          className="h-full w-full object-contain"
+          className="h-full w-full object-fill"
+          style={{ width: "100%", height: "100%", objectFit: "fill" }}
           draggable={false}
         />
       )}

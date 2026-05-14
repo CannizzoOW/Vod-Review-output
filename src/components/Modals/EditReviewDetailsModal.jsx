@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Field } from "../FormFields/Field.jsx";
 import { Label } from "../FormFields/Label.jsx";
 import { RichTextArea } from "../FormFields/RichTextArea.jsx";
-import { DEFAULT_HERO, getDefaultTemplateStyle, getHeroTemplateStyles } from "../../utils/constants.js";
+import { DEFAULT_HERO, FALLBACK_TEMPLATE, getDefaultTemplateStyle, getHeroTemplatePath, getHeroTemplateStyles } from "../../utils/constants.js";
 
 export function EditReviewDetailsModal({
   form,
@@ -23,6 +23,15 @@ export function EditReviewDetailsModal({
   });
   const [localRawText, setLocalRawText] = useState(rawText || "");
   const templateStyles = getHeroTemplateStyles(localForm.hero);
+  const selectedTemplateStyle = localForm.templateStyle || getDefaultTemplateStyle(localForm.hero);
+  const selectedTemplateLabel =
+    templateStyles.find((style) => style.value === selectedTemplateStyle)?.label ||
+    selectedTemplateStyle ||
+    "Default";
+  const selectedTemplatePath = getHeroTemplatePath(localForm.hero, selectedTemplateStyle);
+  const selectedTemplatePreview = selectedTemplatePath
+    ? `${import.meta.env.BASE_URL}${selectedTemplatePath.replace(/^\/+/, "")}`
+    : FALLBACK_TEMPLATE;
 
   function updateField(key, value) {
     setLocalForm((prev) => ({
@@ -90,60 +99,83 @@ export function EditReviewDetailsModal({
           </button>
         </div>
 
-        <div className="space-y-3">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field
-              label="Player"
-              value={localForm.player}
-              onChange={(v) => updateField("player", v)}
-            />
+        <div className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field
+                  label="Player"
+                  value={localForm.player}
+                  onChange={(v) => updateField("player", v)}
+                />
 
-            <Field
-              label="Coach"
-              value={localForm.reviewer}
-              onChange={(v) => updateField("reviewer", v)}
-            />
+                <Field
+                  label="Coach"
+                  value={localForm.reviewer}
+                  onChange={(v) => updateField("reviewer", v)}
+                />
+              </div>
+
+              <Field
+                label="Replay ID"
+                value={localForm.replayId}
+                onChange={(v) => updateField("replayId", v)}
+              />
+
+              <label className="block">
+                <Label>Hero template</Label>
+
+                <select
+                  className="input"
+                  value={localForm.hero}
+                  onChange={(e) => updateHero(e.target.value)}
+                >
+                  {heroes.map((hero) => (
+                    <option key={hero}>
+                      {hero}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {templateStyles.length > 1 && (
+                <label className="block">
+                  <Label>Template style</Label>
+
+                  <select
+                    className="input"
+                    value={selectedTemplateStyle}
+                    onChange={(e) => updateField("templateStyle", e.target.value)}
+                  >
+                    {templateStyles.map((style) => (
+                      <option key={style.value} value={style.value}>
+                        {style.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-slate-700 bg-slate-950 p-3">
+              <div className="mb-2">
+                <p className="text-sm font-black text-slate-100">{localForm.hero}</p>
+                <p className="text-xs text-slate-400">{selectedTemplateLabel}</p>
+              </div>
+
+              <div className="aspect-[1080/1527] overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+                <img
+                  key={`${localForm.hero}-${selectedTemplateStyle}`}
+                  src={selectedTemplatePreview}
+                  alt={`${localForm.hero} ${selectedTemplateLabel} template preview`}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = FALLBACK_TEMPLATE;
+                  }}
+                />
+              </div>
+            </div>
           </div>
-
-          <Field
-            label="Replay ID"
-            value={localForm.replayId}
-            onChange={(v) => updateField("replayId", v)}
-          />
-
-          <label className="block">
-            <Label>Hero template</Label>
-
-            <select
-              className="input"
-              value={localForm.hero}
-              onChange={(e) => updateHero(e.target.value)}
-            >
-              {heroes.map((hero) => (
-                <option key={hero}>
-                  {hero}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {templateStyles.length > 1 && (
-            <label className="block">
-              <Label>Template style</Label>
-
-              <select
-                className="input"
-                value={localForm.templateStyle || getDefaultTemplateStyle(localForm.hero)}
-                onChange={(e) => updateField("templateStyle", e.target.value)}
-              >
-                {templateStyles.map((style) => (
-                  <option key={style.value} value={style.value}>
-                    {style.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
 
           <RichTextArea
             label="Raw review text"
