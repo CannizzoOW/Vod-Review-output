@@ -1,0 +1,62 @@
+export const TUTORIAL_STORAGE_KEY = "rivals-vod-review-tutorial-complete";
+
+export const tutorialSteps = [
+  {
+    id: "new-review",
+    target: "new-review",
+    title: "Start a review",
+    body: "Create a new review from here. This opens the setup wizard where the reviewer chooses the source, hero, and template.",
+    placement: "bottom",
+    spotlightOffsetY: -2,
+  },
+  {
+    id: "wizard-source",
+    target: "wizard-source",
+    title: "Choose the source",
+    body: "Start blank or paste a Discord review. JSON import is intentionally disabled until the bot workflow is ready.",
+    placement: "right",
+  },
+  {
+    id: "wizard-template",
+    target: "wizard-template",
+    title: "Pick hero and template",
+    body: "Select the hero and template style. Page 2 and onward will automatically use the matching continuation template when it exists.",
+    placement: "right",
+  },
+  {
+    id: "wizard-text",
+    target: "wizard-text",
+    title: "Add review text",
+    body: "Paste the review text or add starter notes. The editor can turn pasted review text into reusable segments.",
+    placement: "left",
+  },
+  {
+    id: "segments",
+    target: "segments-panel",
+    title: "Use text segments",
+    body: "Segments live here. Select one, then click the canvas to place it, or auto-place all detected segments.",
+    placement: "right",
+  },
+  {
+    id: "canvas",
+    target: "review-canvas",
+    title: "Edit on the canvas",
+    body: "Drag, resize, rotate, group, and double-click text layers to edit them with the full text editor.",
+    placement: "left",
+  },
+  {
+    id: "layers",
+    target: "layer-list",
+    title: "Manage layers",
+    body: "Use the layer list to hide, lock, group, rename, reorder, and select nested folders like a design tool.",
+    placement: "left",
+  },
+  {
+    id: "export",
+    target: "export-actions",
+    title: "Export or print",
+    body: "Export PNGs for the active page or use Print for all pages. If you use Print make sure to enable 'background graphics' and select 'Save as PDF' in the Destination selection.",
+    placement: "bottom",
+    spotlightOffsetY: -2,
+  },
+];

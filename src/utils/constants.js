@@ -101,6 +101,32 @@ export const DEFAULT_SAFE_ZONES = [
   },
 ];
 
+const PAGE_TWO_SAFE_ZONE_Y = 255;
+
+export function isPageTwoTemplateStyle(templateStyle = "") {
+  return /(?:^|-)page-2(?:$|-)/i.test(String(templateStyle || ""));
+}
+
+export function getSafeZonesForTemplateStyle(safeZones = DEFAULT_SAFE_ZONES, templateStyle = "") {
+  if (!isPageTwoTemplateStyle(templateStyle)) {
+    return safeZones;
+  }
+
+  return safeZones.map((zone) => {
+    if (zone.id !== "mainText" && zone.id !== "rightMedia") {
+      return zone;
+    }
+
+    const yDelta = zone.y - PAGE_TWO_SAFE_ZONE_Y;
+
+    return {
+      ...zone,
+      y: PAGE_TWO_SAFE_ZONE_Y,
+      h: zone.h + Math.max(0, yDelta),
+    };
+  });
+}
+
 export const SAMPLE_REVIEW = `Replay ID: 10903088673
 
 Abilities

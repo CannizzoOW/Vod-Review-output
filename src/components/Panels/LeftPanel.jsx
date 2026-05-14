@@ -72,7 +72,7 @@ export function LeftPanel({
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between gap-2">
+      <div className="mt-3 flex items-center justify-between gap-2" data-tutorial="segments-panel">
         <button
           className="flex min-w-0 flex-1 items-center justify-between rounded-xl px-2 py-1 text-left hover:bg-slate-800"
           onClick={() => setSegmentsOpen((v) => !v)}
@@ -130,7 +130,6 @@ export function LeftPanel({
           ))}
         </div>
       )}
-
       <EmojiPicker onAddEmoji={onAddEmoji} />
     </div>
   );

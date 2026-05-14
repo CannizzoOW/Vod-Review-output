@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ChevronLeft, ChevronRight, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Printer, Redo2, Undo2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, HelpCircle, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Printer, Redo2, Undo2 } from "lucide-react";
 import { exportAllPages } from "./utils/exportAllPages.js";
 
 // MARK: Hooks
@@ -9,6 +9,7 @@ import { useSegments } from "./hooks/useSegments.js";
 import { useSelection } from "./hooks/useSelection.js";
 import { useLayers } from "./hooks/useLayers.js";
 import { useUIState } from "./hooks/useUIState.js";
+import { useTutorial } from "./hooks/useTutorial.js";
 
 // MARK: Components
 import { Toolbar } from "./components/Toolbar/Toolbar.jsx";
@@ -18,9 +19,10 @@ import { ReviewCanvas } from "./components/Canvas/ReviewCanvas.jsx";
 import { NewReviewWizard } from "./components/Modals/NewReviewWizard.jsx";
 import { EditReviewDetailsModal } from "./components/Modals/EditReviewDetailsModal.jsx";
 import { TextEditorModal } from "./components/Modals/TextEditorModal.jsx";
+import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
 
 // MARK: Utils & Constants
-import { HEROES, DEFAULT_HERO, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, getDefaultTemplateStyle, getHeroTemplatePath, getHeroTemplateStyles, getPageTemplateStyle } from "./utils/constants.js";
+import { HEROES, DEFAULT_HERO, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, getDefaultTemplateStyle, getHeroTemplatePath, getPageTemplateStyle, getSafeZonesForTemplateStyle } from "./utils/constants.js";
 import { parseDiscordReview } from "./utils/parsing.js";
 import { buildReviewPages } from "./utils/buildReviewPages.js";
 import { makeEmojiLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
@@ -37,6 +39,12 @@ export default function App() {
   const printExportRef = React.useRef(null);
   const historyRef = React.useRef({ past: [], future: [], last: null });
   const skipHistoryRef = React.useRef(false);
+  const historyGestureRef = React.useRef({
+    active: false,
+    committing: false,
+    before: null,
+    timer: null,
+  });
   const [textEditorLayerId, setTextEditorLayerId] = React.useState(null);
 
   // MARK: State management
@@ -45,6 +53,12 @@ export default function App() {
   const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
   const { selectedLayerId, setSelectedLayerId, selectedLayerIds, setSelectedLayerIds, selectedSafeZoneId, setSelectedSafeZoneId, selectedLayer, tool, setTool, deselectAll, selectLayer, selectSafeZone, deleteSelectedLayers } = useSelection(pages, activePageId, setPages);
   const uiState = useUIState();
+  const tutorial = useTutorial();
+  const activePageIndex = pages.findIndex((page) => page.id === activePageId);
+  const activePageTemplateStyle = React.useMemo(
+    () => getPageTemplateStyle(form.hero, form.templateStyle, Math.max(0, activePageIndex)),
+    [activePageIndex, form.hero, form.templateStyle]
+  );
 
   const {
     safeZones,
@@ -59,26 +73,19 @@ export default function App() {
     activePageId,
     setPages,
     uiState.gridEnabled,
-    uiState.lockToRegions
+    uiState.lockToRegions,
+    activePageTemplateStyle
   );
 
-  const activePageTemplateStyle = React.useMemo(
-    () => getPageTemplateStyle(form.hero, form.templateStyle, Math.max(0, pages.findIndex((page) => page.id === activePageId))),
-    [activePageId, form.hero, form.templateStyle, pages]
+  const activeSafeZones = React.useMemo(
+    () => getSafeZonesForTemplateStyle(safeZones, activePageTemplateStyle),
+    [activePageTemplateStyle, safeZones]
   );
   const templateBackground = React.useMemo(() => {
     const template = getHeroTemplatePath(form.hero, activePageTemplateStyle);
     if (!template) return FALLBACK_TEMPLATE;
     return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
   }, [activePageTemplateStyle, form.hero]);
-  const activePageTemplateLabel = React.useMemo(() => {
-    const style = getHeroTemplateStyles(form.hero).find((templateStyle) =>
-      templateStyle.value === activePageTemplateStyle
-    );
-
-    return style?.label || activePageTemplateStyle;
-  }, [activePageTemplateStyle, form.hero]);
-
   const selectedLayers = React.useMemo(
     () =>
       (activePage?.layers || []).filter((layer) =>
@@ -115,7 +122,6 @@ export default function App() {
 
     return null;
   }, [activePage?.layers, textEditorLayer?.groupId, textEditorLayer?.id, textEditorLayer?.parentGroupId]);
-  const activePageIndex = pages.findIndex((page) => page.id === activePageId);
   const canGoPrevPage = activePageIndex > 0;
   const canGoNextPage = activePageIndex >= 0 && activePageIndex < pages.length - 1;
 
@@ -144,6 +150,44 @@ export default function App() {
     setPages(snapshot.pages);
     setActivePageId(snapshot.activePageId);
     deselectAll();
+  }
+
+  function beginCanvasInteraction() {
+    const gesture = historyGestureRef.current;
+
+    if (gesture.active) return;
+    if (gesture.timer) {
+      clearTimeout(gesture.timer);
+      gesture.timer = null;
+    }
+
+    gesture.active = true;
+    gesture.committing = false;
+    gesture.before = cloneSnapshot(
+      historyRef.current.last || { pages, activePageId }
+    );
+  }
+
+  function endCanvasInteraction() {
+    const gesture = historyGestureRef.current;
+
+    if (!gesture.active) return;
+
+    gesture.active = false;
+    gesture.committing = true;
+    gesture.timer = setTimeout(() => {
+      const history = historyRef.current;
+
+      if (gesture.before && history.last) {
+        history.past.push(cloneSnapshot(gesture.before));
+        history.past = history.past.slice(-60);
+        history.future = [];
+      }
+
+      gesture.before = null;
+      gesture.committing = false;
+      gesture.timer = null;
+    }, 0);
   }
 
   function undo() {
@@ -409,10 +453,10 @@ export default function App() {
 
   function getPlacementZone(x, y, preferredZoneId = "mainText") {
     return (
-      safeZones.find((zone) => x >= zone.x && x <= zone.x + zone.w && y >= zone.y && y <= zone.y + zone.h) ||
-      safeZones.find((zone) => zone.id === preferredZoneId) ||
-      safeZones.find((zone) => zone.id === "mainText") ||
-      safeZones[0]
+      activeSafeZones.find((zone) => x >= zone.x && x <= zone.x + zone.w && y >= zone.y && y <= zone.y + zone.h) ||
+      activeSafeZones.find((zone) => zone.id === preferredZoneId) ||
+      activeSafeZones.find((zone) => zone.id === "mainText") ||
+      activeSafeZones[0]
     );
   }
 
@@ -482,7 +526,7 @@ export default function App() {
 
         if (selectedLayersOnPage.length < 2) return page;
 
-        const groupBounds = getLayerBounds(selectedLayersOnPage);
+        const groupBounds = patch.groupBounds || getLayerBounds(selectedLayersOnPage);
 
         if (isGroupResize) {
           const transformedLayers = resizeLayerGroup({
@@ -650,11 +694,11 @@ export default function App() {
       }
 
       const nearestZone =
-        safeZones.find((z) => {
+        activeSafeZones.find((z) => {
           return x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h;
         }) ||
-        safeZones.find((z) => z.id === "mainText") ||
-        safeZones[0];
+        activeSafeZones.find((z) => z.id === "mainText") ||
+        activeSafeZones[0];
 
       const layer = autoPlaceInZone({
         segment: selectedSegment,
@@ -833,6 +877,9 @@ export default function App() {
   }
 
   async function exportPng() {
+    tutorial.closeTutorial(false);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     await exportAllPages({
       pages,
       activePageId,
@@ -861,6 +908,7 @@ export default function App() {
     };
 
     try {
+      tutorial.closeTutorial(false);
       uiState.setIsExporting(true);
       uiState.setGridEnabled(false);
       uiState.setLockToRegions(false);
@@ -950,6 +998,11 @@ export default function App() {
       return;
     }
 
+    if (historyGestureRef.current.active || historyGestureRef.current.committing) {
+      history.last = snapshot;
+      return;
+    }
+
     if (!history.last) {
       history.last = snapshot;
       return;
@@ -1013,7 +1066,7 @@ export default function App() {
         deselectAll();
       }
 
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      if ((e.ctrlKey || e.metaKey || e.altKey) && e.key.toLowerCase() === "z") {
         e.preventDefault();
         if (e.shiftKey) {
           redo();
@@ -1042,6 +1095,43 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedLayerId, selectedLayerIds, activePageId, pages]);
 
+  useEffect(() => {
+    if (!tutorial.isTutorialOpen) return;
+
+    const step = tutorial.tutorialSteps[tutorial.tutorialStepIndex];
+    if (!step) return;
+
+    if (step.id === "wizard-source") {
+      uiState.setWizardStep(1);
+      uiState.setWizardOpen(true);
+    }
+
+    if (step.id === "wizard-template") {
+      uiState.setWizardStep(2);
+      uiState.setWizardOpen(true);
+    }
+
+    if (step.id === "wizard-text") {
+      uiState.setWizardSource("paste");
+      uiState.setWizardStep(3);
+      uiState.setWizardOpen(true);
+    }
+
+    if (["segments", "canvas", "layers", "export"].includes(step.id)) {
+      uiState.setWizardOpen(false);
+    }
+
+    if (step.id === "segments") {
+      uiState.setLeftPanelOpen(true);
+      uiState.setSegmentsOpen(true);
+    }
+
+    if (step.id === "layers") {
+      uiState.setRightPanelOpen(true);
+      uiState.setLayerListOpen(true);
+    }
+  }, [tutorial.isTutorialOpen, tutorial.tutorialStepIndex]);
+
   return (
     <div className="app-shell h-screen overflow-hidden bg-[#070b16] text-slate-100">
       <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-[#0f172a] px-4">
@@ -1060,6 +1150,7 @@ export default function App() {
         <div className="flex gap-2">
           <button
             className="btn-primary"
+            data-tutorial="new-review"
             onClick={() => {
               uiState.setWizardStep(1);
               uiState.setWizardSource("blank");
@@ -1110,20 +1201,30 @@ export default function App() {
             }}
           />
 
-          <button className="btn-secondary" onClick={saveDraft}>
-            <Save size={16} /> Save draft
-          </button>
+          <div className="flex gap-2" data-tutorial="export-actions">
+            <button className="btn-secondary" onClick={saveDraft}>
+              <Save size={16} /> Save draft
+            </button>
 
-          <button className="btn-secondary" onClick={loadDraft}>
-            <RefreshCcw size={16} /> Load draft
-          </button>
+            <button className="btn-secondary" onClick={loadDraft}>
+              <RefreshCcw size={16} /> Load draft
+            </button>
 
-          <button className="btn-primary" onClick={exportPng}>
-            <Download size={16} /> Export PNG
-          </button>
+            <button className="btn-primary" onClick={exportPng}>
+              <Download size={16} /> Export PNG
+            </button>
 
-          <button className="btn-secondary" onClick={printCanvas}>
-            <Printer size={16} /> Print
+            <button className="btn-secondary" onClick={printCanvas}>
+              <Printer size={16} /> Print
+            </button>
+          </div>
+
+          <button
+            className="btn-secondary px-3"
+            onClick={tutorial.startTutorial}
+            title="Restart tutorial"
+          >
+            <HelpCircle size={16} /> Tutorial
           </button>
         </div>
       </header>
@@ -1148,11 +1249,11 @@ export default function App() {
               selectedSegmentId={selectedSegmentId}
               setSelectedSegmentId={setSelectedSegmentId}
               setTool={setTool}
-              autoPlaceAllSegments={() => autoPlaceAllSegments(safeZones)}
+              autoPlaceAllSegments={() => autoPlaceAllSegments(activeSafeZones)}
               onAddEmoji={(emoji) => {
                 const zone =
-                  safeZones.find((safeZone) => safeZone.id === "rightMedia") ||
-                  safeZones[0];
+                  activeSafeZones.find((safeZone) => safeZone.id === "rightMedia") ||
+                  activeSafeZones[0];
 
                 addLayer(centerLayerInZone(makeEmojiLayer(emoji), zone));
                 setTool("select");
@@ -1178,8 +1279,6 @@ export default function App() {
             setLockToRegions={uiState.setLockToRegions}
             updateFooterLayer={updateFooterLayer}
             loadPendingImage={loadPendingImage}
-            pageTemplateLabel={activePageTemplateLabel}
-            pageTemplateKind={activePageIndex <= 0 ? "Page 1" : "Page 2+"}
           />
 
           {uiState.pageTabsOpen && (
@@ -1295,7 +1394,7 @@ export default function App() {
                   isExporting={uiState.isExporting}
                   templateBackground={templateBackground}
                   layers={activePage?.layers || []}
-                  safeZones={safeZones}
+                  safeZones={activeSafeZones}
                   selectedLayerId={selectedLayerId}
                   selectedLayerIds={selectedLayerIds}
                   selectedSafeZoneId={selectedSafeZoneId}
@@ -1303,6 +1402,8 @@ export default function App() {
                   editTextLayer={setTextEditorLayerId}
                   updateLayer={updateCanvasLayer}
                   updateSafeZone={setSafeZone}
+                  onLayerInteractionStart={beginCanvasInteraction}
+                  onLayerInteractionEnd={endCanvasInteraction}
                   canvasClick={canvasClick}
                   tool={tool}
                   zoom={uiState.zoom}
@@ -1336,7 +1437,7 @@ export default function App() {
               selectedLayerIds={selectedLayerIds}
               selectLayer={selectLayer}
               setTool={setTool}
-              safeZones={safeZones}
+              safeZones={activeSafeZones}
               lockToRegions={uiState.lockToRegions}
               selectedSafeZoneId={selectedSafeZoneId}
               setSelectedSafeZoneId={setSelectedSafeZoneId}
@@ -1381,6 +1482,8 @@ export default function App() {
               editTextLayer={() => {}}
               updateLayer={() => {}}
               updateSafeZone={() => {}}
+              onLayerInteractionStart={() => {}}
+              onLayerInteractionEnd={() => {}}
               canvasClick={() => {}}
               tool="select"
               gridEnabled={false}
@@ -1461,8 +1564,38 @@ export default function App() {
               return;
             }
 
+            if (textEditorLayer.sourceSegmentId) {
+              setSegments((prev) =>
+                prev.map((segment) => {
+                  if (segment.id !== textEditorLayer.sourceSegmentId) return segment;
+
+                  const isHeading = patch.segmentType === "heading";
+                  const text = patch.text || "";
+
+                  return {
+                    ...segment,
+                    type: patch.segmentType || segment.type,
+                    text,
+                    title: isHeading ? text : segment.title,
+                    section: isHeading ? text : segment.section,
+                    timestamp: isHeading ? "" : segment.timestamp,
+                  };
+                })
+              );
+            }
+
             setLayer(layerId, patch);
           }}
+        />
+      )}
+
+      {tutorial.isTutorialOpen && (
+        <TutorialOverlay
+          steps={tutorial.tutorialSteps}
+          stepIndex={tutorial.tutorialStepIndex}
+          onNext={tutorial.nextTutorialStep}
+          onBack={tutorial.previousTutorialStep}
+          onSkip={() => tutorial.closeTutorial(true)}
         />
       )}
     </div>

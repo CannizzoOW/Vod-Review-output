@@ -19,6 +19,8 @@ export function ReviewCanvas({
   editTextLayer,
   updateLayer,
   updateSafeZone,
+  onLayerInteractionStart,
+  onLayerInteractionEnd,
   canvasClick,
   tool,
   gridEnabled,
@@ -40,6 +42,7 @@ export function ReviewCanvas({
       }}
     >
       <div
+        data-tutorial="review-canvas"
         ref={(node) => {
           canvasRef.current = node;
           exportRef.current = node;
@@ -119,11 +122,14 @@ export function ReviewCanvas({
             isExporting={isExporting}
             selected={!isExporting && selectedLayerIds.includes(layer.id)}
             selectedLayerCount={selectedLayerIds.length}
+            selectedLayerIds={selectedLayerIds}
             onSelect={(e) => {
               e.stopPropagation();
               selectLayer(layer.id, e.shiftKey);
             }}
             onMove={(patch) => updateLayer(layer.id, patch, { snapToGrid: true })}
+            onInteractionStart={onLayerInteractionStart}
+            onInteractionEnd={onLayerInteractionEnd}
             onEdit={editTextLayer}
             onGuideChange={setSnapGuides}
             layers={layers}

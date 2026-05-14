@@ -5,10 +5,10 @@ export function useReviewForm(defaultHero) {
   const firstHero = DEFAULT_HERO || Object.keys(heroTemplates)[0];
 
   const [form, setForm] = useState({
-    player: "rockstarcobra9",
+    player: "user123",
     hero: defaultHero || firstHero,
     templateStyle: getDefaultTemplateStyle(defaultHero || firstHero),
-    reviewer: "Phimmiezz",
+    reviewer: "Pathfinder1",
     replayId: "10903088673",
     requestId: "",
   });

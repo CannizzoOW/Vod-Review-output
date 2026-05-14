@@ -8,7 +8,11 @@ import {
   Italic,
   List,
   ListOrdered,
+  Minus,
+  Plus,
   Quote,
+  Strikethrough,
+  Underline,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -17,6 +21,26 @@ import { NumberField } from "../FormFields/NumberField.jsx";
 
 function clampWeight(value) {
   return Math.max(100, Math.min(1000, Number(value) || 500));
+}
+
+function clampFontSize(value) {
+  return Math.max(8, Math.min(120, Number(value) || 18));
+}
+
+function getTextDecoration(layer) {
+  return [
+    layer.underline ? "underline" : "",
+    layer.strikethrough ? "line-through" : "",
+  ].filter(Boolean).join(" ") || "none";
+}
+
+function inferSegmentType(layer) {
+  if (layer.segmentType) return layer.segmentType;
+  if (layer.sourceSegmentId && layer.timestampGutter === 0 && layer.fontSize >= 24 && layer.weight >= 800) {
+    return "heading";
+  }
+
+  return "paragraph";
 }
 
 function hexToRgba(hex, opacity = 1) {
@@ -36,14 +60,31 @@ function hexToRgba(hex, opacity = 1) {
 
 export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave }) {
   const textareaRef = useRef(null);
+  const selectionRef = useRef({ start: 0, end: 0 });
   const [draft, setDraft] = useState(() => ({ ...layer }));
   const previewBackgroundColor = previewBackgroundLayer
     ? hexToRgba(previewBackgroundLayer.fillColor, previewBackgroundLayer.fillOpacity ?? 1)
     : "#efeae7";
   const isPageTitle = layer.id === "page-title";
+  const isHeading = inferSegmentType(draft) === "heading";
 
   function update(patch) {
     setDraft((prev) => ({ ...prev, ...patch }));
+  }
+
+  function rememberSelection() {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    selectionRef.current = {
+      start: textarea.selectionStart,
+      end: textarea.selectionEnd,
+    };
+  }
+
+  function keepTextareaSelection(e) {
+    e.preventDefault();
+    textareaRef.current?.focus();
   }
 
   useEffect(() => {
@@ -63,15 +104,15 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = draft.text.slice(start, end) || placeholder;
+    const text = draft.text || "";
+    const { start, end } = selectionRef.current;
+    const selectedText = text.slice(start, end) || placeholder;
     const nextText =
-      draft.text.slice(0, start) +
+      text.slice(0, start) +
       before +
       selectedText +
       after +
-      draft.text.slice(end);
+      text.slice(end);
 
     update({ text: nextText, markdown: true });
 
@@ -85,18 +126,18 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = draft.text.slice(start, end) || "Text";
+    const text = draft.text || "";
+    const { start, end } = selectionRef.current;
+    const selectedText = text.slice(start, end) || "Text";
     const nextSelectedText = selectedText
       .split("\n")
       .map((line) => `${prefix}${line}`)
       .join("\n");
 
     const nextText =
-      draft.text.slice(0, start) +
+      text.slice(0, start) +
       nextSelectedText +
-      draft.text.slice(end);
+      text.slice(end);
 
     update({ text: nextText, markdown: true });
 
@@ -106,6 +147,24 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
     });
   }
 
+  function setHeadingStyle() {
+    const nextText = String(draft.text || "").trim();
+
+    update({
+      segmentType: "heading",
+      text: nextText ? nextText.toUpperCase() : draft.text,
+      timestamp: "",
+      timestampGutter: 0,
+      fontSize: Math.max(28, Number(draft.fontSize) || 28),
+      weight: Math.max(900, clampWeight(draft.weight)),
+      markdown: false,
+    });
+  }
+
+  function adjustFontSize(delta) {
+    update({ fontSize: clampFontSize((Number(draft.fontSize) || 18) + delta) });
+  }
+
   function save() {
     onSave(layer.id, {
       text: draft.text,
@@ -113,8 +172,13 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
       fontSize: draft.fontSize,
       weight: clampWeight(draft.weight),
       italic: draft.italic,
+      underline: draft.underline,
+      strikethrough: draft.strikethrough,
       align: draft.align,
       markdown: draft.markdown,
+      segmentType: inferSegmentType(draft),
+      timestamp: draft.timestamp,
+      timestampGutter: draft.timestampGutter,
     });
     onClose();
   }
@@ -131,6 +195,7 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
           </div>
 
           <button
+            type="button"
             className="rounded-xl px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white"
             onClick={onClose}
             title="Close editor"
@@ -143,28 +208,85 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)]">
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2 rounded-2xl border border-slate-800 bg-slate-950 p-2">
-                <button className="tool-btn" onClick={() => wrapSelection("**")} title="Bold">
+                <button type="button" className="tool-btn" onMouseDown={keepTextareaSelection} onClick={() => wrapSelection("**")} title="Bold">
                   <Bold size={16} />
                 </button>
-                <button className="tool-btn" onClick={() => wrapSelection("*")} title="Italic">
+                <button type="button" className="tool-btn" onMouseDown={keepTextareaSelection} onClick={() => wrapSelection("*")} title="Italic">
                   <Italic size={16} />
                 </button>
-                <button className="tool-btn" onClick={() => prefixLines("## ")} title="Heading">
+                <button
+                  type="button"
+                  className={`tool-btn ${draft.underline ? "tool-btn-active" : ""}`}
+                  onMouseDown={keepTextareaSelection}
+                  onClick={() => update({ underline: !draft.underline })}
+                  title="Underline"
+                >
+                  <Underline size={16} />
+                </button>
+                <button
+                  type="button"
+                  className={`tool-btn ${draft.strikethrough ? "tool-btn-active" : ""}`}
+                  onMouseDown={keepTextareaSelection}
+                  onClick={() => update({ strikethrough: !draft.strikethrough })}
+                  title="Strikethrough"
+                >
+                  <Strikethrough size={16} />
+                </button>
+                <button
+                  type="button"
+                  className={`tool-btn ${isHeading ? "tool-btn-active" : ""}`}
+                  onMouseDown={keepTextareaSelection}
+                  onClick={setHeadingStyle}
+                  title="Heading"
+                >
                   <Heading2 size={16} />
                 </button>
-                <button className="tool-btn" onClick={() => prefixLines("- ")} title="Bulleted list">
+                <button type="button" className="tool-btn" onMouseDown={keepTextareaSelection} onClick={() => prefixLines("- ")} title="Bulleted list">
                   <List size={16} />
                 </button>
-                <button className="tool-btn" onClick={() => prefixLines("1. ")} title="Numbered list">
+                <button type="button" className="tool-btn" onMouseDown={keepTextareaSelection} onClick={() => prefixLines("1. ")} title="Numbered list">
                   <ListOrdered size={16} />
                 </button>
-                <button className="tool-btn" onClick={() => prefixLines("> ")} title="Quote">
+                <button type="button" className="tool-btn" onMouseDown={keepTextareaSelection} onClick={() => prefixLines("> ")} title="Quote">
                   <Quote size={16} />
                 </button>
 
                 <div className="mx-1 w-px bg-slate-800" />
 
+                <div className="flex h-10 items-center rounded-xl border border-slate-800 bg-slate-900">
+                  <button
+                    type="button"
+                    className="tool-btn h-9 rounded-r-none px-2"
+                    onMouseDown={keepTextareaSelection}
+                    onClick={() => adjustFontSize(-1)}
+                    title="Decrease font size"
+                  >
+                    <Minus size={15} />
+                  </button>
+                  <input
+                    className="h-9 w-14 border-x border-slate-800 bg-transparent px-1 text-center text-sm font-bold text-slate-100 outline-none"
+                    type="number"
+                    min="8"
+                    max="120"
+                    value={draft.fontSize || 18}
+                    onChange={(e) => update({ fontSize: clampFontSize(e.target.value) })}
+                    title="Font size"
+                  />
+                  <button
+                    type="button"
+                    className="tool-btn h-9 rounded-l-none px-2"
+                    onMouseDown={keepTextareaSelection}
+                    onClick={() => adjustFontSize(1)}
+                    title="Increase font size"
+                  >
+                    <Plus size={15} />
+                  </button>
+                </div>
+
+                <div className="mx-1 w-px bg-slate-800" />
+
                 <button
+                  type="button"
                   className={`tool-btn ${draft.align === "left" || !draft.align ? "tool-btn-active" : ""}`}
                   onClick={() => update({ align: "left" })}
                   title="Align left"
@@ -172,6 +294,7 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                   <AlignLeft size={16} />
                 </button>
                 <button
+                  type="button"
                   className={`tool-btn ${draft.align === "center" ? "tool-btn-active" : ""}`}
                   onClick={() => update({ align: "center" })}
                   title="Align center"
@@ -179,6 +302,7 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                   <AlignCenter size={16} />
                 </button>
                 <button
+                  type="button"
                   className={`tool-btn ${draft.align === "right" ? "tool-btn-active" : ""}`}
                   onClick={() => update({ align: "right" })}
                   title="Align right"
@@ -193,7 +317,13 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                   ref={textareaRef}
                   className="input min-h-80 resize-y font-mono text-sm"
                   value={draft.text || ""}
-                  onChange={(e) => update({ text: e.target.value })}
+                  onChange={(e) => {
+                    update({ text: e.target.value });
+                    rememberSelection();
+                  }}
+                  onClick={rememberSelection}
+                  onKeyUp={rememberSelection}
+                  onSelect={rememberSelection}
                 />
               </label>
             </div>
@@ -203,7 +333,7 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                 <NumberField
                   label="Font size"
                   value={draft.fontSize}
-                  onChange={(v) => update({ fontSize: Math.max(8, v) })}
+                  onChange={(v) => update({ fontSize: clampFontSize(v) })}
                 />
                 <NumberField
                   label="Weight"
@@ -227,6 +357,7 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                 <label className="block">
                   <Label>Mode</Label>
                   <button
+                    type="button"
                     className={`tool-btn h-10 w-full ${draft.markdown ? "tool-btn-active" : ""}`}
                     onClick={() => update({ markdown: !draft.markdown })}
                   >
@@ -237,16 +368,35 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
 
               <div className="flex gap-2">
                 <button
+                  type="button"
                   className={`tool-btn flex-1 ${draft.weight >= 700 ? "tool-btn-active" : ""}`}
                   onClick={() => update({ weight: draft.weight >= 700 ? 500 : 900 })}
                 >
                   Bold
                 </button>
                 <button
+                  type="button"
                   className={`tool-btn flex-1 ${draft.italic ? "tool-btn-active" : ""}`}
                   onClick={() => update({ italic: !draft.italic })}
                 >
                   Italic
+                </button>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className={`tool-btn flex-1 ${draft.underline ? "tool-btn-active" : ""}`}
+                  onClick={() => update({ underline: !draft.underline })}
+                >
+                  Underline
+                </button>
+                <button
+                  type="button"
+                  className={`tool-btn flex-1 ${draft.strikethrough ? "tool-btn-active" : ""}`}
+                  onClick={() => update({ strikethrough: !draft.strikethrough })}
+                >
+                  Strike
                 </button>
               </div>
 
@@ -262,6 +412,7 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                     fontSize: `${draft.fontSize}px`,
                     fontWeight: draft.weight,
                     fontStyle: draft.italic ? "italic" : "normal",
+                    textDecoration: getTextDecoration(draft),
                     lineHeight: 1.25,
                     textAlign: draft.align || "left",
                     overflowWrap: "anywhere",
@@ -282,10 +433,10 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
         </div>
 
         <div className="flex justify-end gap-2 border-t border-slate-800 p-5">
-          <button className="btn-secondary" onClick={onClose}>
+          <button type="button" className="btn-secondary" onClick={onClose}>
             Cancel
           </button>
-          <button className="btn-primary" onClick={save}>
+          <button type="button" className="btn-primary" onClick={save}>
             Save Text
           </button>
         </div>

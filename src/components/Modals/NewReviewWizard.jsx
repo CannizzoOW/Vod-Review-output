@@ -167,7 +167,7 @@ export function NewReviewWizard({
         </div>
 
         {step === 1 && (
-          <div className="space-y-3">
+          <div className="space-y-3" data-tutorial="wizard-source">
             {options.map((option) => (
               <button
                 key={option.id}
@@ -198,7 +198,7 @@ export function NewReviewWizard({
         )}
 
         {step === 2 && (
-          <div className="space-y-3">
+          <div className="space-y-3" data-tutorial="wizard-template">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field
                 label="Player"
@@ -261,7 +261,7 @@ export function NewReviewWizard({
         )}
 
         {step === 3 && wizardSource === "paste" && (
-          <div className="space-y-3">
+          <div className="space-y-3" data-tutorial="wizard-text">
             <RichTextArea
               label="Discord review text"
               value={wizardRawText}
@@ -326,7 +326,7 @@ export function NewReviewWizard({
         )}
 
         {step === 3 && wizardSource === "blank" && (
-          <div className="space-y-3">
+          <div className="space-y-3" data-tutorial="wizard-text">
             <RichTextArea
               label="Starter text"
               value={wizardRawText}

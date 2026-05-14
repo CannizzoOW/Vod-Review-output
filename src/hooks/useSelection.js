@@ -37,6 +37,11 @@ export function useSelection(pages, activePageId, setPages) {
       return;
     }
 
+    if (selectedLayerIds.length > 1 && selectedLayerIds.includes(layerId)) {
+      setSelectedLayerId(layerId);
+      return;
+    }
+
     setSelectedLayerId(layerId);
     setSelectedLayerIds([layerId]);
   }

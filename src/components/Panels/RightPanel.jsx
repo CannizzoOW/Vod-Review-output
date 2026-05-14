@@ -636,7 +636,7 @@ export function RightPanel({
         </div>
       </div>
 
-      <div className="panel mt-3">
+      <div className="panel mt-3" data-tutorial="layer-list">
         <button
           className="flex w-full items-center justify-between text-left"
           onClick={() => setLayerListOpen((v) => !v)}

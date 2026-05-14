@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { RotateCw } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -34,9 +34,12 @@ export function PlacedLayer({
   layer,
   selected,
   selectedLayerCount = 0,
+  selectedLayerIds = [],
   onSelect,
   onMove,
   onEdit,
+  onInteractionStart,
+  onInteractionEnd,
   onGuideChange,
   layers = [],
   isExporting,
@@ -46,6 +49,7 @@ export function PlacedLayer({
 }) {
   const startRef = useRef(null);
   const layerRef = useRef(null);
+  const [isPointerActive, setIsPointerActive] = useState(false);
   const hasTimestamp = layer.kind === "text" && Boolean(layer.timestamp);
   const hasTimestampGutter =
     timestampGutterWidth > 0 &&
@@ -72,6 +76,8 @@ export function PlacedLayer({
 
     if (layer.locked) return;
 
+    setIsPointerActive(true);
+    onInteractionStart?.("drag");
     startRef.current = {
       mode: "drag",
       pointerX: e.clientX,
@@ -91,6 +97,8 @@ export function PlacedLayer({
 
     if (layer.locked) return;
 
+    setIsPointerActive(true);
+    onInteractionStart?.("resize");
     startRef.current = {
       mode: "resize",
       handle,
@@ -117,9 +125,15 @@ export function PlacedLayer({
     const rect = layerRef.current?.getBoundingClientRect();
     if (!rect) return;
 
+    setIsPointerActive(true);
+    onInteractionStart?.("rotate");
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     const pointerAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    const selectedLayerIdSet = new Set(selectedLayerIds);
+    const selectedLayers = layers.filter((candidate) =>
+      selectedLayerIdSet.has(candidate.id) && !candidate.locked
+    );
 
     startRef.current = {
       mode: "rotate",
@@ -127,6 +141,7 @@ export function PlacedLayer({
       centerY,
       pointerAngle,
       rotation: layer.rotation || 0,
+      groupBounds: selectedLayers.length > 1 ? getLayerBounds(selectedLayers) : null,
     };
 
     window.addEventListener("pointermove", move);
@@ -167,7 +182,10 @@ export function PlacedLayer({
         ? Math.round(rawRotation / 15) * 15
         : rawRotation;
 
-      onMove({ rotation: normalizeDegrees(rotation) });
+      onMove({
+        rotation: normalizeDegrees(rotation),
+        ...(start.groupBounds ? { groupBounds: start.groupBounds } : {}),
+      });
     }
   }
 
@@ -319,7 +337,9 @@ export function PlacedLayer({
 
   function stop() {
     startRef.current = null;
+    setIsPointerActive(false);
     onGuideChange?.([]);
+    onInteractionEnd?.();
     window.removeEventListener("pointermove", move);
     window.removeEventListener("pointerup", stop);
   }
@@ -404,6 +424,10 @@ export function PlacedLayer({
                 : `${layer.fontSize / 10}cqw`,
               fontWeight: layer.weight,
               fontStyle: layer.italic ? "italic" : "normal",
+              textDecoration: [
+                layer.underline ? "underline" : "",
+                layer.strikethrough ? "line-through" : "",
+              ].filter(Boolean).join(" ") || "none",
               lineHeight: 1.25,
               textAlign: layer.align || "left",
               overflowWrap: "anywhere",
@@ -462,7 +486,7 @@ export function PlacedLayer({
 
       {selected && !isExporting && !layer.locked && (
         <>
-          {(selectedLayerCount > 1 || layer.kind === "shape" || layer.kind === "emoji") && (
+          {!isPointerActive && (selectedLayerCount > 1 || layer.kind === "shape" || layer.kind === "emoji") && (
             <>
               {ROTATE_HANDLES.map((handle) => (
                 <button
@@ -489,4 +513,20 @@ export function PlacedLayer({
       )}
     </div>
   );
+}
+
+function getLayerBounds(layers) {
+  const left = Math.min(...layers.map((layer) => layer.x));
+  const top = Math.min(...layers.map((layer) => layer.y));
+  const right = Math.max(...layers.map((layer) => layer.x + layer.w));
+  const bottom = Math.max(...layers.map((layer) => layer.y + layer.h));
+
+  return {
+    x: left,
+    y: top,
+    w: right - left,
+    h: bottom - top,
+    centerX: left + (right - left) / 2,
+    centerY: top + (bottom - top) / 2,
+  };
 }

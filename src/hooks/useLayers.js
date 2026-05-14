@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { snap, clampToZones } from "../utils/canvas.js";
 import { estimateTextHeight } from "../utils/textUtils.js";
-import { DEFAULT_SAFE_ZONES } from "../utils/constants.js";
+import { DEFAULT_SAFE_ZONES, getSafeZonesForTemplateStyle } from "../utils/constants.js";
 
-export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegions) {
+export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegions, activeTemplateStyle = "") {
   const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
   const [selectedSafeZoneId, setSelectedSafeZoneId] = useState(null);
+  const effectiveSafeZones = getSafeZonesForTemplateStyle(safeZones, activeTemplateStyle);
 
-  const selectedSafeZone = safeZones.find((z) => z.id === selectedSafeZoneId);
+  const selectedSafeZone = effectiveSafeZones.find((z) => z.id === selectedSafeZoneId);
 
   function updateActivePageLayers(updater) {
     setPages((prev) =>
@@ -45,7 +46,7 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
         }
 
         if (lockToRegions) {
-          next = clampToZones(next, safeZones);
+          next = clampToZones(next, effectiveSafeZones);
         }
 
         updatedTargetLayer = next;
@@ -112,7 +113,7 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
     }
 
     if (lockToRegions) {
-      next = clampToZones(next, safeZones);
+      next = clampToZones(next, effectiveSafeZones);
     }
 
     updateActivePageLayers((layers) => [...layers, next]);
