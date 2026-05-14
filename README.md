@@ -6,22 +6,31 @@ The project is built with React, Vite, Tailwind CSS, and html-to-image. It is de
 
 ## Features
 
+- New review setup wizard
 - Hero-specific review templates
 - Import review JSON
 - Paste and parse raw Discord review text
+- Rich text tools for pasted review text and starter notes
 - Automatically split feedback into editable segments
 - Click-to-place text segments on the canvas
 - Auto-place all unused segments across pages
 - Add screenshot/image layers with captions
+- Add Rivals emoji layers
+- Add shape layers including rectangles, circles, lines, and arrows
 - Move and resize layers on the canvas
+- Rotate supported layers
+- Select, group, duplicate, rename, reorder, hide, and lock layers
 - Edit layer position, size, text, weight, and style from the properties panel
 - Safe zones for main text, screenshots, and footer placement
+- Page 2 template layouts use raised main text and screenshot safe zones for more usable space
 - Inline page renaming
 - Automatic page title layer
 - Footer layer using player, coach, and replay ID metadata
 - Multi-page review support
 - Save and load local drafts
 - Export the active page as a PNG
+- Print all pages to PDF
+- Built-in tutorial for the main editor workflow
 
 ## Tech stack
 
@@ -34,48 +43,15 @@ The project is built with React, Vite, Tailwind CSS, and html-to-image. It is de
 - remark-gfm
 - lucide-react
 
-## Getting started
-
-### Requirements
-
-- Node.js
-- npm
-
-### Install dependencies
-
-```bash
-npm install
-```
-
-### Run locally
-
-```bash
-npm run dev
-```
-
-Then open the local Vite URL shown in the terminal.
-
-### Build for production
-
-```bash
-npm run build
-```
-
-### Preview production build
-
-```bash
-npm run preview
-```
-
 ## Basic workflow
 
-1. Choose a hero template.
-2. Fill in player, coach, and replay ID.
-3. Import review JSON or paste raw Discord review text.
-4. Parse the review into segments.
+1. Click New Review.
+2. Choose whether to paste Discord review text or start blank.
+3. Fill in player, coach, replay ID, hero, and template style.
+4. Add review text or starter notes.
 5. Place segments manually or use auto-place all.
-6. Adjust text, safe zones, screenshots, and page titles.
-7. Export the final page as PNG.
+6. Adjust text, safe zones, screenshots, shapes, emojis, and page titles.
+7. Export the active page as PNG or print all pages to PDF.
 
 ## Review JSON support
 
@@ -102,8 +78,12 @@ Layer types currently include:
 
 - Text layers
 - Image layers
+- Shape layers
+- Emoji layers
 - Footer metadata layer
 - Page title layer
+
+Shape layers support fill, stroke, opacity, scaling, dragging, and rotation-ready editing. Shape rendering lives in SVG helpers so new shape types can follow the existing layer pattern.
 
 ## Safe zones
 
@@ -117,13 +97,16 @@ Default safe zones:
 
 Safe zones can be selected from the right panel and edited through the properties panel.
 
+For page 2 template layouts, the Main text and Screenshots safe zones are raised to `y: 255` while keeping the bottom edge consistent with the default zones.
+
 ## Exporting
 
-The active page can be exported as a PNG using the Export PNG button. The export hides editor-only UI such as selection rings, safe zone outlines, and non-export helpers.
+The active page can be exported as a PNG using the Export PNG button. The export hides editor-only UI such as selection rings, safe zone outlines, tutorial overlays, and non-export helpers.
+
+Use Print to output all pages. In the browser print dialog, enable `background graphics` and select `Save as PDF` in the Destination selection.
 
 ## Planned improvements
 
-- New review setup wizard
 - More layout presets
 - Better screenshot placement tools
 - More template customization
