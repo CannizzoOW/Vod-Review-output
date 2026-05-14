@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ChevronLeft, ChevronRight, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Redo2, Undo2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Printer, Redo2, Undo2 } from "lucide-react";
 import { exportAllPages } from "./utils/exportAllPages.js";
 
 // MARK: Hooks
@@ -20,10 +20,10 @@ import { EditReviewDetailsModal } from "./components/Modals/EditReviewDetailsMod
 import { TextEditorModal } from "./components/Modals/TextEditorModal.jsx";
 
 // MARK: Utils & Constants
-import { HEROES, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, heroTemplates } from "./utils/constants.js";
+import { HEROES, DEFAULT_HERO, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, getDefaultTemplateStyle, getHeroTemplatePath, getHeroTemplateStyles, getPageTemplateStyle } from "./utils/constants.js";
 import { parseDiscordReview } from "./utils/parsing.js";
 import { buildReviewPages } from "./utils/buildReviewPages.js";
-import { makeEmojiLayer, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
+import { makeEmojiLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
 import { autoPlaceInZone } from "./utils/canvas.js";
 
 const PAGE_W = 1080;
@@ -33,12 +33,14 @@ export default function App() {
   const canvasRef = React.useRef(null);
   const exportRef = React.useRef(null);
   const fileInputRef = React.useRef(null);
+  const printCanvasRef = React.useRef(null);
+  const printExportRef = React.useRef(null);
   const historyRef = React.useRef({ past: [], future: [], last: null });
   const skipHistoryRef = React.useRef(false);
   const [textEditorLayerId, setTextEditorLayerId] = React.useState(null);
 
   // MARK: State management
-  const { form, setForm, updateForm } = useReviewForm(HEROES[0]);
+  const { form, setForm, updateForm } = useReviewForm(DEFAULT_HERO);
   const { pages, setPages, activePageId, setActivePageId, activePage, editingPageId, setEditingPageId, updateActivePageLayers, updatePageTitleLayer, updateFooterLayer, renamePage, getPageFallbackTitle, getNextPageTitle, removeActivePage, addPage } = usePages(form);
   const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
   const { selectedLayerId, setSelectedLayerId, selectedLayerIds, setSelectedLayerIds, selectedSafeZoneId, setSelectedSafeZoneId, selectedLayer, tool, setTool, deselectAll, selectLayer, selectSafeZone, deleteSelectedLayers } = useSelection(pages, activePageId, setPages);
@@ -60,11 +62,22 @@ export default function App() {
     uiState.lockToRegions
   );
 
+  const activePageTemplateStyle = React.useMemo(
+    () => getPageTemplateStyle(form.hero, form.templateStyle, Math.max(0, pages.findIndex((page) => page.id === activePageId))),
+    [activePageId, form.hero, form.templateStyle, pages]
+  );
   const templateBackground = React.useMemo(() => {
-    const template = heroTemplates[form.hero]?.template;
+    const template = getHeroTemplatePath(form.hero, activePageTemplateStyle);
     if (!template) return FALLBACK_TEMPLATE;
     return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
-  }, [form.hero]);
+  }, [activePageTemplateStyle, form.hero]);
+  const activePageTemplateLabel = React.useMemo(() => {
+    const style = getHeroTemplateStyles(form.hero).find((templateStyle) =>
+      templateStyle.value === activePageTemplateStyle
+    );
+
+    return style?.label || activePageTemplateStyle;
+  }, [activePageTemplateStyle, form.hero]);
 
   const selectedLayers = React.useMemo(
     () =>
@@ -81,12 +94,27 @@ export default function App() {
     [activePage?.layers, textEditorLayerId]
   );
   const textEditorPreviewBackgroundLayer = React.useMemo(() => {
-    if (textEditorLayer?.id !== "page-title") return null;
+    const layers = activePage?.layers || [];
 
-    return (activePage?.layers || []).find(
-      (layer) => layer.id === "default-background-rect"
-    ) || null;
-  }, [activePage?.layers, textEditorLayer?.id]);
+    if (textEditorLayer?.id === "page-title") {
+      return layers.find((layer) => layer.id === "default-background-rect") || null;
+    }
+
+    if (textEditorLayer?.groupId) {
+      return layers.find(
+        (layer) =>
+          layer.kind === "shape" &&
+          layer.name === "Description background" &&
+          (
+            layer.groupId === textEditorLayer.groupId ||
+            layer.parentGroupId === textEditorLayer.groupId ||
+            layer.groupId === textEditorLayer.parentGroupId
+          )
+      ) || null;
+    }
+
+    return null;
+  }, [activePage?.layers, textEditorLayer?.groupId, textEditorLayer?.id, textEditorLayer?.parentGroupId]);
   const activePageIndex = pages.findIndex((page) => page.id === activePageId);
   const canGoPrevPage = activePageIndex > 0;
   const canGoNextPage = activePageIndex >= 0 && activePageIndex < pages.length - 1;
@@ -97,6 +125,14 @@ export default function App() {
 
     setActivePageId(nextPage.id);
     deselectAll();
+  }
+
+  function getTemplateBackgroundForPage(pageIndex) {
+    const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pageIndex);
+    const template = getHeroTemplatePath(form.hero, pageTemplateStyle);
+
+    if (!template) return FALLBACK_TEMPLATE;
+    return `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`;
   }
 
   function cloneSnapshot(snapshot) {
@@ -270,17 +306,92 @@ export default function App() {
     setPages((prev) =>
       prev.map((page) =>
         page.id === activePageId
-          ? {
-            ...page,
-            layers: page.layers.map((layer) =>
-              ids.includes(layer.id)
-                ? { ...layer, groupId, groupName }
-                : layer
-            ),
-          }
+          ? (() => {
+            const selectedIdSet = new Set(ids);
+            const groupMemberIds = new Map();
+
+            page.layers.forEach((layer) => {
+              if (!layer.groupId) return;
+
+              if (!groupMemberIds.has(layer.groupId)) {
+                groupMemberIds.set(layer.groupId, []);
+              }
+
+              groupMemberIds.get(layer.groupId).push(layer.id);
+            });
+
+            const selectedGroupIds = new Set(
+              page.layers
+                .filter((layer) => selectedIdSet.has(layer.id) && layer.groupId)
+                .map((layer) => layer.groupId)
+            );
+            const wholeSelectedGroupIds = new Set(
+              [...selectedGroupIds].filter((selectedGroupId) =>
+                groupMemberIds.get(selectedGroupId)?.every((layerId) =>
+                  selectedIdSet.has(layerId)
+                )
+              )
+            );
+
+            return {
+              ...page,
+              layers: page.layers.map((layer) => {
+                if (layer.groupId && wholeSelectedGroupIds.has(layer.groupId)) {
+                  return {
+                    ...layer,
+                    parentGroupId: groupId,
+                    parentGroupName: groupName,
+                  };
+                }
+
+                if (selectedIdSet.has(layer.id) && layer.groupId) {
+                  return {
+                    ...layer,
+                    parentGroupId: layer.groupId,
+                    parentGroupName: layer.groupName,
+                    groupId,
+                    groupName,
+                  };
+                }
+
+                if (selectedIdSet.has(layer.id)) {
+                  return {
+                    ...layer,
+                    groupId,
+                    groupName,
+                  };
+                }
+
+                return layer;
+              }),
+            };
+          })()
           : page
       )
     );
+  }
+
+  function loadPendingImage(file) {
+    if (!file) return;
+
+    const src = URL.createObjectURL(file);
+    const image = new Image();
+
+    image.onload = () => {
+      uiState.setPendingImage({
+        src,
+        naturalWidth: image.naturalWidth,
+        naturalHeight: image.naturalHeight,
+      });
+      setTool("insertImage");
+    };
+
+    image.onerror = () => {
+      uiState.setPendingImage({ src });
+      setTool("insertImage");
+    };
+
+    image.src = src;
   }
 
   function getActivePageTextSegmentGroup() {
@@ -294,6 +405,232 @@ export default function App() {
         groupName: existingGroup.groupName || "Text segments",
       }
       : makeTextSegmentGroupPatch();
+  }
+
+  function getPlacementZone(x, y, preferredZoneId = "mainText") {
+    return (
+      safeZones.find((zone) => x >= zone.x && x <= zone.x + zone.w && y >= zone.y && y <= zone.y + zone.h) ||
+      safeZones.find((zone) => zone.id === preferredZoneId) ||
+      safeZones.find((zone) => zone.id === "mainText") ||
+      safeZones[0]
+    );
+  }
+
+  function centerLayerInZone(layer, zone) {
+    if (!zone) return layer;
+
+    return {
+      ...layer,
+      zoneId: zone.id,
+      x: Math.round(zone.x + Math.max(0, (zone.w - layer.w) / 2)),
+      y: Math.round(zone.y + Math.max(0, (zone.h - layer.h) / 2)),
+    };
+  }
+
+  function addImageWithDescription(source, zone) {
+    const groupPatch = makeImageGroupPatch();
+    const imageLayer = centerLayerInZone(makeImageLayer(source), zone);
+    const descriptionGroupPatch = makeImageDescriptionGroupPatch(groupPatch);
+    const descriptionLayer = makeImageDescriptionLayer(imageLayer, descriptionGroupPatch);
+    const descriptionBackgroundLayer = makeImageDescriptionBackgroundLayer(descriptionLayer, descriptionGroupPatch);
+
+    addLayer({
+      ...imageLayer,
+      ...groupPatch,
+      name: "Screenshot",
+    });
+    addLayer(descriptionBackgroundLayer);
+    addLayer(descriptionLayer);
+  }
+
+  function updateCanvasLayer(layerId, patch, options = {}) {
+    const isMultiSelection =
+      selectedLayerIds.length > 1 &&
+      selectedLayerIds.includes(layerId);
+    const isGroupDrag =
+      isMultiSelection &&
+      Object.prototype.hasOwnProperty.call(patch, "x") &&
+      Object.prototype.hasOwnProperty.call(patch, "y") &&
+      !Object.prototype.hasOwnProperty.call(patch, "w") &&
+      !Object.prototype.hasOwnProperty.call(patch, "h") &&
+      !Object.prototype.hasOwnProperty.call(patch, "rotation");
+    const isGroupResize =
+      isMultiSelection &&
+      Object.prototype.hasOwnProperty.call(patch, "w") &&
+      Object.prototype.hasOwnProperty.call(patch, "h") &&
+      !Object.prototype.hasOwnProperty.call(patch, "rotation");
+    const isGroupRotate =
+      isMultiSelection &&
+      Object.prototype.hasOwnProperty.call(patch, "rotation");
+
+    if (!isGroupDrag && !isGroupResize && !isGroupRotate) {
+      setLayer(layerId, patch, options);
+      return;
+    }
+
+    const selectedIdSet = new Set(selectedLayerIds);
+
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== activePageId) return page;
+
+        const draggedLayer = page.layers.find((layer) => layer.id === layerId);
+        if (!draggedLayer) return page;
+        const selectedLayersOnPage = page.layers.filter((layer) =>
+          selectedIdSet.has(layer.id) && !layer.locked
+        );
+
+        if (selectedLayersOnPage.length < 2) return page;
+
+        const groupBounds = getLayerBounds(selectedLayersOnPage);
+
+        if (isGroupResize) {
+          const transformedLayers = resizeLayerGroup({
+            layers: selectedLayersOnPage,
+            draggedLayer,
+            patch,
+            bounds: groupBounds,
+          });
+
+          return {
+            ...page,
+            layers: page.layers.map((layer) =>
+              transformedLayers.get(layer.id) || layer
+            ),
+          };
+        }
+
+        if (isGroupRotate) {
+          const transformedLayers = rotateLayerGroup({
+            layers: selectedLayersOnPage,
+            draggedLayer,
+            patch,
+            bounds: groupBounds,
+          });
+
+          return {
+            ...page,
+            layers: page.layers.map((layer) =>
+              transformedLayers.get(layer.id) || layer
+            ),
+          };
+        }
+
+        const dx = patch.x - draggedLayer.x;
+        const dy = patch.y - draggedLayer.y;
+
+        return {
+          ...page,
+          layers: page.layers.map((layer) =>
+            selectedIdSet.has(layer.id) && !layer.locked
+              ? {
+                ...layer,
+                x: Math.round(layer.x + dx),
+                y: Math.round(layer.y + dy),
+              }
+              : layer
+          ),
+        };
+      })
+    );
+  }
+
+  function getLayerBounds(layers) {
+    const left = Math.min(...layers.map((layer) => layer.x));
+    const top = Math.min(...layers.map((layer) => layer.y));
+    const right = Math.max(...layers.map((layer) => layer.x + layer.w));
+    const bottom = Math.max(...layers.map((layer) => layer.y + layer.h));
+
+    return {
+      x: left,
+      y: top,
+      w: right - left,
+      h: bottom - top,
+      right,
+      bottom,
+      centerX: left + (right - left) / 2,
+      centerY: top + (bottom - top) / 2,
+    };
+  }
+
+  function resizeLayerGroup({ layers, draggedLayer, patch, bounds }) {
+    const oldLeft = draggedLayer.x;
+    const oldTop = draggedLayer.y;
+    const oldRight = draggedLayer.x + draggedLayer.w;
+    const oldBottom = draggedLayer.y + draggedLayer.h;
+    const nextLeft = patch.x ?? oldLeft;
+    const nextTop = patch.y ?? oldTop;
+    const nextRight = nextLeft + (patch.w ?? draggedLayer.w);
+    const nextBottom = nextTop + (patch.h ?? draggedLayer.h);
+    const groupLeft = Math.abs(nextLeft - oldLeft) > 0.5
+      ? bounds.x + (nextLeft - oldLeft)
+      : bounds.x;
+    const groupTop = Math.abs(nextTop - oldTop) > 0.5
+      ? bounds.y + (nextTop - oldTop)
+      : bounds.y;
+    const groupRight = Math.abs(nextRight - oldRight) > 0.5
+      ? bounds.right + (nextRight - oldRight)
+      : bounds.right;
+    const groupBottom = Math.abs(nextBottom - oldBottom) > 0.5
+      ? bounds.bottom + (nextBottom - oldBottom)
+      : bounds.bottom;
+    const nextW = Math.max(20, groupRight - groupLeft);
+    const nextH = Math.max(20, groupBottom - groupTop);
+    const scaleX = nextW / Math.max(1, bounds.w);
+    const scaleY = nextH / Math.max(1, bounds.h);
+
+    return new Map(
+      layers.map((layer) => [
+        layer.id,
+        {
+          ...layer,
+          x: Math.round(groupLeft + (layer.x - bounds.x) * scaleX),
+          y: Math.round(groupTop + (layer.y - bounds.y) * scaleY),
+          w: Math.max(20, Math.round(layer.w * scaleX)),
+          h: Math.max(20, Math.round(layer.h * scaleY)),
+        },
+      ])
+    );
+  }
+
+  function rotateLayerGroup({ layers, draggedLayer, patch, bounds }) {
+    const rotationDelta = getRotationDelta(draggedLayer.rotation || 0, patch.rotation || 0);
+    const radians = rotationDelta * (Math.PI / 180);
+    const cos = Math.cos(radians);
+    const sin = Math.sin(radians);
+
+    return new Map(
+      layers.map((layer) => {
+        const layerCenterX = layer.x + layer.w / 2;
+        const layerCenterY = layer.y + layer.h / 2;
+        const offsetX = layerCenterX - bounds.centerX;
+        const offsetY = layerCenterY - bounds.centerY;
+        const rotatedCenterX = bounds.centerX + offsetX * cos - offsetY * sin;
+        const rotatedCenterY = bounds.centerY + offsetX * sin + offsetY * cos;
+
+        return [
+          layer.id,
+          {
+            ...layer,
+            x: Math.round(rotatedCenterX - layer.w / 2),
+            y: Math.round(rotatedCenterY - layer.h / 2),
+            rotation: normalizeDegrees((layer.rotation || 0) + rotationDelta),
+          },
+        ];
+      })
+    );
+  }
+
+  function getRotationDelta(from, to) {
+    const delta = normalizeDegrees(to) - normalizeDegrees(from);
+
+    if (delta > 180) return delta - 360;
+    if (delta < -180) return delta + 360;
+    return delta;
+  }
+
+  function normalizeDegrees(value) {
+    return Math.round(((value % 360) + 360) % 360);
   }
 
   // MARK: Canvas event handlers
@@ -334,13 +671,15 @@ export default function App() {
     }
 
     if (tool === "insertImage" && uiState.pendingImage) {
-      addLayer(makeImageLayer(uiState.pendingImage, Math.round(x), Math.round(y)));
+      const zone = getPlacementZone(x, y, "rightMedia");
+      addImageWithDescription(uiState.pendingImage, zone);
       setTool("select");
     }
 
     if (tool.startsWith("insertShape:")) {
       const shapeType = tool.replace("insertShape:", "");
-      addLayer(makeShapeLayer(shapeType, Math.round(x), Math.round(y)));
+      const zone = getPlacementZone(x, y, "mainText");
+      addLayer(centerLayerInZone(makeShapeLayer(shapeType), zone));
       setTool("select");
     }
   }
@@ -360,6 +699,7 @@ export default function App() {
         const importedForm = {
           player: request.player || request.username || form.player,
           hero: request.hero || request.heroes || form.hero,
+          templateStyle: request.templateStyle || request.template_style || data.meta?.templateStyle || form.templateStyle,
           reviewer: coach.displayName || coach.username || request.reviewer || form.reviewer,
           replayId: request.replayId || request.replayID || request.replay_id || form.replayId,
           requestId: request.requestId || request.id || form.requestId,
@@ -430,8 +770,49 @@ export default function App() {
       savedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem("rivals-vod-review-draft", JSON.stringify(draft));
-    alert("Draft saved locally.");
+    try {
+      localStorage.setItem("rivals-vod-review-draft", JSON.stringify(draft));
+      alert("Draft saved locally.");
+    } catch (error) {
+      console.warn("Full draft save failed, trying compact draft:", error);
+
+      try {
+        const compactDraft = {
+          ...draft,
+          pages: compactDraftPages(pages),
+          compactedAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem("rivals-vod-review-draft", JSON.stringify(compactDraft));
+        alert("Draft saved locally without embedded image data. Re-add uploaded screenshots after loading.");
+      } catch (compactError) {
+        console.error("Draft save failed:", compactError);
+        alert("Draft save failed. Browser storage may be full.");
+      }
+    }
+  }
+
+  function compactDraftPages(pageList) {
+    return pageList.map((page) => ({
+      ...page,
+      layers: page.layers.map((layer) => {
+        if (layer.kind !== "image") return layer;
+
+        const src = layer.src || "";
+        const shouldStripSrc =
+          src.startsWith("blob:") ||
+          src.startsWith("data:image/") ||
+          src.length > 200000;
+
+        if (!shouldStripSrc) return layer;
+
+        return {
+          ...layer,
+          src: "",
+          missingSrc: true,
+        };
+      }),
+    }));
   }
 
   function loadDraft() {
@@ -455,7 +836,6 @@ export default function App() {
     await exportAllPages({
       pages,
       activePageId,
-      setActivePageId,
       exportRef,
       form,
       uiState,
@@ -465,12 +845,47 @@ export default function App() {
     });
   }
 
+  async function printCanvas() {
+    const wasGridEnabled = uiState.gridEnabled;
+    const wasLockToRegions = uiState.lockToRegions;
+    let restored = false;
+
+    const restorePrintState = () => {
+      if (restored) return;
+
+      restored = true;
+      uiState.setGridEnabled(wasGridEnabled);
+      uiState.setLockToRegions(wasLockToRegions);
+      uiState.setIsExporting(false);
+      window.removeEventListener("afterprint", restorePrintState);
+    };
+
+    try {
+      uiState.setIsExporting(true);
+      uiState.setGridEnabled(false);
+      uiState.setLockToRegions(false);
+      deselectAll();
+
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      window.addEventListener("afterprint", restorePrintState);
+      window.print();
+      setTimeout(restorePrintState, 1000);
+    } finally {
+      if (!window.matchMedia?.("print").matches) {
+        setTimeout(restorePrintState, 1000);
+      }
+    }
+  }
+
   function finishWizardReview() {
     const cleanForm = {
       player: uiState.wizardForm.player.trim(),
       reviewer: uiState.wizardForm.reviewer.trim(),
       replayId: uiState.wizardForm.replayId.trim(),
-      hero: uiState.wizardForm.hero || HEROES[0],
+      hero: uiState.wizardForm.hero || DEFAULT_HERO,
+      templateStyle: uiState.wizardForm.templateStyle || getDefaultTemplateStyle(uiState.wizardForm.hero || DEFAULT_HERO),
       requestId: "",
     };
 
@@ -564,14 +979,23 @@ export default function App() {
   }, [form.player, form.reviewer, form.replayId]);
 
   useEffect(() => {
-    updateActivePageLayers((layers) => {
-      const hasTitle = layers.some((layer) => layer.id === "page-title");
+    setPages((prev) =>
+      prev.map((page, pageIndex) => {
+        const hasTitle = page.layers.some((layer) => layer.id === "page-title");
 
-      if (!hasTitle) return layers;
+        if (!hasTitle) return page;
 
-      return syncPageTitleLayers(layers, activePage?.title || "VOD FEEDBACK");
-    });
-  }, [activePage?.title, activePageId]);
+        return {
+          ...page,
+          layers: syncPageTitleLayers(
+            page.layers,
+            page.title || "VOD FEEDBACK",
+            getPageTemplateStyle(form.hero, form.templateStyle, pageIndex)
+          ),
+        };
+      })
+    );
+  }, [activePage?.title, activePageId, form.hero, form.templateStyle]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -619,7 +1043,7 @@ export default function App() {
   }, [selectedLayerId, selectedLayerIds, activePageId, pages]);
 
   return (
-    <div className="h-screen overflow-hidden bg-[#070b16] text-slate-100">
+    <div className="app-shell h-screen overflow-hidden bg-[#070b16] text-slate-100">
       <header className="flex h-14 items-center justify-between border-b border-slate-800 bg-[#0f172a] px-4">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-400/40 bg-blue-600/20 text-lg font-black text-blue-200 shadow-lg">
@@ -644,7 +1068,8 @@ export default function App() {
                 player: "",
                 reviewer: "",
                 replayId: "",
-                hero: HEROES[0],
+                hero: DEFAULT_HERO,
+                templateStyle: getDefaultTemplateStyle(DEFAULT_HERO),
               });
               uiState.setWizardOpen(true);
             }}
@@ -696,6 +1121,10 @@ export default function App() {
           <button className="btn-primary" onClick={exportPng}>
             <Download size={16} /> Export PNG
           </button>
+
+          <button className="btn-secondary" onClick={printCanvas}>
+            <Printer size={16} /> Print
+          </button>
         </div>
       </header>
 
@@ -721,7 +1150,11 @@ export default function App() {
               setTool={setTool}
               autoPlaceAllSegments={() => autoPlaceAllSegments(safeZones)}
               onAddEmoji={(emoji) => {
-                addLayer(makeEmojiLayer(emoji));
+                const zone =
+                  safeZones.find((safeZone) => safeZone.id === "rightMedia") ||
+                  safeZones[0];
+
+                addLayer(centerLayerInZone(makeEmojiLayer(emoji), zone));
                 setTool("select");
               }}
               segmentsOpen={uiState.segmentsOpen}
@@ -744,11 +1177,9 @@ export default function App() {
             lockToRegions={uiState.lockToRegions}
             setLockToRegions={uiState.setLockToRegions}
             updateFooterLayer={updateFooterLayer}
-            loadPendingImage={(file) => {
-              if (!file) return;
-              uiState.setPendingImage(URL.createObjectURL(file));
-              setTool("insertImage");
-            }}
+            loadPendingImage={loadPendingImage}
+            pageTemplateLabel={activePageTemplateLabel}
+            pageTemplateKind={activePageIndex <= 0 ? "Page 1" : "Page 2+"}
           />
 
           {uiState.pageTabsOpen && (
@@ -870,7 +1301,7 @@ export default function App() {
                   selectedSafeZoneId={selectedSafeZoneId}
                   selectLayer={selectLayer}
                   editTextLayer={setTextEditorLayerId}
-                  updateLayer={setLayer}
+                  updateLayer={updateCanvasLayer}
                   updateSafeZone={setSafeZone}
                   canvasClick={canvasClick}
                   tool={tool}
@@ -930,6 +1361,36 @@ export default function App() {
             />
           )}
         </aside>
+      </div>
+
+      <div className="print-pages">
+        {pages.map((page, pageIndex) => (
+          <div key={page.id} className="print-page">
+            <ReviewCanvas
+              canvasRef={printCanvasRef}
+              exportRef={printExportRef}
+              deselectAll={() => {}}
+              selectSafeZone={() => {}}
+              isExporting
+              templateBackground={getTemplateBackgroundForPage(pageIndex)}
+              layers={page.layers || []}
+              safeZones={[]}
+              selectedLayerIds={[]}
+              selectedSafeZoneId={null}
+              selectLayer={() => {}}
+              editTextLayer={() => {}}
+              updateLayer={() => {}}
+              updateSafeZone={() => {}}
+              canvasClick={() => {}}
+              tool="select"
+              gridEnabled={false}
+              lockToRegions={false}
+              timestampGutterWidth={uiState.timestampGutterWidth}
+              timestampFontSize={uiState.timestampFontSize}
+              timestampColor={uiState.timestampColor}
+            />
+          </div>
+        ))}
       </div>
 
       {uiState.wizardOpen && (

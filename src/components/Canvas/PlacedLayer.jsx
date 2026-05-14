@@ -33,6 +33,7 @@ function normalizeDegrees(value) {
 export function PlacedLayer({
   layer,
   selected,
+  selectedLayerCount = 0,
   onSelect,
   onMove,
   onEdit,
@@ -59,7 +60,7 @@ export function PlacedLayer({
     width: `${(layer.w / PAGE_W) * 100}%`,
     transform: layer.rotation ? `rotate(${layer.rotation}deg)` : undefined,
     transformOrigin: "center center",
-    ...(layer.kind === "shape" || layer.kind === "emoji" || layer.locked
+    ...(layer.kind === "shape" || layer.kind === "emoji" || layer.kind === "image" || layer.locked
       ? { height: `${(layer.h / PAGE_W) * 100}cqw` }
       : { minHeight: `${(layer.h / PAGE_H) * 100}%` }),
   };
@@ -99,6 +100,7 @@ export function PlacedLayer({
       y: layer.y,
       w: layer.w,
       h: layer.h,
+      aspectRatio: layer.w / layer.h,
     };
 
     window.addEventListener("pointermove", move);
@@ -110,7 +112,7 @@ export function PlacedLayer({
     e.stopPropagation();
     onSelect(e);
 
-    if (layer.locked || (layer.kind !== "shape" && layer.kind !== "emoji")) return;
+    if (layer.locked || (selectedLayerCount <= 1 && layer.kind !== "shape" && layer.kind !== "emoji")) return;
 
     const rect = layerRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -245,6 +247,13 @@ export function PlacedLayer({
   }
 
   function getResizePatch(start, dx, dy) {
+    const isDiagonal = start.handle.length === 2;
+    const shouldKeepAspect = layer.kind === "image" && isDiagonal && start.aspectRatio > 0;
+
+    if (shouldKeepAspect) {
+      return getAspectResizePatch(start, dx, dy);
+    }
+
     const patch = {
       x: start.x,
       y: start.y,
@@ -270,6 +279,39 @@ export function PlacedLayer({
       const nextH = Math.max(MIN_LAYER_H, Math.round(start.h - dy));
       patch.h = nextH;
       patch.y = Math.round(start.y + start.h - nextH);
+    }
+
+    return patch;
+  }
+
+  function getAspectResizePatch(start, dx, dy) {
+    const patch = {
+      x: start.x,
+      y: start.y,
+      w: start.w,
+      h: start.h,
+    };
+
+    const widthDelta = start.handle.includes("e") ? dx : -dx;
+    const heightDelta = start.handle.includes("s") ? dy : -dy;
+    const delta =
+      Math.abs(widthDelta) > Math.abs(heightDelta * start.aspectRatio)
+        ? widthDelta
+        : heightDelta * start.aspectRatio;
+
+    patch.w = Math.max(MIN_LAYER_W, Math.round(start.w + delta));
+    patch.h = Math.max(MIN_LAYER_H, Math.round(patch.w / start.aspectRatio));
+
+    if (patch.h === MIN_LAYER_H) {
+      patch.w = Math.max(MIN_LAYER_W, Math.round(patch.h * start.aspectRatio));
+    }
+
+    if (start.handle.includes("w")) {
+      patch.x = Math.round(start.x + start.w - patch.w);
+    }
+
+    if (start.handle.includes("n")) {
+      patch.y = Math.round(start.y + start.h - patch.h);
     }
 
     return patch;
@@ -303,7 +345,13 @@ export function PlacedLayer({
       style={style}
     >
       {layer.kind === "text" && (
-        <div className="relative">
+        <div
+          className="relative h-full"
+          style={{
+            display: layer.verticalAlign === "center" ? "flex" : undefined,
+            alignItems: layer.verticalAlign === "center" ? "center" : undefined,
+          }}
+        >
           {hasTimestampGutter && hasTimestamp && (
             <div
               className="absolute left-0 top-0 pr-3 text-right font-black tabular-nums drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
@@ -325,12 +373,32 @@ export function PlacedLayer({
           <div
             className="vod-text whitespace-pre-wrap drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]"
             style={{
+              width: "100%",
               color: layer.color || "#000000",
               paddingLeft: hasTimestampGutter
                 ? isExporting
                   ? `${timestampGutter}px`
                   : `${(timestampGutter / PAGE_W) * 100}cqw`
-                : 0,
+                : isExporting
+                  ? `${layer.padding || 0}px`
+                  : layer.padding
+                    ? `${(layer.padding / PAGE_W) * 100}cqw`
+                    : 0,
+              paddingRight: isExporting
+                ? `${layer.padding || 0}px`
+                : layer.padding
+                  ? `${(layer.padding / PAGE_W) * 100}cqw`
+                  : 0,
+              paddingTop: isExporting
+                ? `${layer.padding || 0}px`
+                : layer.padding
+                  ? `${(layer.padding / PAGE_W) * 100}cqw`
+                  : 0,
+              paddingBottom: isExporting
+                ? `${layer.padding || 0}px`
+                : layer.padding
+                  ? `${(layer.padding / PAGE_W) * 100}cqw`
+                  : 0,
               fontSize: isExporting
                 ? `${layer.fontSize}px`
                 : `${layer.fontSize / 10}cqw`,
@@ -338,6 +406,8 @@ export function PlacedLayer({
               fontStyle: layer.italic ? "italic" : "normal",
               lineHeight: 1.25,
               textAlign: layer.align || "left",
+              overflowWrap: "anywhere",
+              wordBreak: "break-word",
             }}
           >
             {timestampGutterWidth <= 0 && hasTimestamp ? (
@@ -354,16 +424,19 @@ export function PlacedLayer({
       )}
 
       {layer.kind === "image" && (
-        <div className="overflow-hidden bg-slate-800 shadow-lg">
-          <img src={layer.src} alt="Screenshot" className="aspect-video w-full object-cover" />
-            <div
-              className="bg-[#25274f] px-3 py-2 text-center font-black uppercase leading-tight text-white"
-              style={{
-                fontSize: isExporting ? "12px" : "1.1cqw",
-              }}
-            >
-            {layer.caption}
-          </div>
+        <div className="flex h-full w-full items-center justify-center overflow-hidden bg-slate-950/40 shadow-lg">
+          {layer.src ? (
+            <img
+              src={layer.src}
+              alt={layer.name || "Screenshot"}
+              className="h-full w-full object-contain"
+              draggable={false}
+            />
+          ) : (
+            <div className="px-3 text-center text-xs font-bold uppercase text-slate-400">
+              Missing image
+            </div>
+          )}
         </div>
       )}
 
@@ -389,7 +462,7 @@ export function PlacedLayer({
 
       {selected && !isExporting && !layer.locked && (
         <>
-          {(layer.kind === "shape" || layer.kind === "emoji") && (
+          {(selectedLayerCount > 1 || layer.kind === "shape" || layer.kind === "emoji") && (
             <>
               {ROTATE_HANDLES.map((handle) => (
                 <button

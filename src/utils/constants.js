@@ -3,7 +3,67 @@ import heroTemplates from "../data/heroTemplates.json";
 export const PAGE_W = 1080;
 export const PAGE_H = 1527;
 export const HEROES = Object.keys(heroTemplates);
+export const DEFAULT_HERO = HEROES.includes("Invisible Woman")
+  ? "Invisible Woman"
+  : HEROES[0];
 export const FALLBACK_TEMPLATE = `${import.meta.env.BASE_URL}templates/default.png`;
+
+export function getHeroTemplateStyles(hero) {
+  const config = heroTemplates[hero];
+
+  if (!config) return [];
+
+  if (config.styles) {
+    return Object.entries(config.styles).map(([value, style]) => ({
+      value,
+      label: style.label || value,
+      template: style.template,
+    }));
+  }
+
+  return [
+    {
+      value: "default",
+      label: "Default",
+      template: config.template,
+    },
+  ];
+}
+
+export function getDefaultTemplateStyle(hero) {
+  const config = heroTemplates[hero];
+
+  if (!config) return "default";
+  if (config.defaultStyle) return config.defaultStyle;
+
+  const styles = getHeroTemplateStyles(hero);
+  return styles[0]?.value || "default";
+}
+
+export function getPageTemplateStyle(hero, templateStyle, pageIndex = 0) {
+  const config = heroTemplates[hero];
+  const styleKey = templateStyle || getDefaultTemplateStyle(hero);
+
+  if (!config?.styles || pageIndex <= 0) return styleKey;
+  if (/(?:^|-)page-2(?:$|-)/i.test(styleKey)) return styleKey;
+
+  const pageTwoStyleKey = styleKey.replace(/page-1/i, "page-2");
+
+  return config.styles[pageTwoStyleKey] ? pageTwoStyleKey : styleKey;
+}
+
+export function getHeroTemplatePath(hero, templateStyle) {
+  const config = heroTemplates[hero];
+
+  if (!config) return null;
+
+  if (config.styles) {
+    const styleKey = templateStyle || getDefaultTemplateStyle(hero);
+    return config.styles[styleKey]?.template || config.styles[getDefaultTemplateStyle(hero)]?.template || null;
+  }
+
+  return config.template || null;
+}
 
 export const DEFAULT_SAFE_ZONES = [
   {

@@ -1,18 +1,20 @@
 import { uid } from "./parsing.js";
 import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer, makeTextSegmentGroupPatch } from "./layerFactory.js";
 import { makeAutoTextLayerAtY } from "./canvas.js";
+import { getPageTemplateStyle } from "./constants.js";
 
 export function buildReviewPages({ form, segments = [], safeZones = [] }) {
   const mainZone = safeZones.find((zone) => zone.id === "mainText") || safeZones[0];
 
-  const titleLayer = makePageTitleLayer("VOD FEEDBACK");
+  const firstPageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, 0);
+  const titleLayer = makePageTitleLayer("VOD FEEDBACK", firstPageTemplateStyle);
   const footerLayer = makeFooterLayer(form);
 
   const firstPage = {
     id: uid(),
     title: "VOD FEEDBACK",
     isCoverPage: true,
-    layers: [makeDefaultBackgroundRectLayer("VOD FEEDBACK"), titleLayer, footerLayer],
+    layers: [makeDefaultBackgroundRectLayer("VOD FEEDBACK", firstPageTemplateStyle), titleLayer, footerLayer],
   };
 
   if (!mainZone || !segments.length) {
@@ -57,14 +59,15 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
 
         if (combinedBottom > maxY) {
           const pageTitle = `Page ${pages.length}`;
+          const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pages.length);
 
           const newPage = {
             id: uid(),
             title: pageTitle,
             isCoverPage: false,
             layers: [
-              makeDefaultBackgroundRectLayer(pageTitle),
-              makePageTitleLayer(pageTitle),
+              makeDefaultBackgroundRectLayer(pageTitle, pageTemplateStyle),
+              makePageTitleLayer(pageTitle, pageTemplateStyle),
               makeFooterLayer(form),
             ],
           };
@@ -90,14 +93,15 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
 
     if (layer.y + layer.h > maxY) {
       const pageTitle = `Page ${pages.length}`;
+      const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pages.length);
 
       const newPage = {
         id: uid(),
         title: pageTitle,
         isCoverPage: false,
         layers: [
-          makeDefaultBackgroundRectLayer(pageTitle),
-          makePageTitleLayer(pageTitle),
+          makeDefaultBackgroundRectLayer(pageTitle, pageTemplateStyle),
+          makePageTitleLayer(pageTitle, pageTemplateStyle),
           makeFooterLayer(form),
         ],
       };

@@ -9,7 +9,23 @@ const PAGE_TITLE_TEXT_H = 40;
 const PAGE_TITLE_FONT_SIZE = 30;
 const PAGE_TITLE_HORIZONTAL_PADDING = 52;
 const PAGE_TITLE_MAX_W = 920;
+const PAGE_TWO_TITLE_RECT_LAYOUT = {
+  x: 360,
+  y: 162,
+  w: 360,
+  h: 70,
+};
+const PAGE_TWO_TITLE_TEXT_LAYOUT = {
+  x: 360,
+  y: 179,
+  w: 360,
+  h: 40,
+};
+const PAGE_TITLE_GROUP_ID = "page-title-group";
+const PAGE_TITLE_GROUP_NAME = "VOD Feedback";
 const TEXT_SEGMENT_GROUP_NAME = "Text segments";
+const IMAGE_GROUP_NAME = "Image";
+const IMAGE_DESCRIPTION_GROUP_NAME = "Description";
 
 export function makeTextSegmentGroupPatch(groupId = uid()) {
   return {
@@ -18,7 +34,18 @@ export function makeTextSegmentGroupPatch(groupId = uid()) {
   };
 }
 
-export function getPageTitleLayout(title = "VOD FEEDBACK") {
+export function isPageTwoTemplate(templateStyle = "") {
+  return /(?:^|-)page-2(?:$|-)/i.test(String(templateStyle || ""));
+}
+
+export function getPageTitleLayout(title = "VOD FEEDBACK", templateStyle = "") {
+  if (isPageTwoTemplate(templateStyle)) {
+    return {
+      rect: { ...PAGE_TWO_TITLE_RECT_LAYOUT },
+      text: { ...PAGE_TWO_TITLE_TEXT_LAYOUT },
+    };
+  }
+
   const text = String(title || "VOD FEEDBACK").trim() || "VOD FEEDBACK";
   const estimatedTextWidth = text.length * PAGE_TITLE_FONT_SIZE * 0.62;
   const width = Math.min(
@@ -43,9 +70,9 @@ export function getPageTitleLayout(title = "VOD FEEDBACK") {
   };
 }
 
-export function syncPageTitleLayers(layers, title = "VOD FEEDBACK") {
-  const nextRect = makeDefaultBackgroundRectLayer(title);
-  const nextTitle = makePageTitleLayer(title);
+export function syncPageTitleLayers(layers, title = "VOD FEEDBACK", templateStyle = "") {
+  const nextRect = makeDefaultBackgroundRectLayer(title, templateStyle);
+  const nextTitle = makePageTitleLayer(title, templateStyle);
   const hasRect = layers.some((layer) => layer.id === "default-background-rect");
   const hasTitle = layers.some((layer) => layer.id === "page-title");
 
@@ -112,17 +139,95 @@ export function makeTextLayer(segment, x = 80, y = 380) {
   };
 }
 
-export function makeImageLayer(src, x = 700, y = 420) {
+export function makeImageLayer(source, x = 700, y = 420) {
+  const imageSource = typeof source === "string" ? { src: source } : source || {};
+  const naturalW = Number(imageSource.naturalWidth) || 0;
+  const naturalH = Number(imageSource.naturalHeight) || 0;
+  const aspectRatio = naturalW > 0 && naturalH > 0 ? naturalW / naturalH : 16 / 9;
+  const maxW = 330;
+  const maxH = 520;
+  let w = maxW;
+  let h = Math.round(w / aspectRatio);
+
+  if (h > maxH) {
+    h = maxH;
+    w = Math.round(h * aspectRatio);
+  }
+
   return {
     id: uid(),
     kind: "image",
     visible: true,
     x,
     y,
-    w: 330,
-    h: 230,
-    src,
-    caption: "Screenshot note",
+    w,
+    h,
+    src: imageSource.src || "",
+    naturalW,
+    naturalH,
+  };
+}
+
+export function makeImageDescriptionLayer(imageLayer, groupPatch = {}, text = "Screenshot note") {
+  return {
+    id: uid(),
+    kind: "text",
+    visible: true,
+    color: "#ffffff",
+    x: imageLayer.x,
+    y: imageLayer.y + imageLayer.h + 12,
+    w: imageLayer.w,
+    h: 52,
+    fontSize: 18,
+    padding: 10,
+    weight: 900,
+    italic: false,
+    align: "center",
+    verticalAlign: "center",
+    markdown: false,
+    autoFlow: true,
+    zoneId: imageLayer.zoneId || null,
+    text,
+    ...groupPatch,
+  };
+}
+
+export function makeImageDescriptionBackgroundLayer(descriptionLayer, groupPatch = {}) {
+  return {
+    id: uid(),
+    kind: "shape",
+    visible: true,
+    shapeType: "rectangle",
+    x: descriptionLayer.x,
+    y: descriptionLayer.y,
+    w: descriptionLayer.w,
+    h: descriptionLayer.h,
+    rotation: 0,
+    fillMode: "filled",
+    fillColor: "#25274f",
+    fillOpacity: 1,
+    strokeColor: "#25274f",
+    strokeOpacity: 0,
+    strokeWidth: 1,
+    zoneId: descriptionLayer.zoneId || null,
+    name: "Description background",
+    ...groupPatch,
+  };
+}
+
+export function makeImageGroupPatch(groupId = uid()) {
+  return {
+    groupId,
+    groupName: IMAGE_GROUP_NAME,
+  };
+}
+
+export function makeImageDescriptionGroupPatch(parentGroup, groupId = uid()) {
+  return {
+    groupId,
+    groupName: IMAGE_DESCRIPTION_GROUP_NAME,
+    parentGroupId: parentGroup.groupId,
+    parentGroupName: parentGroup.groupName,
   };
 }
 
@@ -166,8 +271,8 @@ export function makeShapeLayer(shapeType = "rectangle", x = 430, y = 610) {
   };
 }
 
-export function makeDefaultBackgroundRectLayer(title = "VOD FEEDBACK") {
-  const layout = getPageTitleLayout(title);
+export function makeDefaultBackgroundRectLayer(title = "VOD FEEDBACK", templateStyle = "") {
+  const layout = getPageTitleLayout(title, templateStyle);
 
   return {
     id: "default-background-rect",
@@ -185,6 +290,8 @@ export function makeDefaultBackgroundRectLayer(title = "VOD FEEDBACK") {
     strokeColor: "#75819a",
     strokeOpacity: 0,
     strokeWidth: 1,
+    groupId: PAGE_TITLE_GROUP_ID,
+    groupName: PAGE_TITLE_GROUP_NAME,
     locked: true,
   };
 }
@@ -196,9 +303,9 @@ export function makeFooterLayer(form) {
     visible: true,
     color: "#e7e6e6",
     x: 0,
-    y: 1475,
+    y: 1482,
     w: 1080,
-    h: 40,
+    h: 39,
     fontSize: 19,
     weight: 900,
     align: "center",
@@ -211,8 +318,8 @@ export function makeFooterLayer(form) {
   };
 }
 
-export function makePageTitleLayer(title) {
-  const layout = getPageTitleLayout(title);
+export function makePageTitleLayer(title, templateStyle = "") {
+  const layout = getPageTitleLayout(title, templateStyle);
 
   return {
     id: "page-title",
@@ -230,6 +337,8 @@ export function makePageTitleLayer(title) {
     markdown: false,
     autoFlow: false,
     zoneId: null,
+    groupId: PAGE_TITLE_GROUP_ID,
+    groupName: PAGE_TITLE_GROUP_NAME,
     locked: true,
     text: title || "VOD FEEDBACK",
   };

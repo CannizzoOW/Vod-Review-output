@@ -41,6 +41,7 @@ export function RightPanel({
   setSafeZonesOpen,
 }) {
   const [collapsedGroups, setCollapsedGroups] = useState({});
+  const [editingName, setEditingName] = useState(null);
   const layerEntries = buildLayerEntries(activePage.layers || []);
 
   function getLayerGroupKey(layer) {
@@ -51,36 +52,83 @@ export function RightPanel({
       : `id:${layer.groupId}`;
   }
 
+  function getParentGroupKey(layer) {
+    return layer.parentGroupId ? `id:${layer.parentGroupId}` : "";
+  }
+
   function buildLayerEntries(layers) {
     const topFirstLayers = [...layers].reverse();
-    const seenGroups = new Set();
-    const entries = [];
+    const groupMap = new Map();
+    const rootEntries = [];
 
-    for (const layer of topFirstLayers) {
+    function ensureGroup(key, name, order) {
+      if (!groupMap.has(key)) {
+        groupMap.set(key, {
+          type: "group",
+          id: key,
+          groupId: key.startsWith("id:") ? key.slice(3) : "",
+          name: name || "Group",
+          directLayers: [],
+          layers: [],
+          children: [],
+          parentKey: "",
+          order,
+        });
+      }
+
+      const group = groupMap.get(key);
+      group.order = Math.min(group.order, order);
+      return group;
+    }
+
+    topFirstLayers.forEach((layer, index) => {
       const groupKey = getLayerGroupKey(layer);
 
       if (!groupKey) {
-        entries.push({ type: "layer", layer, indented: false });
-        continue;
+        rootEntries.push({ type: "layer", layer, order: index });
+        return;
       }
 
-      if (seenGroups.has(groupKey)) continue;
+      const group = ensureGroup(groupKey, layer.groupName, index);
+      const parentKey = getParentGroupKey(layer);
 
-      seenGroups.add(groupKey);
+      group.directLayers.push(layer);
+      group.layers.push(layer);
 
-      const groupLayers = topFirstLayers.filter(
-        (candidate) => getLayerGroupKey(candidate) === groupKey
-      );
+      if (parentKey) {
+        group.parentKey = parentKey;
+        ensureGroup(parentKey, layer.parentGroupName, index);
+      }
+    });
 
-      entries.push({
-        type: "group",
-        id: groupKey,
-        name: layer.groupName || "Group",
-        layers: groupLayers,
-      });
+    for (const group of groupMap.values()) {
+      if (group.parentKey && groupMap.has(group.parentKey)) {
+        const parent = groupMap.get(group.parentKey);
+        parent.children.push(group);
+      }
     }
 
-    return entries;
+    const nestedGroupIds = new Set(
+      [...groupMap.values()]
+        .filter((group) => group.parentKey && groupMap.has(group.parentKey))
+        .map((group) => group.id)
+    );
+    const rootGroups = [...groupMap.values()].filter(
+      (group) => !nestedGroupIds.has(group.id)
+    );
+
+    function collectGroupLayers(group) {
+      group.layers = [
+        ...group.directLayers,
+        ...group.children.flatMap((child) => collectGroupLayers(child)),
+      ];
+
+      return group.layers;
+    }
+
+    rootGroups.forEach(collectGroupLayers);
+
+    return [...rootEntries, ...rootGroups].sort((a, b) => a.order - b.order);
   }
 
   function setGroupPatch(layers, patch) {
@@ -105,7 +153,112 @@ export function RightPanel({
     }));
   }
 
-  function renderLayerRow(layer, indented = false) {
+  function getNestedRowStyle(depth) {
+    if (depth <= 0) return undefined;
+
+    const indent = Math.min(depth, 4) * 1.25;
+
+    return {
+      marginLeft: `${indent}rem`,
+      width: `calc(100% - ${indent}rem)`,
+    };
+  }
+
+  function startLayerRename(e, layer) {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingName({
+      type: "layer",
+      id: layer.id,
+      value: getLayerListLabel(layer).replace(/^T\s|^IMG\s|^EMOJI\s|^S\s/, ""),
+    });
+  }
+
+  function startGroupRename(e, entry) {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingName({
+      type: "group",
+      id: entry.id,
+      value: entry.name,
+    });
+  }
+
+  function cancelRename() {
+    setEditingName(null);
+  }
+
+  function commitLayerRename(layer) {
+    const name = editingName?.value?.trim();
+
+    if (!name) {
+      setEditingName(null);
+      return;
+    }
+
+    setLayer(layer.id, { name });
+    setEditingName(null);
+  }
+
+  function commitGroupRename(entry) {
+    const name = editingName?.value?.trim();
+
+    if (!name) {
+      setEditingName(null);
+      return;
+    }
+
+    for (const layer of entry.layers) {
+      const patch = {};
+
+      if (entry.groupId && layer.groupId === entry.groupId) {
+        patch.groupName = name;
+      }
+
+      if (entry.groupId && layer.parentGroupId === entry.groupId) {
+        patch.parentGroupName = name;
+      }
+
+      if (!entry.groupId && entry.directLayers.some((directLayer) => directLayer.id === layer.id)) {
+        patch.groupName = name;
+      }
+
+      if (Object.keys(patch).length) {
+        setLayer(layer.id, patch);
+      }
+    }
+
+    setEditingName(null);
+  }
+
+  function renderRenameInput(value, onChange, onCommit) {
+    return (
+      <input
+        className="min-w-0 flex-1 rounded-md border border-blue-400 bg-slate-950 px-2 py-1 text-sm font-bold text-white outline-none"
+        autoFocus
+        value={value}
+        onClick={(e) => e.stopPropagation()}
+        onDoubleClick={(e) => e.stopPropagation()}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onCommit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            onCommit();
+          }
+
+          if (e.key === "Escape") {
+            e.preventDefault();
+            cancelRename();
+          }
+        }}
+      />
+    );
+  }
+
+  function renderLayerRow(layer, depth = 0) {
+    const indented = depth > 0;
+
     return (
       <button
         key={layer.id}
@@ -116,7 +269,8 @@ export function RightPanel({
         className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${selectedLayerIds.includes(layer.id)
             ? "bg-blue-600"
             : "bg-slate-950 hover:bg-slate-800"
-          } ${layer.visible === false ? "opacity-45" : ""} ${indented ? "ml-5 w-[calc(100%-1.25rem)] border-l border-slate-700" : ""}`}
+          } ${layer.visible === false ? "opacity-45" : ""} ${indented ? "border-l border-slate-700" : ""}`}
+        style={getNestedRowStyle(depth)}
       >
         <span
           role="button"
@@ -180,9 +334,17 @@ export function RightPanel({
           </span>
         )}
 
-        <span className="truncate">
-          {getLayerListLabel(layer).replace(/^T\s|^IMG\s|^EMOJI\s|^S\s/, "")}
-        </span>
+        {editingName?.type === "layer" && editingName.id === layer.id ? (
+          renderRenameInput(
+            editingName.value,
+            (value) => setEditingName((prev) => ({ ...prev, value })),
+            () => commitLayerRename(layer)
+          )
+        ) : (
+          <span className="min-w-0 flex-1 truncate" onDoubleClick={(e) => startLayerRename(e, layer)}>
+            {getLayerListLabel(layer).replace(/^T\s|^IMG\s|^EMOJI\s|^S\s/, "")}
+          </span>
+        )}
 
         {layer.autoFlow && (
           <span className="ml-2 rounded bg-emerald-700 px-1.5 py-0.5 text-[10px]">
@@ -196,6 +358,112 @@ export function RightPanel({
           </span>
         )}
       </button>
+    );
+  }
+
+  function renderGroup(entry, depth = 0) {
+    const groupVisible = entry.layers.some((layer) => layer.visible !== false);
+    const groupLocked = entry.layers.every((layer) => layer.locked);
+    const groupSelected = entry.layers.some((layer) =>
+      selectedLayerIds.includes(layer.id)
+    );
+    const collapsed = Boolean(collapsedGroups[entry.id]);
+
+    return (
+      <div key={entry.id} className="space-y-1">
+        <button
+          onClick={() => selectGroup(entry.layers)}
+          className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
+            groupSelected ? "bg-indigo-600" : "bg-slate-900 hover:bg-slate-800"
+          } ${groupVisible ? "" : "opacity-45"} ${depth > 0 ? "border-l border-slate-700" : ""}`}
+          style={getNestedRowStyle(depth)}
+        >
+          <span
+            role="button"
+            tabIndex={0}
+            className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+            title={groupVisible ? "Hide group" : "Show group"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setGroupPatch(entry.layers, { visible: !groupVisible });
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter" && e.key !== " ") return;
+              e.preventDefault();
+              e.stopPropagation();
+              setGroupPatch(entry.layers, { visible: !groupVisible });
+            }}
+          >
+            {groupVisible ? <Eye size={15} /> : <EyeOff size={15} />}
+          </span>
+
+          <span
+            role="button"
+            tabIndex={0}
+            className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+            title={groupLocked ? "Unlock group" : "Lock group"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setGroupPatch(entry.layers, { locked: !groupLocked });
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter" && e.key !== " ") return;
+              e.preventDefault();
+              e.stopPropagation();
+              setGroupPatch(entry.layers, { locked: !groupLocked });
+            }}
+          >
+            {groupLocked ? <Lock size={15} /> : <LockOpen size={15} />}
+          </span>
+
+          <span
+            role="button"
+            tabIndex={0}
+            className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
+            title={collapsed ? "Expand group" : "Collapse group"}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleGroupCollapsed(entry.id);
+            }}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter" && e.key !== " ") return;
+              e.preventDefault();
+              e.stopPropagation();
+              toggleGroupCollapsed(entry.id);
+            }}
+          >
+            {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
+          </span>
+
+          <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-indigo-700 text-indigo-50">
+            <Folder size={13} />
+          </span>
+
+          {editingName?.type === "group" && editingName.id === entry.id ? (
+            renderRenameInput(
+              editingName.value,
+              (value) => setEditingName((prev) => ({ ...prev, value })),
+              () => commitGroupRename(entry)
+            )
+          ) : (
+            <span className="min-w-0 flex-1 truncate font-bold" onDoubleClick={(e) => startGroupRename(e, entry)}>
+              {entry.name}
+            </span>
+          )}
+          <span className="ml-2 rounded bg-indigo-900 px-1.5 py-0.5 text-[10px] text-indigo-100">
+            {entry.layers.length}
+          </span>
+        </button>
+
+        {!collapsed && (
+          <>
+            {entry.children
+              .sort((a, b) => a.order - b.order)
+              .map((child) => renderGroup(child, depth + 1))}
+            {entry.directLayers.map((layer) => renderLayerRow(layer, depth + 1))}
+          </>
+        )}
+      </div>
     );
   }
 
@@ -233,10 +501,6 @@ export function RightPanel({
               <NumberField label="Font size" value={selectedLayer.fontSize} onChange={(v) => setLayer(selectedLayer.id, { fontSize: v })} />
               <NumberField label="Weight" value={selectedLayer.weight} onChange={(v) => setLayer(selectedLayer.id, { weight: v })} />
             </div>
-          )}
-
-          {selectedLayer.kind === "image" && (
-            <Field label="Caption" value={selectedLayer.caption} onChange={(v) => setLayer(selectedLayer.id, { caption: v })} />
           )}
 
           {selectedLayer.kind === "emoji" && (
@@ -485,94 +749,10 @@ export function RightPanel({
 
             {layerEntries.map((entry) => {
               if (entry.type === "layer") {
-                return renderLayerRow(entry.layer, entry.indented);
+                return renderLayerRow(entry.layer);
               }
 
-              const groupVisible = entry.layers.some((layer) => layer.visible !== false);
-              const groupLocked = entry.layers.every((layer) => layer.locked);
-              const groupSelected = entry.layers.some((layer) =>
-                selectedLayerIds.includes(layer.id)
-              );
-              const collapsed = Boolean(collapsedGroups[entry.id]);
-
-              return (
-                <div key={entry.id} className="space-y-1">
-                  <button
-                    onClick={() => selectGroup(entry.layers)}
-                    className={`flex w-full items-center rounded-xl px-3 py-2 text-left text-sm ${
-                      groupSelected ? "bg-indigo-600" : "bg-slate-900 hover:bg-slate-800"
-                    } ${groupVisible ? "" : "opacity-45"}`}
-                  >
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
-                      title={groupVisible ? "Hide group" : "Show group"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGroupPatch(entry.layers, { visible: !groupVisible });
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key !== "Enter" && e.key !== " ") return;
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setGroupPatch(entry.layers, { visible: !groupVisible });
-                      }}
-                    >
-                      {groupVisible ? <Eye size={15} /> : <EyeOff size={15} />}
-                    </span>
-
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
-                      title={groupLocked ? "Unlock group" : "Lock group"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setGroupPatch(entry.layers, { locked: !groupLocked });
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key !== "Enter" && e.key !== " ") return;
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setGroupPatch(entry.layers, { locked: !groupLocked });
-                      }}
-                    >
-                      {groupLocked ? <Lock size={15} /> : <LockOpen size={15} />}
-                    </span>
-
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      className="mr-2 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white"
-                      title={collapsed ? "Expand group" : "Collapse group"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleGroupCollapsed(entry.id);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key !== "Enter" && e.key !== " ") return;
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleGroupCollapsed(entry.id);
-                      }}
-                    >
-                      {collapsed ? <ChevronRight size={15} /> : <ChevronDown size={15} />}
-                    </span>
-
-                    <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded bg-indigo-700 text-indigo-50">
-                      <Folder size={13} />
-                    </span>
-
-                    <span className="truncate font-bold">{entry.name}</span>
-                    <span className="ml-2 rounded bg-indigo-900 px-1.5 py-0.5 text-[10px] text-indigo-100">
-                      {entry.layers.length}
-                    </span>
-                  </button>
-
-                  {!collapsed && entry.layers.map((layer) => renderLayerRow(layer, true))}
-                </div>
-              );
+              return renderGroup(entry);
             })}
           </div>
         )}

@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { heroTemplates } from "../utils/constants.js";
+import { DEFAULT_HERO, getDefaultTemplateStyle, heroTemplates } from "../utils/constants.js";
 
 export function useReviewForm(defaultHero) {
-  const firstHero = heroTemplates["Cloak & Dagger"]
-    ? "Cloak & Dagger"
-    : Object.keys(heroTemplates)[0];
+  const firstHero = DEFAULT_HERO || Object.keys(heroTemplates)[0];
 
   const [form, setForm] = useState({
     player: "rockstarcobra9",
     hero: defaultHero || firstHero,
+    templateStyle: getDefaultTemplateStyle(defaultHero || firstHero),
     reviewer: "Phimmiezz",
     replayId: "10903088673",
     requestId: "",

@@ -264,6 +264,8 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
                     fontStyle: draft.italic ? "italic" : "normal",
                     lineHeight: 1.25,
                     textAlign: draft.align || "left",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
                   }}
                 >
                   {draft.markdown ? (

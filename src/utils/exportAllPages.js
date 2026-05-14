@@ -3,7 +3,6 @@ import { toPng } from "html-to-image";
 export async function exportAllPages({
     pages,
     activePageId,
-    setActivePageId,
     exportRef,
     form,
     uiState,
@@ -18,7 +17,10 @@ export async function exportAllPages({
 
     const wasGridEnabled = uiState.gridEnabled;
     const wasLockToRegions = uiState.lockToRegions;
-    const originalPageId = activePageId;
+    const activePageIndex = Math.max(
+        0,
+        pages.findIndex((page) => page.id === activePageId)
+    );
 
     try {
         uiState.setIsExporting(true);
@@ -35,55 +37,43 @@ export async function exportAllPages({
             .replace(/[^\w-]+/g, "-")
             .toLowerCase();
 
-        for (let i = 0; i < pages.length; i++) {
-            const page = pages[i];
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        await new Promise((resolve) => setTimeout(resolve, 50));
 
-            setActivePageId(page.id);
+        const dataUrl = await toPng(exportRef.current, {
+            cacheBust: true,
+            pixelRatio: 1,
+            canvasWidth: PAGE_W,
+            canvasHeight: PAGE_H,
+            width: PAGE_W,
+            height: PAGE_H,
 
-            // Wait for React render/update
-            await new Promise((resolve) => requestAnimationFrame(resolve));
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            filter: (node) => {
+                return !node.classList?.contains("no-export");
+            },
 
-            const dataUrl = await toPng(exportRef.current, {
-                cacheBust: true,
-                pixelRatio: 1,
-                canvasWidth: PAGE_W,
-                canvasHeight: PAGE_H,
-                width: PAGE_W,
-                height: PAGE_H,
+            style: {
+                width: `${PAGE_W}px`,
+                height: `${PAGE_H}px`,
+                borderRadius: "0px",
+                boxShadow: "none",
+                outline: "none",
+                transform: "none",
+            },
+        });
 
-                filter: (node) => {
-                    return !node.classList?.contains("no-export");
-                },
+        const link = document.createElement("a");
 
-                style: {
-                    width: `${PAGE_W}px`,
-                    height: `${PAGE_H}px`,
-                    borderRadius: "0px",
-                    boxShadow: "none",
-                    outline: "none",
-                    transform: "none",
-                },
-            });
+        link.download =
+            `vod-review-${safePlayer}-` +
+            `${safeHero}-page-${activePageIndex + 1}.png`;
 
-            const link = document.createElement("a");
-
-            link.download =
-                `vod-review-${safePlayer}-` +
-                `${safeHero}-page-${i + 1}.png`;
-
-            link.href = dataUrl;
-            link.click();
-
-            // Prevent browser choking on rapid downloads
-            await new Promise((resolve) => setTimeout(resolve, 150));
-        }
+        link.href = dataUrl;
+        link.click();
     } catch (error) {
         console.error("PNG export failed:", error);
         alert("PNG export failed. Check console for details.");
     } finally {
-        setActivePageId(originalPageId);
-
         uiState.setGridEnabled(wasGridEnabled);
         uiState.setLockToRegions(wasLockToRegions);
         uiState.setIsExporting(false);

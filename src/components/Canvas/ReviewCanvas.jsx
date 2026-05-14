@@ -118,6 +118,7 @@ export function ReviewCanvas({
             layer={layer}
             isExporting={isExporting}
             selected={!isExporting && selectedLayerIds.includes(layer.id)}
+            selectedLayerCount={selectedLayerIds.length}
             onSelect={(e) => {
               e.stopPropagation();
               selectLayer(layer.id, e.shiftKey);

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { DEFAULT_HERO, getDefaultTemplateStyle } from "../utils/constants.js";
 
 export function useUIState() {
   const [zoom, setZoom] = useState(0.9);
@@ -25,7 +26,8 @@ export function useUIState() {
     player: "",
     reviewer: "",
     replayId: "",
-    hero: "",
+    hero: DEFAULT_HERO,
+    templateStyle: getDefaultTemplateStyle(DEFAULT_HERO),
   });
 
   // Modal state

@@ -1,20 +1,24 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { uid } from "../utils/parsing.js";
 import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer, syncPageTitleLayers } from "../utils/layerFactory.js";
+import { getPageTemplateStyle } from "../utils/constants.js";
 
 export function usePages(form) {
-  const firstPage = useMemo(
-    () => ({
+  const [pages, setPages] = useState(() => {
+    const firstPage = {
       id: uid(),
       title: "VOD FEEDBACK",
       isCoverPage: true,
-      layers: [makeDefaultBackgroundRectLayer("VOD FEEDBACK"), makePageTitleLayer("VOD FEEDBACK")],
-    }),
-    []
-  );
+      layers: [
+        makeDefaultBackgroundRectLayer("VOD FEEDBACK", getPageTemplateStyle(form.hero, form.templateStyle, 0)),
+        makePageTitleLayer("VOD FEEDBACK", getPageTemplateStyle(form.hero, form.templateStyle, 0)),
+        makeFooterLayer(form),
+      ],
+    };
 
-  const [pages, setPages] = useState([firstPage]);
-  const [activePageId, setActivePageId] = useState(firstPage.id);
+    return [firstPage];
+  });
+  const [activePageId, setActivePageId] = useState(() => pages[0].id);
   const [editingPageId, setEditingPageId] = useState(null);
 
   const activePage = pages.find((p) => p.id === activePageId) || pages[0];
@@ -28,7 +32,11 @@ export function usePages(form) {
   }
 
   function updatePageTitleLayer(title = activePage?.title || "VOD FEEDBACK") {
-    updateActivePageLayers((layers) => syncPageTitleLayers(layers, title));
+    const activePageIndex = pages.findIndex((page) => page.id === activePageId);
+
+    updateActivePageLayers((layers) =>
+      syncPageTitleLayers(layers, title, getPageTemplateStyle(form.hero, form.templateStyle, activePageIndex))
+    );
   }
 
   function updateFooterLayer() {
@@ -46,11 +54,16 @@ export function usePages(form) {
         if (page.id !== pageId) return page;
 
         const nextTitle = title;
+        const pageIndex = prev.findIndex((candidate) => candidate.id === pageId);
 
         return {
           ...page,
           title: nextTitle,
-          layers: syncPageTitleLayers(page.layers, nextTitle),
+          layers: syncPageTitleLayers(
+            page.layers,
+            nextTitle,
+            getPageTemplateStyle(form.hero, form.templateStyle, pageIndex)
+          ),
         };
       })
     );
@@ -107,12 +120,17 @@ export function usePages(form) {
 
   function addPage() {
     const pageTitle = getNextPageTitle(pages);
+    const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pages.length);
 
     const page = {
       id: uid(),
       title: pageTitle,
       isCoverPage: false,
-      layers: [makeDefaultBackgroundRectLayer(pageTitle), makePageTitleLayer(pageTitle)],
+      layers: [
+        makeDefaultBackgroundRectLayer(pageTitle, pageTemplateStyle),
+        makePageTitleLayer(pageTitle, pageTemplateStyle),
+        makeFooterLayer(form),
+      ],
     };
 
     setPages((prev) => [...prev, page]);

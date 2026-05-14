@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Field } from "../FormFields/Field.jsx";
 import { Label } from "../FormFields/Label.jsx";
 import { RichTextArea } from "../FormFields/RichTextArea.jsx";
+import { DEFAULT_HERO, getDefaultTemplateStyle, getHeroTemplateStyles } from "../../utils/constants.js";
 
 export function EditReviewDetailsModal({
   form,
@@ -16,15 +17,25 @@ export function EditReviewDetailsModal({
     player: form.player || "",
     reviewer: form.reviewer || "",
     replayId: form.replayId || "",
-    hero: form.hero || heroes[0] || "",
+    hero: form.hero || DEFAULT_HERO || heroes[0] || "",
+    templateStyle: form.templateStyle || getDefaultTemplateStyle(form.hero || DEFAULT_HERO || heroes[0] || ""),
     requestId: form.requestId || "",
   });
   const [localRawText, setLocalRawText] = useState(rawText || "");
+  const templateStyles = getHeroTemplateStyles(localForm.hero);
 
   function updateField(key, value) {
     setLocalForm((prev) => ({
       ...prev,
       [key]: value,
+    }));
+  }
+
+  function updateHero(hero) {
+    setLocalForm((prev) => ({
+      ...prev,
+      hero,
+      templateStyle: getDefaultTemplateStyle(hero),
     }));
   }
 
@@ -53,8 +64,8 @@ export function EditReviewDetailsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 p-6">
-      <div className="w-full max-w-5xl rounded-3xl border border-slate-700 bg-[#0f172a] p-6 shadow-2xl">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 p-4">
+      <div className="max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-slate-700 bg-[#0f172a] p-5 shadow-2xl">
         <div className="mb-5 flex items-start justify-between">
           <div>
             <p className="text-sm font-black uppercase tracking-wider text-blue-300">
@@ -80,7 +91,7 @@ export function EditReviewDetailsModal({
         </div>
 
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field
               label="Player"
               value={localForm.player}
@@ -106,7 +117,7 @@ export function EditReviewDetailsModal({
             <select
               className="input"
               value={localForm.hero}
-              onChange={(e) => updateField("hero", e.target.value)}
+              onChange={(e) => updateHero(e.target.value)}
             >
               {heroes.map((hero) => (
                 <option key={hero}>
@@ -115,6 +126,24 @@ export function EditReviewDetailsModal({
               ))}
             </select>
           </label>
+
+          {templateStyles.length > 1 && (
+            <label className="block">
+              <Label>Template style</Label>
+
+              <select
+                className="input"
+                value={localForm.templateStyle || getDefaultTemplateStyle(localForm.hero)}
+                onChange={(e) => updateField("templateStyle", e.target.value)}
+              >
+                {templateStyles.map((style) => (
+                  <option key={style.value} value={style.value}>
+                    {style.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <RichTextArea
             label="Raw review text"

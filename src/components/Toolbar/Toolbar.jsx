@@ -30,6 +30,8 @@ export function Toolbar({
   setLockToRegions,
   updateFooterLayer,
   loadPendingImage,
+  pageTemplateLabel,
+  pageTemplateKind,
 }) {
   const [contrastBackground, setContrastBackground] = useState("#ffffff");
   const shapeOptions = [
@@ -231,6 +233,15 @@ export function Toolbar({
       </div>
 
       <div className="flex items-center gap-2">
+        <div
+          className="mr-2 hidden max-w-56 rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs font-bold text-slate-300 xl:block"
+          title={`Current page template: ${pageTemplateLabel}`}
+        >
+          <span className="text-slate-500">{pageTemplateKind}</span>
+          <span className="mx-1 text-slate-600">/</span>
+          <span className="text-slate-200">{pageTemplateLabel}</span>
+        </div>
+
         <button className="btn-secondary h-9 px-3" onClick={() => setZoom((z) => Math.max(0.45, Number((z - 0.1).toFixed(2))))}>
           <ZoomOut size={16} />
         </button>

@@ -1,206 +1,727 @@
 {
   "Adam Warlock": {
     "slug": "adam-warlock",
-    "template": "templates/Adam Warlock.png"
+    "template": "templates/Adam Warlock/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Adam Warlock/Default.png"
+      }
+    }
   },
   "Angela": {
     "slug": "angela",
-    "template": "templates/Angela.png"
+    "template": "templates/Angela/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Angela/Default.png"
+      }
+    }
   },
   "Black Cat": {
     "slug": "black-cat",
-    "template": "templates/Black Cat.png"
+    "template": "templates/Black Cat/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Black Cat/Default.png"
+      }
+    }
   },
   "Black Panther": {
     "slug": "black-panther",
-    "template": "templates/Black Panther.png"
+    "template": "templates/Black Panther/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Black Panther/Default.png"
+      }
+    }
   },
   "Black Widow": {
     "slug": "black-widow",
-    "template": "templates/Black Widow.png"
+    "template": "templates/Black Widow/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Black Widow/Default.png"
+      }
+    }
   },
   "Blade": {
     "slug": "blade",
-    "template": "templates/Blade.png"
+    "template": "templates/Blade/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Blade/Default.png"
+      }
+    }
   },
   "Captain America": {
     "slug": "captain-america",
-    "template": "templates/Captain America.png"
+    "template": "templates/Captain America/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Captain America/Default.png"
+      }
+    }
   },
-  "Cloak Dagger": {
+  "Cloak & Dagger": {
     "slug": "cloak-dagger",
-    "template": "templates/Cloak & Dagger.png"
+    "template": "templates/Cloak & Dagger/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Cloak & Dagger/Default.png"
+      }
+    }
   },
   "Daredevil": {
     "slug": "daredevil",
-    "template": "templates/Daredevil.png"
+    "template": "templates/Daredevil/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Daredevil/Default.png"
+      }
+    }
   },
   "Doctor Strange": {
     "slug": "doctor-strange",
-    "template": "templates/Doctor Strange.png"
+    "template": "templates/Doctor Strange/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Doctor Strange/Default.png"
+      }
+    }
   },
   "Dpspool": {
     "slug": "dpspool",
-    "template": "templates/Dpspool.png"
+    "template": "templates/Dpspool/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Dpspool/Default.png"
+      }
+    }
   },
   "Elsa Bloodstone": {
     "slug": "elsa-bloodstone",
-    "template": "templates/Elsa Bloodstone.png"
+    "template": "templates/Elsa Bloodstone/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Elsa Bloodstone/Default.png"
+      }
+    }
   },
   "Emma Frost": {
     "slug": "emma-frost",
-    "template": "templates/Emma Frost.png"
+    "template": "templates/Emma Frost/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Emma Frost/Default.png"
+      }
+    }
   },
   "Gambit": {
     "slug": "gambit",
-    "template": "templates/Gambit.png"
+    "template": "templates/Gambit/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Gambit/Default.png"
+      }
+    }
   },
   "Groot": {
     "slug": "groot",
-    "template": "templates/Groot.png"
+    "template": "templates/Groot/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Groot/Default.png"
+      }
+    }
   },
   "Hawkeye": {
     "slug": "hawkeye",
-    "template": "templates/Hawkeye.png"
+    "template": "templates/Hawkeye/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Hawkeye/Default.png"
+      }
+    }
   },
   "Healpool": {
     "slug": "healpool",
-    "template": "templates/Healpool.png"
+    "template": "templates/Healpool/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Healpool/Default.png"
+      }
+    }
   },
   "Hela": {
     "slug": "hela",
-    "template": "templates/Hela.png"
+    "template": "templates/Hela/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Hela/Default.png"
+      }
+    }
   },
   "Hulk": {
     "slug": "hulk",
-    "template": "templates/Hulk.png"
+    "template": "templates/Hulk/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Hulk/Default.png"
+      }
+    }
   },
   "Human Torch": {
     "slug": "human-torch",
-    "template": "templates/Human Torch.png"
+    "template": "templates/Human Torch/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Human Torch/Default.png"
+      }
+    }
   },
   "Invisible Woman": {
     "slug": "invisible-woman",
-    "template": "templates/Invisible Woman.png"
+    "template": "templates/Invisible Woman/DEFAULT V2 Page 1.png",
+    "defaultStyle": "default-v2-page-1",
+    "styles": {
+      "azure-shade-v1-page-1": {
+        "label": "Azure Shade V1 Page 1",
+        "template": "templates/Invisible Woman/AZURE SHADE V1 Page 1.png"
+      },
+      "azure-shade-v1-page-2": {
+        "label": "Azure Shade V1 Page 2",
+        "template": "templates/Invisible Woman/AZURE SHADE V1 Page 2.png"
+      },
+      "azure-shade-v2-page-1": {
+        "label": "Azure Shade V2 Page 1",
+        "template": "templates/Invisible Woman/AZURE SHADE V2 Page 1.png"
+      },
+      "azure-shade-v2-page-2": {
+        "label": "Azure Shade V2 Page 2",
+        "template": "templates/Invisible Woman/AZURE SHADE V2 Page 2.png"
+      },
+      "azure-shade-v3-page-1-2": {
+        "label": "Azure Shade V3 Page 1 2",
+        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 1 (2).png"
+      },
+      "azure-shade-v3-page-1": {
+        "label": "Azure Shade V3 Page 1",
+        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 1.png"
+      },
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Invisible Woman/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Invisible Woman/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Invisible Woman/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Invisible Woman/DEFAULT V2 Page 2.png"
+      },
+      "default-v3-page-1": {
+        "label": "Default V3 Page 1",
+        "template": "templates/Invisible Woman/DEFAULT V3 Page 1.png"
+      },
+      "default-v3-page-2": {
+        "label": "Default V3 Page 2",
+        "template": "templates/Invisible Woman/DEFAULT V3 Page 2.png"
+      },
+      "disappearing-dessert-v1-page-1": {
+        "label": "Disappearing Dessert V1 Page 1",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V1 Page 1.png"
+      },
+      "disappearing-dessert-v1-page-2": {
+        "label": "Disappearing Dessert V1 Page 2",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V1 Page 2.png"
+      },
+      "disappearing-dessert-v2-page-1": {
+        "label": "Disappearing Dessert V2 Page 1",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V2 Page 1.png"
+      },
+      "disappearing-dessert-v2-page-2": {
+        "label": "Disappearing Dessert V2 Page 2",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V2 Page 2.png"
+      },
+      "disappearing-dessert-v3-page-1": {
+        "label": "Disappearing Dessert V3 Page 1",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V3 Page 1.png"
+      },
+      "disappearing-dessert-v3-page-2": {
+        "label": "Disappearing Dessert V3 Page 2",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V3 Page 2.png"
+      },
+      "disappearing-dessert-v4-page-1": {
+        "label": "Disappearing Dessert V4 Page 1",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 1.png"
+      },
+      "disappearing-dessert-v4-page-2": {
+        "label": "Disappearing Dessert V4 Page 2",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 2.png"
+      },
+      "future-foundation-v1-page-1": {
+        "label": "Future Foundation V1 Page 1",
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V1 Page 1.png"
+      },
+      "future-foundation-v1-page-2": {
+        "label": "Future Foundation V1 Page 2",
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V1 Page 2.png"
+      },
+      "future-foundation-v2-page-1": {
+        "label": "Future Foundation V2 Page 1",
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V2 Page 1.png"
+      },
+      "future-foundation-v2-page-2": {
+        "label": "Future Foundation V2 Page 2",
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V2 Page 2.png"
+      },
+      "life-fantastic-v1-page-1": {
+        "label": "Life Fantastic V1 Page 1",
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V1 Page 1.png"
+      },
+      "life-fantastic-v1-page-2": {
+        "label": "Life Fantastic V1 Page 2",
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V1 Page 2.png"
+      },
+      "life-fantastic-v2-page-1": {
+        "label": "Life Fantastic V2 Page 1",
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V2 Page 1.png"
+      },
+      "life-fantastic-v2-page-2": {
+        "label": "Life Fantastic V2 Page 2",
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V2 Page 2.png"
+      },
+      "malice-v1-page-1": {
+        "label": "Malice V1 Page 1",
+        "template": "templates/Invisible Woman/MALICE V1 Page 1.png"
+      },
+      "malice-v1-page-2": {
+        "label": "Malice V1 Page 2",
+        "template": "templates/Invisible Woman/MALICE V1 Page 2.png"
+      },
+      "malice-v2-page-1": {
+        "label": "Malice V2 Page 1",
+        "template": "templates/Invisible Woman/MALICE V2 Page 1.png"
+      },
+      "malice-v2-page-2": {
+        "label": "Malice V2 Page 2",
+        "template": "templates/Invisible Woman/MALICE V2 Page 2.png"
+      },
+      "prism-parade-v1-page-1": {
+        "label": "Prism Parade V1 Page 1",
+        "template": "templates/Invisible Woman/PRISM PARADE V1 Page 1.png"
+      },
+      "prism-parade-v1-page-2": {
+        "label": "Prism Parade V1 Page 2",
+        "template": "templates/Invisible Woman/PRISM PARADE V1 Page 2.png"
+      },
+      "prism-parade-v2-page-1": {
+        "label": "Prism Parade V2 Page 1",
+        "template": "templates/Invisible Woman/PRISM PARADE V2 Page 1.png"
+      },
+      "prism-parade-v2-page-2": {
+        "label": "Prism Parade V2 Page 2",
+        "template": "templates/Invisible Woman/PRISM PARADE V2 Page 2.png"
+      },
+      "the-debater-v1-page-1": {
+        "label": "The Debater V1 Page 1",
+        "template": "templates/Invisible Woman/THE DEBATER V1 Page 1.png"
+      },
+      "the-debater-v1-page-2": {
+        "label": "The Debater V1 Page 2",
+        "template": "templates/Invisible Woman/THE DEBATER V1 Page 2.png"
+      },
+      "the-debater-v2-page-1": {
+        "label": "The Debater V2 Page 1",
+        "template": "templates/Invisible Woman/THE DEBATER V2 Page 1.png"
+      },
+      "the-debater-v2-page-2": {
+        "label": "The Debater V2 Page 2",
+        "template": "templates/Invisible Woman/THE DEBATER V2 Page 2.png"
+      }
+    }
   },
   "Iron Fist": {
     "slug": "iron-fist",
-    "template": "templates/Iron Fist.png"
+    "template": "templates/Iron Fist/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Iron Fist/Default.png"
+      }
+    }
   },
   "Iron Man": {
     "slug": "iron-man",
-    "template": "templates/Iron Man.png"
+    "template": "templates/Iron Man/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Iron Man/Default.png"
+      }
+    }
   },
   "Jeff": {
     "slug": "jeff",
-    "template": "templates/Jeff.png"
+    "template": "templates/Jeff/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Jeff/Default.png"
+      }
+    }
   },
   "Loki": {
     "slug": "loki",
-    "template": "templates/Loki.png"
+    "template": "templates/Loki/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Loki/Default.png"
+      }
+    }
   },
   "Luna Snow": {
     "slug": "luna-snow",
-    "template": "templates/Luna Snow.png"
+    "template": "templates/Luna Snow/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Luna Snow/Default.png"
+      }
+    }
   },
   "Magik": {
     "slug": "magik",
-    "template": "templates/Magik.png"
+    "template": "templates/Magik/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Magik/Default.png"
+      }
+    }
   },
   "Magneto": {
     "slug": "magneto",
-    "template": "templates/Magneto.png"
+    "template": "templates/Magneto/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Magneto/Default.png"
+      }
+    }
   },
   "Mantis": {
     "slug": "mantis",
-    "template": "templates/Mantis.png"
+    "template": "templates/Mantis/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Mantis/Default.png"
+      }
+    }
   },
   "Mister Fantastic": {
     "slug": "mister-fantastic",
-    "template": "templates/Mister Fantastic.png"
+    "template": "templates/Mister Fantastic/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Mister Fantastic/Default.png"
+      }
+    }
   },
   "Moon Knight": {
     "slug": "moon-knight",
-    "template": "templates/Moon Knight.png"
+    "template": "templates/Moon Knight/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Moon Knight/Default.png"
+      }
+    }
   },
   "Namor": {
     "slug": "namor",
-    "template": "templates/Namor.png"
+    "template": "templates/Namor/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Namor/Default.png"
+      }
+    }
   },
   "Peni Parker": {
     "slug": "peni-parker",
-    "template": "templates/Peni Parker.png"
+    "template": "templates/Peni Parker/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Peni Parker/Default.png"
+      }
+    }
   },
   "Phoenix": {
     "slug": "phoenix",
-    "template": "templates/Phoenix.png"
+    "template": "templates/Phoenix/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Phoenix/Default.png"
+      }
+    }
   },
   "Psylocke": {
     "slug": "psylocke",
-    "template": "templates/Psylocke.png"
+    "template": "templates/Psylocke/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Psylocke/Default.png"
+      }
+    }
   },
   "Rocket Raccoon": {
     "slug": "rocket-raccoon",
-    "template": "templates/Rocket Raccoon.png"
+    "template": "templates/Rocket Raccoon/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Rocket Raccoon/Default.png"
+      }
+    }
   },
   "Rogue": {
     "slug": "rogue",
-    "template": "templates/Rogue.png"
+    "template": "templates/Rogue/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Rogue/Default.png"
+      }
+    }
   },
   "Scarlet Witch": {
     "slug": "scarlet-witch",
-    "template": "templates/Scarlet Witch.png"
+    "template": "templates/Scarlet Witch/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Scarlet Witch/Default.png"
+      }
+    }
   },
   "Spider-Man": {
     "slug": "spider-man",
-    "template": "templates/Spider-Man.png"
+    "template": "templates/Spider-Man/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Spider-Man/Default.png"
+      }
+    }
   },
   "Squirrel Girl": {
     "slug": "squirrel-girl",
-    "template": "templates/Squirrel Girl.png"
+    "template": "templates/Squirrel Girl/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Squirrel Girl/Default.png"
+      }
+    }
   },
   "Star Lord": {
     "slug": "star-lord",
-    "template": "templates/Star-Lord.png"
+    "template": "templates/Star Lord/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Star Lord/Default.png"
+      }
+    }
   },
   "Storm": {
     "slug": "storm",
-    "template": "templates/Storm.png"
+    "template": "templates/Storm/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Storm/Default.png"
+      }
+    }
   },
   "Tankpool": {
     "slug": "tankpool",
-    "template": "templates/Tankpool.png"
+    "template": "templates/Tankpool/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Tankpool/Default.png"
+      }
+    }
   },
   "The Punisher": {
     "slug": "the-punisher",
-    "template": "templates/The Punisher.png"
+    "template": "templates/The Punisher/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/The Punisher/Default.png"
+      }
+    }
   },
   "The Thing": {
     "slug": "the-thing",
-    "template": "templates/The Thing.png"
+    "template": "templates/The Thing/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/The Thing/Default.png"
+      }
+    }
   },
   "Thor": {
     "slug": "thor",
-    "template": "templates/Thor.png"
+    "template": "templates/Thor/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Thor/Default.png"
+      }
+    }
   },
   "Ultron": {
     "slug": "ultron",
-    "template": "templates/Ultron.png"
+    "template": "templates/Ultron/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Ultron/Default.png"
+      }
+    }
   },
   "Venom": {
     "slug": "venom",
-    "template": "templates/Venom.png"
+    "template": "templates/Venom/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Venom/Default.png"
+      }
+    }
   },
   "White Fox": {
     "slug": "white-fox",
-    "template": "templates/White Fox.png"
+    "template": "templates/White Fox/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/White Fox/Default.png"
+      },
+      "the-leader-v1-page-1": {
+        "label": "The Leader V1 Page 1",
+        "template": "templates/White Fox/The Leader V1 Page 1.png"
+      },
+      "the-leader-v1-page-2": {
+        "label": "The Leader V1 Page 2",
+        "template": "templates/White Fox/The Leader V1 Page 2.png"
+      }
+    }
   },
   "Winter Soldier": {
     "slug": "winter-soldier",
-    "template": "templates/Winter Soldier.png"
+    "template": "templates/Winter Soldier/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Winter Soldier/Default.png"
+      }
+    }
   },
   "Wolverine": {
     "slug": "wolverine",
-    "template": "templates/Wolverine.png"
+    "template": "templates/Wolverine/Default.png",
+    "defaultStyle": "default",
+    "styles": {
+      "default": {
+        "label": "Default",
+        "template": "templates/Wolverine/Default.png"
+      }
+    }
   }
 }

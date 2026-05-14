@@ -7,7 +7,6 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
   const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
   const [selectedSafeZoneId, setSelectedSafeZoneId] = useState(null);
 
-  const activePage = pages.find((p) => p.id === activePageId);
   const selectedSafeZone = safeZones.find((z) => z.id === selectedSafeZoneId);
 
   function updateActivePageLayers(updater) {
@@ -21,18 +20,21 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
   function setLayer(layerId, patch, options = {}) {
     const shouldSnap = options.snapToGrid ?? false;
 
-    updateActivePageLayers((layers) =>
-      layers.map((layer) => {
+    updateActivePageLayers((layers) => {
+      let updatedTargetLayer = null;
+      const nextLayers = layers.map((layer) => {
         if (layer.id !== layerId) return layer;
 
         let next = { ...layer, ...patch };
 
         if (next.kind === "text" && next.autoFlow) {
+          const padding = Number(next.padding) || 0;
+
           next.h = estimateTextHeight(
             next.text,
-            next.w - (next.timestampGutter || 0),
+            next.w - (next.timestampGutter || 0) - padding * 2,
             next.fontSize
-          );
+          ) + padding * 2;
         }
 
         if (gridEnabled && shouldSnap) {
@@ -46,9 +48,35 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
           next = clampToZones(next, safeZones);
         }
 
+        updatedTargetLayer = next;
         return next;
-      })
-    );
+      });
+
+      if (
+        updatedTargetLayer?.kind === "text" &&
+        updatedTargetLayer.groupId
+      ) {
+        return nextLayers.map((layer) => {
+          if (
+            layer.groupId !== updatedTargetLayer.groupId ||
+            layer.kind !== "shape" ||
+            layer.name !== "Description background"
+          ) {
+            return layer;
+          }
+
+          return {
+            ...layer,
+            x: updatedTargetLayer.x,
+            y: updatedTargetLayer.y,
+            w: updatedTargetLayer.w,
+            h: updatedTargetLayer.h,
+          };
+        });
+      }
+
+      return nextLayers;
+    });
   }
 
   function setSafeZone(zoneId, patch, options = {}) {
