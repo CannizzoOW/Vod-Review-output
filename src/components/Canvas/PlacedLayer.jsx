@@ -506,7 +506,7 @@ export function PlacedLayer({
         />
       )}
 
-      {selected && !isExporting && !layer.locked && (
+      {selected && !isExporting && !layer.locked && selectedLayerCount <= 1 && (
         <>
           {!isPointerActive && (selectedLayerCount > 1 || layer.kind === "shape" || layer.kind === "emoji") && (
             <>

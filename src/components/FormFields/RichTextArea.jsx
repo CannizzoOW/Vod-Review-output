@@ -71,18 +71,23 @@ export function RichTextArea({
 
     const { start, end } = selectionRef.current;
     const selectedText = value.slice(start, end) || fallback;
-    const nextValue =
-      value.slice(0, start) +
-      before +
-      selectedText +
-      after +
-      value.slice(end);
+    const alreadyWrapped =
+      selectedText.startsWith(before) &&
+      selectedText.endsWith(after) &&
+      selectedText.length >= before.length + after.length;
+    const nextSelectedText = alreadyWrapped
+      ? selectedText.slice(before.length, selectedText.length - after.length)
+      : `${before}${selectedText}${after}`;
+    const nextValue = value.slice(0, start) + nextSelectedText + value.slice(end);
 
     onChange(nextValue);
 
     requestAnimationFrame(() => {
       textarea.focus();
-      textarea.setSelectionRange(start + before.length, start + before.length + selectedText.length);
+      textarea.setSelectionRange(
+        alreadyWrapped ? start : start + before.length,
+        alreadyWrapped ? start + nextSelectedText.length : start + before.length + selectedText.length
+      );
     });
   }
 
@@ -92,9 +97,10 @@ export function RichTextArea({
 
     const { start, end } = selectionRef.current;
     const selectedText = value.slice(start, end) || "Text";
-    const nextSelectedText = selectedText
-      .split("\n")
-      .map((line) => `${prefix}${line}`)
+    const lines = selectedText.split("\n");
+    const allPrefixed = lines.every((line) => line.startsWith(prefix));
+    const nextSelectedText = lines
+      .map((line) => allPrefixed ? line.slice(prefix.length) : `${prefix}${line}`)
       .join("\n");
     const nextValue =
       value.slice(0, start) +

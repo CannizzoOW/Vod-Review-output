@@ -31,6 +31,12 @@ export function ReviewCanvas({
   timestampColor,
 }) {
   const [snapGuides, setSnapGuides] = useState([]);
+  const selectedVisibleLayers = layers.filter(
+    (layer) => layer.visible !== false && selectedLayerIds.includes(layer.id)
+  );
+  const selectedBounds = selectedVisibleLayers.length > 1
+    ? getLayerBounds(selectedVisibleLayers)
+    : null;
   const cursor = tool === "insertText" || tool === "insertSegment" || tool === "insertImage" || tool === "insertComparison" || tool.startsWith("insertShape:")
     ? "cursor-crosshair"
     : "cursor-default";
@@ -119,6 +125,18 @@ export function ReviewCanvas({
           />
         ))}
 
+        {selectedBounds && !isExporting && (
+          <div
+            className="pointer-events-none absolute z-30 border-2 border-blue-400"
+            style={{
+              left: `${(selectedBounds.x / PAGE_W) * 100}%`,
+              top: `${(selectedBounds.y / PAGE_H) * 100}%`,
+              width: `${(selectedBounds.w / PAGE_W) * 100}%`,
+              height: `${(selectedBounds.h / PAGE_H) * 100}%`,
+            }}
+          />
+        )}
+
         {layers.filter((layer) => layer.visible !== false).map((layer) => (
           <PlacedLayer
             key={layer.id}
@@ -147,4 +165,18 @@ export function ReviewCanvas({
       </div>
     </motion.div>
   );
+}
+
+function getLayerBounds(layers) {
+  const left = Math.min(...layers.map((layer) => layer.x));
+  const top = Math.min(...layers.map((layer) => layer.y));
+  const right = Math.max(...layers.map((layer) => layer.x + layer.w));
+  const bottom = Math.max(...layers.map((layer) => layer.y + layer.h));
+
+  return {
+    x: left,
+    y: top,
+    w: right - left,
+    h: bottom - top,
+  };
 }
