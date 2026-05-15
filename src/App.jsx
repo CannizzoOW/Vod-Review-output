@@ -1470,7 +1470,9 @@ export default function App() {
                   timestampColor={uiState.timestampColor}
                 />
                 <p className="mt-4 text-center text-xs font-semibold text-slate-400">
-                  Copyright (c) 2026 Cannizzo. This tool is created for Pathfinders and is not affiliated with Marvel Rivals, NetEase, or any official Marvel Rivals service.
+                  {"\u00A9"} 2026 Cannizzo. Created for Pathfinders.
+                  <br />
+                  {"\u00A9"} 2025 MARVEL. Unofficial fan tool; not affiliated with Marvel Rivals, NetEase, or any official Marvel Rivals service.
                 </p>
               </div>
             </div>
