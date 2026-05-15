@@ -594,7 +594,7 @@ export function RightPanel({
         </div>
       </div>
 
-      <div className="panel mt-3">
+      <div className="panel mt-3" data-tutorial="history-panel">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="font-black">Timestamp gutter</p>

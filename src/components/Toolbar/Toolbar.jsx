@@ -3,12 +3,12 @@ import {
   ChevronDown,
   Circle,
   Columns2,
+  Contrast,
   ImagePlus,
   LayoutGrid,
   Minus,
   MousePointer2,
   MoveUpRight,
-  Palette,
   RectangleHorizontal,
   Type,
   ZoomIn,
@@ -22,6 +22,8 @@ export function Toolbar({
   setTool,
   selectedLayer,
   selectedLayers,
+  layers,
+  canvasBackgroundColor,
   setLayer,
   zoom,
   setZoom,
@@ -31,7 +33,11 @@ export function Toolbar({
   setLockToRegions,
   loadPendingImage,
 }) {
-  const [contrastBackground, setContrastBackground] = useState("#ffffff");
+  const [manualContrastBackground, setManualContrastBackground] = useState("");
+  const detectedContrastBackground = selectedLayer
+    ? getDetectedBackgroundColor(selectedLayer, layers, canvasBackgroundColor)
+    : canvasBackgroundColor;
+  const contrastBackground = manualContrastBackground || detectedContrastBackground;
   const shapeOptions = [
     { type: "rectangle", label: "Rectangle", shortLabel: "Rect", Icon: RectangleHorizontal },
     { type: "circle", label: "Circle", shortLabel: "Circle", Icon: Circle },
@@ -59,6 +65,8 @@ export function Toolbar({
     strokeColor,
     contrastBackground
   );
+  const canvasContrastChecks = getCanvasContrastChecks(layers, canvasBackgroundColor);
+  const passingCanvasChecks = canvasContrastChecks.filter((check) => check.status.aa).length;
 
   function applyPrimaryColor(color) {
     colorableLayers.forEach((layer) => {
@@ -158,23 +166,46 @@ export function Toolbar({
           Safe zones
         </button>
 
-        <div className={`group relative ${hasColorableLayer ? "" : "opacity-45"}`}>
+        <div className="group relative">
           <button
             className="tool-btn"
-            disabled={!hasColorableLayer}
-            title={hasColorableLayer ? "Change selected layer color" : "Select text or a shape to color"}
+            title="Check canvas WCAG contrast"
+            data-tutorial="wcag-tool"
           >
-            <Palette size={16} />
-            Color
-            <span
-              className="h-4 w-4 rounded-full border border-white/60"
-              style={{ backgroundColor: primaryColor }}
-            />
+            <Contrast size={16} />
+            Accessibility check
             <ChevronDown size={14} />
           </button>
 
-          {hasColorableLayer && (
-            <div className="absolute left-0 top-full z-50 hidden min-w-44 flex-col gap-2 rounded-xl border border-slate-700 bg-slate-950 p-2 shadow-2xl group-hover:flex group-focus-within:flex">
+          <div className="absolute left-0 top-full z-50 hidden min-w-64 flex-col gap-2 rounded-xl border border-slate-700 bg-slate-950 p-2 shadow-2xl group-hover:flex group-focus-within:flex">
+            <div className="rounded-xl border border-slate-800 bg-slate-900 p-3">
+              <div className="flex items-center justify-between gap-3 text-sm font-bold text-slate-100">
+                <span>Canvas check</span>
+                <span className={passingCanvasChecks === canvasContrastChecks.length ? "text-emerald-300" : "text-amber-200"}>
+                  {canvasContrastChecks.length > 0
+                    ? `${passingCanvasChecks}/${canvasContrastChecks.length} pass`
+                    : "Pass"}
+                </span>
+              </div>
+
+              <div className="mt-2 max-h-44 space-y-1 overflow-y-auto text-xs text-slate-300">
+                {canvasContrastChecks.length ? (
+                  canvasContrastChecks.map((check) => (
+                    <div key={check.id} className="flex items-center justify-between gap-3">
+                      <span className="max-w-36 truncate">{check.label}</span>
+                      <span className={check.status.aa ? "text-emerald-300" : "text-red-300"}>
+                        {check.status.ratio.toFixed(2)}:1 {check.status.aa ? "AA" : "Fail"}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-400">No visible text layers to check.</p>
+                )}
+              </div>
+            </div>
+
+            {hasColorableLayer && (
+              <>
               <label className="flex items-center justify-between gap-3 rounded-lg px-2 py-1 text-sm font-bold text-slate-200 hover:bg-slate-800">
                 <span>{getPrimaryColorLabel(selectedLayer)}</span>
                 <input
@@ -203,9 +234,9 @@ export function Toolbar({
                   <input
                     type="color"
                     className="h-8 w-10 cursor-pointer rounded border border-slate-700 bg-transparent p-0"
-                    value={contrastBackground}
-                    onChange={(e) => setContrastBackground(e.target.value)}
-                  />
+                  value={contrastBackground}
+                  onChange={(e) => setManualContrastBackground(e.target.value)}
+                />
                 </label>
 
                 <div className="mt-2 space-y-1 px-2 text-xs text-slate-300">
@@ -231,8 +262,9 @@ export function Toolbar({
                   )}
                 </div>
               </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </div>
 
       </div>
@@ -306,4 +338,56 @@ function getContrastChecks(layer, primaryColor, strokeColor, contrastBackground)
       status: getWcagStatus(primaryColor, contrastBackground),
     },
   ];
+}
+
+function getDetectedBackgroundColor(layer, layers = [], fallback = "#efeae7") {
+  const selectedIndex = layers.findIndex((candidate) => candidate.id === layer.id);
+  const candidates = selectedIndex >= 0 ? layers.slice(0, selectedIndex).reverse() : [...layers].reverse();
+
+  for (const candidate of candidates) {
+    if (candidate.visible === false) continue;
+    if (!rectanglesIntersect(layer, candidate)) continue;
+
+    if (
+      candidate.kind === "shape" &&
+      candidate.fillMode !== "hollow" &&
+      (candidate.fillOpacity ?? 1) > 0
+    ) {
+      return candidate.fillColor || fallback;
+    }
+  }
+
+  return fallback;
+}
+
+function getCanvasContrastChecks(layers = [], fallback = "#efeae7") {
+  return layers
+    .filter(
+      (layer) =>
+        layer.visible !== false &&
+        layer.kind === "text" &&
+        !isSystemTextLayer(layer)
+    )
+    .map((layer) => {
+      const background = getDetectedBackgroundColor(layer, layers, fallback);
+
+      return {
+        id: layer.id,
+        label: layer.name || layer.text || "Text",
+        status: getWcagStatus(layer.color || "#000000", background),
+      };
+    });
+}
+
+function isSystemTextLayer(layer) {
+  return layer.id === "page-title" || layer.id === "footer-info";
+}
+
+function rectanglesIntersect(a, b) {
+  return (
+    a.x < b.x + b.w &&
+    a.x + a.w > b.x &&
+    a.y < b.y + b.h &&
+    a.y + a.h > b.y
+  );
 }

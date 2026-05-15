@@ -1639,6 +1639,8 @@ export default function App() {
             setTool={setTool}
             selectedLayer={selectedLayer}
             selectedLayers={selectedLayers}
+            layers={activePage?.layers || []}
+            canvasBackgroundColor={activeTemplateThemeColor}
             setLayer={setLayer}
             zoom={uiState.zoom}
             setZoom={uiState.setZoom}

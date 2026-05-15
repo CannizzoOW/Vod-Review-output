@@ -136,7 +136,14 @@ export function TutorialOverlay({
               <p className="text-xs font-black uppercase tracking-wider text-blue-300">
                 Tutorial {stepIndex + 1} / {steps.length}
               </p>
-              <h2 className="mt-1 text-xl font-black">{step.title}</h2>
+              <div className="mt-1 flex items-center gap-2">
+                <h2 className="text-xl font-black">{step.title}</h2>
+                {step.badge && (
+                  <span className="rounded bg-blue-600 px-2 py-0.5 text-[10px] font-black uppercase text-white">
+                    {step.badge}
+                  </span>
+                )}
+              </div>
             </div>
 
             <button
