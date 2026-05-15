@@ -17,6 +17,7 @@ export function ReviewCanvas({
   selectedSafeZoneId,
   selectLayer,
   editTextLayer,
+  editComparison,
   updateLayer,
   updateSafeZone,
   onLayerInteractionStart,
@@ -30,7 +31,7 @@ export function ReviewCanvas({
   timestampColor,
 }) {
   const [snapGuides, setSnapGuides] = useState([]);
-  const cursor = tool === "insertText" || tool === "insertSegment" || tool === "insertImage" || tool.startsWith("insertShape:")
+  const cursor = tool === "insertText" || tool === "insertSegment" || tool === "insertImage" || tool === "insertComparison" || tool.startsWith("insertShape:")
     ? "cursor-crosshair"
     : "cursor-default";
 
@@ -62,6 +63,9 @@ export function ReviewCanvas({
         <img
           src={templateBackground}
           alt="Hero template"
+          fetchPriority={isExporting ? "auto" : "high"}
+          loading={isExporting ? "lazy" : "eager"}
+          decoding="async"
           onError={(e) => {
             e.currentTarget.src = FALLBACK_TEMPLATE;
           }}
@@ -121,6 +125,7 @@ export function ReviewCanvas({
             layer={layer}
             isExporting={isExporting}
             selected={!isExporting && selectedLayerIds.includes(layer.id)}
+            suppressSelectionRing={layer.internalComparisonShape}
             selectedLayerCount={selectedLayerIds.length}
             selectedLayerIds={selectedLayerIds}
             onSelect={(e) => {
@@ -131,6 +136,7 @@ export function ReviewCanvas({
             onInteractionStart={onLayerInteractionStart}
             onInteractionEnd={onLayerInteractionEnd}
             onEdit={editTextLayer}
+            onEditComparison={editComparison}
             onGuideChange={setSnapGuides}
             layers={layers}
             timestampGutterWidth={timestampGutterWidth}

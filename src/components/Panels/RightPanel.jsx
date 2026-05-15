@@ -40,6 +40,11 @@ export function RightPanel({
   setTimestampColor,
   layerListOpen,
   setLayerListOpen,
+  historyOpen,
+  setHistoryOpen,
+  historyEntries,
+  currentHistoryIndex,
+  restoreHistoryIndex,
   safeZonesOpen,
   setSafeZonesOpen,
 }) {
@@ -532,7 +537,7 @@ export function RightPanel({
             </>
           )}
 
-          {selectedLayer.kind === "shape" && (
+          {selectedLayer.kind === "shape" && !selectedLayer.internalComparisonShape && (
             <ShapeControls
               layer={selectedLayer}
               onChange={(patch) => setLayer(selectedLayer.id, patch)}
@@ -668,6 +673,48 @@ export function RightPanel({
             />
           </label>
         </div>
+      </div>
+
+      <div className="panel mt-3">
+        <button
+          className="flex w-full items-center justify-between text-left"
+          onClick={() => setHistoryOpen((v) => !v)}
+          title={historyOpen ? "Collapse history" : "Expand history"}
+        >
+          <div>
+            <p className="font-black">History</p>
+            <p className="text-sm text-slate-400">{historyEntries.length} states</p>
+          </div>
+
+          <span className="text-lg text-slate-400">
+            {historyOpen ? "▾" : "▸"}
+          </span>
+        </button>
+
+        {historyOpen && (
+          <div className="mt-3 max-h-64 space-y-1 overflow-y-auto pr-1">
+            {historyEntries.map((entry, index) => (
+              <button
+                key={entry.id}
+                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm ${
+                  index === currentHistoryIndex
+                    ? "bg-blue-600 text-white"
+                    : index > currentHistoryIndex
+                      ? "bg-slate-950 text-slate-500 hover:bg-slate-900"
+                      : "bg-slate-950 text-slate-200 hover:bg-slate-800"
+                }`}
+                onClick={() => restoreHistoryIndex(index)}
+              >
+                <span className="truncate">{entry.label}</span>
+                {index === currentHistoryIndex && (
+                  <span className="ml-2 rounded bg-blue-950/60 px-1.5 py-0.5 text-[10px]">
+                    current
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="panel mt-3" data-tutorial="layer-list">

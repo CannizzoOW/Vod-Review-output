@@ -33,11 +33,13 @@ function normalizeDegrees(value) {
 export function PlacedLayer({
   layer,
   selected,
+  suppressSelectionRing = false,
   selectedLayerCount = 0,
   selectedLayerIds = [],
   onSelect,
   onMove,
   onEdit,
+  onEditComparison,
   onInteractionStart,
   onInteractionEnd,
   onGuideChange,
@@ -353,13 +355,21 @@ export function PlacedLayer({
       onPointerDown={startDrag}
       onClick={onSelect}
       onDoubleClick={(e) => {
+        if (layer.groupName === "Comparison" && layer.groupId) {
+          e.preventDefault();
+          e.stopPropagation();
+          onSelect(e);
+          onEditComparison?.(layer.groupId);
+          return;
+        }
+
         if (layer.kind !== "text") return;
         e.preventDefault();
         e.stopPropagation();
         onSelect(e);
         onEdit?.(layer.id);
       }}
-      className={`group/layer absolute rounded-sm text-left ${layer.locked ? "cursor-default" : "cursor-move"} ${selected
+      className={`group/layer absolute rounded-sm text-left ${layer.locked ? "cursor-default" : "cursor-move"} ${selected && !suppressSelectionRing
           ? "ring-2 ring-blue-400 ring-offset-2 ring-offset-blue-950"
           : isExporting
             ? ""
@@ -456,14 +466,21 @@ export function PlacedLayer({
             <img
               src={layer.src}
               alt={layer.name || "Screenshot"}
-              className="h-full w-full object-fill"
-              style={{ width: "100%", height: "100%", objectFit: "fill" }}
+              className="h-full w-full"
+              style={{ width: "100%", height: "100%", objectFit: layer.objectFit || "fill" }}
               draggable={false}
             />
           ) : (
-            <div className="px-3 text-center text-xs font-bold uppercase text-slate-400">
-              Missing image
-            </div>
+              <div
+                className="px-3 text-center text-xs font-bold uppercase text-slate-400 whitespace-pre-wrap"
+                contentEditable
+                suppressContentEditableWarning
+                onDoubleClick={(e) => {
+                  e.currentTarget.focus();
+                }}
+              >
+                {"Missing image\nDouble click to edit"}
+              </div>
           )}
         </div>
       )}

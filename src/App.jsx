@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ChevronLeft, ChevronRight, HelpCircle, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Printer, Redo2, Undo2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleHelp, HelpCircle, Plus, Save, RefreshCcw, Download, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Printer, Redo2, Undo2 } from "lucide-react";
 import { exportAllPages } from "./utils/exportAllPages.js";
 
 // MARK: Hooks
@@ -19,13 +19,15 @@ import { ReviewCanvas } from "./components/Canvas/ReviewCanvas.jsx";
 import { NewReviewWizard } from "./components/Modals/NewReviewWizard.jsx";
 import { EditReviewDetailsModal } from "./components/Modals/EditReviewDetailsModal.jsx";
 import { TextEditorModal } from "./components/Modals/TextEditorModal.jsx";
+import { ComparisonEditorModal } from "./components/Modals/ComparisonEditorModal.jsx";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
+import { ShortcutsModal } from "./components/Modals/ShortcutsModal.jsx";
 
 // MARK: Utils & Constants
 import { HEROES, DEFAULT_HERO, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, getDefaultTemplateStyle, getHeroTemplatePath, getPageTemplateStyle, getSafeZonesForTemplateStyle, pageHasScreenshotContent } from "./utils/constants.js";
 import { parseDiscordReview } from "./utils/parsing.js";
 import { buildReviewPages } from "./utils/buildReviewPages.js";
-import { makeEmojiLayer, makeFreeTextLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
+import { makeComparisonLayers, makeEmojiLayer, makeFreeTextLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
 import { autoPlaceInZone } from "./utils/canvas.js";
 import { estimateTextHeight } from "./utils/textUtils.js";
 
@@ -40,6 +42,7 @@ export default function App() {
   const fileInputRef = React.useRef(null);
   const printCanvasRef = React.useRef(null);
   const printExportRef = React.useRef(null);
+  const canvasScrollRef = React.useRef(null);
   const historyRef = React.useRef({ past: [], future: [], last: null });
   const skipHistoryRef = React.useRef(false);
   const historyGestureRef = React.useRef({
@@ -49,6 +52,10 @@ export default function App() {
     timer: null,
   });
   const [textEditorLayerId, setTextEditorLayerId] = React.useState(null);
+  const [comparisonPlacement, setComparisonPlacement] = React.useState(null);
+  const [comparisonEditorGroupId, setComparisonEditorGroupId] = React.useState(null);
+  const [shortcutsOpen, setShortcutsOpen] = React.useState(false);
+  const [historyRevision, setHistoryRevision] = React.useState(0);
   const [templateFooterColors, setTemplateFooterColors] = React.useState({});
 
   // MARK: State management
@@ -115,6 +122,11 @@ export default function App() {
       ),
     [activePage?.layers, textEditorLayerId]
   );
+  const comparisonEditorLayers = React.useMemo(
+    () => (activePage?.layers || []).filter((layer) => layer.groupId === comparisonEditorGroupId),
+    [activePage?.layers, comparisonEditorGroupId]
+  );
+  const comparisonEditorData = comparisonEditorLayers.find((layer) => layer.comparisonData)?.comparisonData || null;
   const textEditorPreviewBackgroundLayer = React.useMemo(() => {
     const layers = activePage?.layers || [];
 
@@ -148,6 +160,25 @@ export default function App() {
     deselectAll();
   }
 
+  useEffect(() => {
+    const node = canvasScrollRef.current;
+    if (!node) return undefined;
+
+    function handleCanvasWheel(e) {
+      if (!e.altKey) return;
+
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+
+      uiState.setZoom((zoom) =>
+        Math.max(0.45, Math.min(2, Number((zoom + delta).toFixed(2))))
+      );
+    }
+
+    node.addEventListener("wheel", handleCanvasWheel, { passive: false });
+    return () => node.removeEventListener("wheel", handleCanvasWheel);
+  }, [uiState.setZoom]);
+
   function getTemplateBackgroundForPage(pageIndex) {
     const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pageIndex);
     const template = getHeroTemplatePath(form.hero, pageTemplateStyle);
@@ -161,6 +192,7 @@ export default function App() {
 
     return templateFooterColors[getTemplateColorKey(form.hero, pageTemplateStyle)];
   }
+  const activeTemplateThemeColor = getPageTitleBackgroundColor(Math.max(0, activePageIndex)) || "#75819a";
 
   function cloneSnapshot(snapshot) {
     return JSON.parse(JSON.stringify(snapshot));
@@ -171,6 +203,10 @@ export default function App() {
     setPages(snapshot.pages);
     setActivePageId(snapshot.activePageId);
     deselectAll();
+  }
+
+  function bumpHistoryRevision() {
+    setHistoryRevision((value) => value + 1);
   }
 
   function beginCanvasInteraction() {
@@ -203,6 +239,7 @@ export default function App() {
         history.past.push(cloneSnapshot(gesture.before));
         history.past = history.past.slice(-60);
         history.future = [];
+        bumpHistoryRevision();
       }
 
       gesture.before = null;
@@ -223,6 +260,7 @@ export default function App() {
 
     history.last = cloneSnapshot(previous);
     restoreSnapshot(previous);
+    bumpHistoryRevision();
   }
 
   function redo() {
@@ -237,6 +275,37 @@ export default function App() {
 
     history.last = cloneSnapshot(next);
     restoreSnapshot(next);
+    bumpHistoryRevision();
+  }
+
+  const historyTimeline = React.useMemo(() => {
+    const history = historyRef.current;
+    const snapshots = [
+      ...history.past,
+      ...(history.last ? [history.last] : []),
+      ...history.future,
+    ];
+
+    return snapshots.map((snapshot, index) => ({
+      id: `${index}-${snapshot.activePageId}-${snapshot.pages.length}`,
+      snapshot,
+      label: describeHistoryState(snapshots[index - 1], snapshot, index),
+    }));
+  }, [historyRevision]);
+  const currentHistoryIndex = historyRef.current.past.length;
+
+  function restoreHistoryIndex(index) {
+    const history = historyRef.current;
+    const snapshots = historyTimeline.map((entry) => cloneSnapshot(entry.snapshot));
+    const target = snapshots[index];
+
+    if (!target || index === currentHistoryIndex) return;
+
+    history.past = snapshots.slice(0, index);
+    history.last = target;
+    history.future = snapshots.slice(index + 1);
+    restoreSnapshot(target);
+    bumpHistoryRevision();
   }
 
   function duplicateSelectedLayers() {
@@ -542,7 +611,7 @@ export default function App() {
         const draggedLayer = page.layers.find((layer) => layer.id === layerId);
         if (!draggedLayer) return page;
         const selectedLayersOnPage = page.layers.filter((layer) =>
-          selectedIdSet.has(layer.id) && !layer.locked
+          selectedIdSet.has(layer.id) && (!layer.locked || layer.lockedToGroup)
         );
 
         if (selectedLayersOnPage.length < 2) return page;
@@ -587,7 +656,7 @@ export default function App() {
         return {
           ...page,
           layers: page.layers.map((layer) =>
-            selectedIdSet.has(layer.id) && !layer.locked
+            selectedIdSet.has(layer.id) && (!layer.locked || layer.lockedToGroup)
               ? {
                 ...layer,
                 x: Math.round(layer.x + dx),
@@ -643,6 +712,7 @@ export default function App() {
     const nextH = Math.max(20, groupBottom - groupTop);
     const scaleX = nextW / Math.max(1, bounds.w);
     const scaleY = nextH / Math.max(1, bounds.h);
+    const textScale = Math.min(scaleX, scaleY);
 
     return new Map(
       layers.map((layer) => [
@@ -653,6 +723,23 @@ export default function App() {
           y: Math.round(groupTop + (layer.y - bounds.y) * scaleY),
           w: Math.max(20, Math.round(layer.w * scaleX)),
           h: Math.max(20, Math.round(layer.h * scaleY)),
+          ...(layer.kind === "text"
+            ? {
+              fontSize: Math.max(8, Math.round((layer.fontSize || 18) * textScale)),
+              padding: layer.padding ? Math.max(1, Math.round(layer.padding * textScale)) : layer.padding,
+            }
+            : {}),
+          ...(layer.kind === "shape" && layer.strokeWidth
+            ? { strokeWidth: Math.max(1, Math.round(layer.strokeWidth * textScale)) }
+            : {}),
+          ...(layer.comparisonData
+            ? {
+              comparisonData: {
+                ...layer.comparisonData,
+                layoutScale: (layer.comparisonData.layoutScale || 1) * textScale,
+              },
+            }
+            : {}),
         },
       ])
     );
@@ -753,6 +840,26 @@ export default function App() {
       const zone = getPlacementZone(x, y, "rightMedia");
       addImageWithDescription(uiState.pendingImage, zone);
       setTool("select");
+    }
+
+    if (tool === "insertComparison") {
+      const zone = getPlacementZone(x, y, "mainText");
+      const isScreenshotZone = zone?.id === "rightMedia";
+      const layoutScale = 1;
+      const layoutMode = isScreenshotZone ? "over-under" : "side-by-side";
+      const comparisonW = isScreenshotZone ? 328 : 900;
+      const comparisonH = isScreenshotZone ? 760 : 520;
+      setComparisonPlacement({
+        x: isScreenshotZone
+          ? Math.round(zone.x + Math.max(0, (zone.w - comparisonW) / 2))
+          : Math.max(20, Math.min(PAGE_W - comparisonW - 20, Math.round(x))),
+        y: isScreenshotZone
+          ? Math.round(zone.y + (zone.padding || 0))
+          : Math.max(20, Math.min(PAGE_H - comparisonH - 20, Math.round(y))),
+        layoutScale,
+        layoutMode,
+      });
+      return;
     }
 
     if (tool.startsWith("insertShape:")) {
@@ -1057,6 +1164,7 @@ export default function App() {
     if (skipHistoryRef.current) {
       skipHistoryRef.current = false;
       history.last = snapshot;
+      bumpHistoryRevision();
       return;
     }
 
@@ -1067,6 +1175,7 @@ export default function App() {
 
     if (!history.last) {
       history.last = snapshot;
+      bumpHistoryRevision();
       return;
     }
 
@@ -1074,6 +1183,7 @@ export default function App() {
     history.past = history.past.slice(-60);
     history.future = [];
     history.last = snapshot;
+    bumpHistoryRevision();
   }, [pages, activePageId]);
 
   useEffect(() => {
@@ -1181,6 +1291,60 @@ export default function App() {
   }, [activePage?.title, activePageId, form.hero, form.templateStyle, templateFooterColors]);
 
   useEffect(() => {
+    setPages((prev) =>
+      prev.map((page, pageIndex) => {
+        const pageThemeColor = getPageTitleBackgroundColor(pageIndex);
+        if (!pageThemeColor) return page;
+
+        const comparisonGroups = new Map();
+
+        for (const layer of page.layers) {
+          if (!layer.groupId || layer.groupName !== "Comparison" || !layer.comparisonData) continue;
+
+          if (!comparisonGroups.has(layer.groupId)) {
+            comparisonGroups.set(layer.groupId, {
+              data: layer.comparisonData,
+              background: null,
+            });
+          }
+
+          if (layer.comparisonRole === "background") {
+            comparisonGroups.get(layer.groupId).background = layer;
+          }
+        }
+
+        if (!comparisonGroups.size) return page;
+
+        let changed = false;
+        let nextLayers = [...page.layers];
+
+        for (const [groupId, group] of comparisonGroups) {
+          if (!group.background) continue;
+          if (group.data.themeColor === pageThemeColor) continue;
+
+          changed = true;
+          const rebuiltLayers = makeComparisonLayers(
+            {
+              ...group.data,
+              themeColor: pageThemeColor,
+            },
+            group.background.x,
+            group.background.y,
+            groupId
+          );
+
+          nextLayers = [
+            ...nextLayers.filter((layer) => layer.groupId !== groupId),
+            ...rebuiltLayers,
+          ];
+        }
+
+        return changed ? { ...page, layers: nextLayers } : page;
+      })
+    );
+  }, [form.hero, form.templateStyle, templateFooterColors]);
+
+  useEffect(() => {
     const pageTemplateStyles = [
       ...new Set(
         pages.map((_, pageIndex) =>
@@ -1196,26 +1360,36 @@ export default function App() {
 
     let cancelled = false;
 
-    Promise.all(
-      missingTemplateStyles.map(async (templateStyle) => {
-        const template = getHeroTemplatePath(form.hero, templateStyle);
-        const src = template
-          ? `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`
-          : FALLBACK_TEMPLATE;
+    const schedule =
+      window.requestIdleCallback ||
+      ((callback) => window.setTimeout(callback, 250));
+    const cancel =
+      window.cancelIdleCallback ||
+      window.clearTimeout;
 
-        return [getTemplateColorKey(form.hero, templateStyle), await sampleTemplateFooterColor(src)];
-      })
-    ).then((entries) => {
-      if (cancelled) return;
+    const idleHandle = schedule(() => {
+      Promise.all(
+        missingTemplateStyles.map(async (templateStyle) => {
+          const template = getHeroTemplatePath(form.hero, templateStyle);
+          const src = template
+            ? `${import.meta.env.BASE_URL}${template.replace(/^\/+/, "")}`
+            : FALLBACK_TEMPLATE;
 
-      setTemplateFooterColors((prev) => ({
-        ...prev,
-        ...Object.fromEntries(entries),
-      }));
+          return [getTemplateColorKey(form.hero, templateStyle), await sampleTemplateFooterColor(src)];
+        })
+      ).then((entries) => {
+        if (cancelled) return;
+
+        setTemplateFooterColors((prev) => ({
+          ...prev,
+          ...Object.fromEntries(entries),
+        }));
+      });
     });
 
     return () => {
       cancelled = true;
+      cancel(idleHandle);
     };
   }, [form.hero, form.templateStyle, pages, templateFooterColors]);
 
@@ -1229,6 +1403,11 @@ export default function App() {
         target.isContentEditable;
 
       if (isTyping) return;
+
+      if (e.key === "?" || (e.shiftKey && e.key === "/")) {
+        e.preventDefault();
+        setShortcutsOpen(true);
+      }
 
       if (e.key === "Escape") {
         e.preventDefault();
@@ -1384,6 +1563,14 @@ export default function App() {
           >
             <HelpCircle size={16} /> Tutorial
           </button>
+
+          <button
+            className="btn-secondary px-3"
+            onClick={() => setShortcutsOpen(true)}
+            title="Keyboard shortcuts (?)"
+          >
+            <CircleHelp size={16} /> Shortcuts
+          </button>
           </div>
 
           <input
@@ -1533,7 +1720,7 @@ export default function App() {
             </div>
           )}
 
-          <div className="group/canvasnav relative flex-1 min-h-0 min-w-0 overflow-scroll">
+          <div ref={canvasScrollRef} className="group/canvasnav relative flex-1 min-h-0 min-w-0 overflow-scroll">
             {canGoPrevPage && (
               <button
                 className="absolute left-5 top-1/2 z-40 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-slate-700 bg-slate-950/85 text-slate-100 opacity-0 shadow-2xl backdrop-blur transition hover:bg-blue-600 group-hover/canvasnav:opacity-100"
@@ -1581,6 +1768,7 @@ export default function App() {
                   selectedSafeZoneId={selectedSafeZoneId}
                   selectLayer={selectLayer}
                   editTextLayer={setTextEditorLayerId}
+                  editComparison={setComparisonEditorGroupId}
                   updateLayer={updateCanvasLayer}
                   updateSafeZone={setSafeZone}
                   onLayerInteractionStart={beginCanvasInteraction}
@@ -1646,6 +1834,11 @@ export default function App() {
               setTimestampColor={uiState.setTimestampColor}
               layerListOpen={uiState.layerListOpen}
               setLayerListOpen={uiState.setLayerListOpen}
+              historyOpen={uiState.historyOpen}
+              setHistoryOpen={uiState.setHistoryOpen}
+              historyEntries={historyTimeline}
+              currentHistoryIndex={currentHistoryIndex}
+              restoreHistoryIndex={restoreHistoryIndex}
               safeZonesOpen={uiState.safeZonesOpen}
               setSafeZonesOpen={uiState.setSafeZonesOpen}
             />
@@ -1653,37 +1846,40 @@ export default function App() {
         </aside>
       </div>
 
-      <div className="print-pages">
-        {pages.map((page, pageIndex) => (
-          <div key={page.id} className="print-page">
-            <ReviewCanvas
-              canvasRef={printCanvasRef}
-              exportRef={printExportRef}
-              deselectAll={() => {}}
-              selectSafeZone={() => {}}
-              isExporting
-              templateBackground={getTemplateBackgroundForPage(pageIndex)}
-              layers={page.layers || []}
-              safeZones={[]}
-              selectedLayerIds={[]}
-              selectedSafeZoneId={null}
-              selectLayer={() => {}}
+      {uiState.isExporting && (
+        <div className="print-pages">
+          {pages.map((page, pageIndex) => (
+            <div key={page.id} className="print-page">
+              <ReviewCanvas
+                canvasRef={printCanvasRef}
+                exportRef={printExportRef}
+                deselectAll={() => {}}
+                selectSafeZone={() => {}}
+                isExporting
+                templateBackground={getTemplateBackgroundForPage(pageIndex)}
+                layers={page.layers || []}
+                safeZones={[]}
+                selectedLayerIds={[]}
+                selectedSafeZoneId={null}
+                selectLayer={() => {}}
               editTextLayer={() => {}}
-              updateLayer={() => {}}
-              updateSafeZone={() => {}}
-              onLayerInteractionStart={() => {}}
-              onLayerInteractionEnd={() => {}}
-              canvasClick={() => {}}
-              tool="select"
-              gridEnabled={false}
-              lockToRegions={false}
-              timestampGutterWidth={uiState.timestampGutterWidth}
-              timestampFontSize={uiState.timestampFontSize}
-              timestampColor={uiState.timestampColor}
-            />
-          </div>
-        ))}
-      </div>
+              editComparison={() => {}}
+                updateLayer={() => {}}
+                updateSafeZone={() => {}}
+                onLayerInteractionStart={() => {}}
+                onLayerInteractionEnd={() => {}}
+                canvasClick={() => {}}
+                tool="select"
+                gridEnabled={false}
+                lockToRegions={false}
+                timestampGutterWidth={uiState.timestampGutterWidth}
+                timestampFontSize={uiState.timestampFontSize}
+                timestampColor={uiState.timestampColor}
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       {uiState.wizardOpen && (
         <NewReviewWizard
@@ -1853,6 +2049,77 @@ export default function App() {
         />
       )}
 
+      {comparisonPlacement && (
+        <ComparisonEditorModal
+          onClose={() => {
+            setComparisonPlacement(null);
+            setTool("select");
+          }}
+          onSave={(draft) => {
+            const comparisonLayers = makeComparisonLayers(
+              {
+                ...draft,
+                layoutScale: comparisonPlacement.layoutScale || draft.layoutScale || 1,
+                layoutMode: comparisonPlacement.layoutMode || draft.layoutMode || "side-by-side",
+                themeColor: activeTemplateThemeColor,
+              },
+              comparisonPlacement.x,
+              comparisonPlacement.y
+            );
+            const nextSelectedIds = comparisonLayers.map((layer) => layer.id);
+
+            setPages((prev) =>
+              prev.map((page) =>
+                page.id === activePageId
+                  ? { ...page, layers: [...page.layers, ...comparisonLayers] }
+                  : page
+              )
+            );
+            setSelectedLayerIds(nextSelectedIds);
+            setSelectedLayerId(nextSelectedIds[nextSelectedIds.length - 1] || null);
+            setComparisonPlacement(null);
+            setTool("select");
+          }}
+        />
+      )}
+
+      {comparisonEditorGroupId && comparisonEditorData && (
+        <ComparisonEditorModal
+          initialValue={comparisonEditorData}
+          onClose={() => setComparisonEditorGroupId(null)}
+          onSave={(draft) => {
+            const backgroundLayer = comparisonEditorLayers.find((layer) => layer.comparisonRole === "background");
+            const rebuiltLayers = makeComparisonLayers(
+              {
+                ...draft,
+                themeColor: activeTemplateThemeColor,
+              },
+              backgroundLayer?.x ?? 90,
+              backgroundLayer?.y ?? 430,
+              comparisonEditorGroupId
+            );
+
+            setPages((prev) =>
+              prev.map((page) =>
+                page.id === activePageId
+                  ? {
+                    ...page,
+                    layers: [
+                      ...page.layers.filter((layer) => layer.groupId !== comparisonEditorGroupId),
+                      ...rebuiltLayers,
+                    ],
+                  }
+                  : page
+              )
+            );
+            const nextSelectedIds = rebuiltLayers.map((layer) => layer.id);
+            setSelectedLayerIds(nextSelectedIds);
+            setSelectedLayerId(nextSelectedIds[nextSelectedIds.length - 1] || null);
+            setComparisonEditorGroupId(null);
+          }}
+        />
+      )}
+
       {tutorial.isTutorialOpen && (
         <TutorialOverlay
           steps={tutorial.tutorialSteps}
@@ -1861,6 +2128,10 @@ export default function App() {
           onBack={tutorial.previousTutorialStep}
           onSkip={() => tutorial.closeTutorial(true)}
         />
+      )}
+
+      {shortcutsOpen && (
+        <ShortcutsModal onClose={() => setShortcutsOpen(false)} />
       )}
     </div>
   );
@@ -1880,13 +2151,27 @@ function sampleTemplateFooterColor(src) {
           return;
         }
 
-        canvas.width = image.naturalWidth || PAGE_W;
-        canvas.height = image.naturalHeight || PAGE_H;
-        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const sourceW = image.naturalWidth || PAGE_W;
+        const sourceH = image.naturalHeight || PAGE_H;
+        const sampleY = Math.round((FOOTER_SAMPLE_TOP / PAGE_H) * sourceH);
+        const sampleH = Math.max(1, Math.round((FOOTER_SAMPLE_H / PAGE_H) * sourceH));
+        const sampleW = 64;
 
-        const sampleY = Math.round((FOOTER_SAMPLE_TOP / PAGE_H) * canvas.height);
-        const sampleH = Math.max(1, Math.round((FOOTER_SAMPLE_H / PAGE_H) * canvas.height));
-        const imageData = context.getImageData(0, sampleY, canvas.width, sampleH);
+        canvas.width = sampleW;
+        canvas.height = 1;
+        context.drawImage(
+          image,
+          0,
+          sampleY,
+          sourceW,
+          sampleH,
+          0,
+          0,
+          sampleW,
+          1
+        );
+
+        const imageData = context.getImageData(0, 0, sampleW, 1);
         const data = imageData.data;
         let red = 0;
         let green = 0;
@@ -1933,4 +2218,36 @@ function rgbToHex(red, green, blue) {
   return `#${[red, green, blue]
     .map((value) => value.toString(16).padStart(2, "0"))
     .join("")}`;
+}
+
+function describeHistoryState(previous, current, index) {
+  if (!previous) return "Opened document";
+
+  if (current.pages.length > previous.pages.length) return "Added page";
+  if (current.pages.length < previous.pages.length) return "Removed page";
+
+  const previousLayers = previous.pages.flatMap((page) => page.layers || []);
+  const currentLayers = current.pages.flatMap((page) => page.layers || []);
+
+  if (currentLayers.length > previousLayers.length) return "Added layer";
+  if (currentLayers.length < previousLayers.length) return "Removed layer";
+
+  const previousTitles = previous.pages.map((page) => page.title).join("|");
+  const currentTitles = current.pages.map((page) => page.title).join("|");
+  if (previousTitles !== currentTitles) return "Renamed page";
+
+  if (previous.activePageId !== current.activePageId) return "Changed page";
+
+  const previousById = new Map(previousLayers.map((layer) => [layer.id, layer]));
+  const changedLayer = currentLayers.find((layer) => {
+    const before = previousById.get(layer.id);
+    return before && JSON.stringify(before) !== JSON.stringify(layer);
+  });
+
+  if (changedLayer?.kind === "text") return "Edited text";
+  if (changedLayer?.kind === "image") return "Edited image";
+  if (changedLayer?.kind === "shape") return "Edited shape";
+  if (changedLayer) return "Edited layer";
+
+  return `History state ${index + 1}`;
 }

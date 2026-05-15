@@ -9,6 +9,7 @@ export function useUIState() {
   const [segmentsOpen, setSegmentsOpen] = useState(false);
   const [safeZonesOpen, setSafeZonesOpen] = useState(false);
   const [layerListOpen, setLayerListOpen] = useState(true);
+  const [historyOpen, setHistoryOpen] = useState(true);
   const [gridEnabled, setGridEnabled] = useState(false);
   const [lockToRegions, setLockToRegions] = useState(false);
   const [fullWidthText, setFullWidthText] = useState(false);
@@ -49,6 +50,8 @@ export function useUIState() {
     setSafeZonesOpen,
     layerListOpen,
     setLayerListOpen,
+    historyOpen,
+    setHistoryOpen,
     gridEnabled,
     setGridEnabled,
     lockToRegions,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   ChevronDown,
   Circle,
+  Columns2,
   ImagePlus,
   LayoutGrid,
   Minus,
@@ -44,7 +45,7 @@ export function Toolbar({
     shapeOptions.find((shape) => shape.type === activeShape) || shapeOptions[0];
   const ActiveShapeIcon = activeShapeOption.Icon;
   const colorableLayers = selectedLayers.filter((layer) =>
-    ["text", "shape"].includes(layer.kind)
+    ["text", "shape"].includes(layer.kind) && !layer.internalComparisonShape
   );
   const hasColorableLayer = colorableLayers.length > 0;
   const hasShapeLayer = colorableLayers.some((layer) => layer.kind === "shape");
@@ -100,6 +101,12 @@ export function Toolbar({
         <ToolButton active={tool === "insertText"} onClick={() => setTool("insertText")} icon={<Type />}>
           Insert text
         </ToolButton>
+
+        <span data-tutorial="comparison-tool">
+          <ToolButton active={tool === "insertComparison"} onClick={() => setTool("insertComparison")} icon={<Columns2 />}>
+            Comparison
+          </ToolButton>
+        </span>
 
         <label className={`tool-btn ${tool === "insertImage" ? "tool-btn-active" : ""}`}>
           <ImagePlus size={16} /> Insert image

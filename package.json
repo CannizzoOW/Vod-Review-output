@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "update-emojis": "node scripts/update-rivals-emojis.js",
+    "optimize-templates": "node scripts/optimize-templates.cjs",
     "build": "npm run update-emojis && node scripts/generate-hero-templates.cjs && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

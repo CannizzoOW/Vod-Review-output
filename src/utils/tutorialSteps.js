@@ -45,6 +45,13 @@ export const tutorialSteps = [
     placement: "left",
   },
   {
+    id: "comparison",
+    target: "comparison-tool",
+    title: "Add comparisons",
+    body: "Use Comparison for side-by-side coaching blocks such as Good versus Not optimal or Do this versus Not this. Each block can include images, labels, captions, and a takeaway.",
+    placement: "bottom",
+  },
+  {
     id: "full-text-width",
     target: "full-text-width",
     title: "Choose text width",
@@ -70,7 +77,7 @@ export const tutorialSteps = [
     id: "example",
     target: "view-example",
     title: "View an example",
-    body: "Open the example review here whenever you want a reference for the expected Discord review format.",
+    body: "Open the example review here whenever you want a reference to what a completed review might look like.",
     placement: "right",
   },
 ];
