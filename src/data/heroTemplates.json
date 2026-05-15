@@ -98,6 +98,21 @@
       }
     }
   },
+  "Devil Dinosaur": {
+    "slug": "devil-dinosaur",
+    "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 1.png",
+    "defaultStyle": "wreck-and-ruin-page-1",
+    "styles": {
+      "wreck-and-ruin-page-1": {
+        "label": "Wreck And Ruin Page 1",
+        "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 1.png"
+      },
+      "wreck-and-ruin-page-2": {
+        "label": "Wreck And Ruin Page 2",
+        "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 2.png"
+      }
+    }
+  },
   "Doctor Strange": {
     "slug": "doctor-strange",
     "template": "templates/Doctor Strange/Default.png",

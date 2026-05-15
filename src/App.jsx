@@ -22,11 +22,12 @@ import { TextEditorModal } from "./components/Modals/TextEditorModal.jsx";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
 
 // MARK: Utils & Constants
-import { HEROES, DEFAULT_HERO, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, SAMPLE_REVIEW, getDefaultTemplateStyle, getHeroTemplatePath, getPageTemplateStyle, getSafeZonesForTemplateStyle } from "./utils/constants.js";
+import { HEROES, DEFAULT_HERO, FALLBACK_TEMPLATE, DEFAULT_SAFE_ZONES, getDefaultTemplateStyle, getHeroTemplatePath, getPageTemplateStyle, getSafeZonesForTemplateStyle, pageHasScreenshotContent } from "./utils/constants.js";
 import { parseDiscordReview } from "./utils/parsing.js";
 import { buildReviewPages } from "./utils/buildReviewPages.js";
-import { makeEmojiLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
+import { makeEmojiLayer, makeFreeTextLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
 import { autoPlaceInZone } from "./utils/canvas.js";
+import { estimateTextHeight } from "./utils/textUtils.js";
 
 const PAGE_W = 1080;
 const PAGE_H = 1527;
@@ -52,8 +53,8 @@ export default function App() {
 
   // MARK: State management
   const { form, setForm, updateForm } = useReviewForm(DEFAULT_HERO);
-  const { pages, setPages, activePageId, setActivePageId, activePage, editingPageId, setEditingPageId, updateActivePageLayers, updatePageTitleLayer, updateFooterLayer, renamePage, getPageFallbackTitle, getNextPageTitle, removeActivePage, addPage } = usePages(form);
-  const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
+  const { pages, setPages, activePageId, setActivePageId, activePage, editingPageId, setEditingPageId, updateActivePageLayers, updatePageTitleLayer, renamePage, getPageFallbackTitle, getNextPageTitle, removeActivePage, addPage } = usePages(form);
+  const { rawText, setRawText, segments, setSegments, selectedSegmentId, setSelectedSegmentId, selectedSegment, exampleVisible, toggleExample, runParser, markSegmentUsed, syncSegmentUsage, autoPlaceAllSegments } = useSegments(pages, activePageId, setPages);
   const { selectedLayerId, setSelectedLayerId, selectedLayerIds, setSelectedLayerIds, selectedSafeZoneId, setSelectedSafeZoneId, selectedLayer, tool, setTool, deselectAll, selectLayer, selectSafeZone, deleteSelectedLayers } = useSelection(pages, activePageId, setPages);
   const uiState = useUIState();
   const tutorial = useTutorial();
@@ -77,12 +78,23 @@ export default function App() {
     setPages,
     uiState.gridEnabled,
     uiState.lockToRegions,
-    activePageTemplateStyle
+    activePageTemplateStyle,
+    { fullWidthText: uiState.fullWidthText }
   );
 
+  const activeFullWidthTextBlocked = React.useMemo(
+    () => pageHasScreenshotContent(activePage, safeZones),
+    [activePage, safeZones]
+  );
+  const activeFullWidthText = uiState.fullWidthText && !activeFullWidthTextBlocked;
+
   const activeSafeZones = React.useMemo(
-    () => getSafeZonesForTemplateStyle(safeZones, activePageTemplateStyle),
-    [activePageTemplateStyle, safeZones]
+    () => getSafeZonesForTemplateStyle(
+      safeZones,
+      activePageTemplateStyle,
+      { fullWidthText: activeFullWidthText }
+    ),
+    [activeFullWidthText, activePageTemplateStyle, safeZones]
   );
   const templateBackground = React.useMemo(() => {
     const template = getHeroTemplatePath(form.hero, activePageTemplateStyle);
@@ -699,6 +711,16 @@ export default function App() {
     const y = ((e.clientY - rect.top) / rect.height) * PAGE_H;
 
     if (tool === "insertText") {
+      const layer = makeFreeTextLayer(Math.round(x), Math.round(y));
+
+      addLayer(layer);
+      setSelectedLayerId(layer.id);
+      setSelectedLayerIds([layer.id]);
+      setTextEditorLayerId(layer.id);
+      setTool("select");
+    }
+
+    if (tool === "insertSegment") {
       if (!selectedSegment) return;
 
       if (selectedSegment.used) {
@@ -794,6 +816,7 @@ export default function App() {
             form: importedForm,
             segments: importedSegments,
             safeZones: Array.isArray(data.safeZones) ? data.safeZones : DEFAULT_SAFE_ZONES,
+            safeZoneOptions: { fullWidthText: uiState.fullWidthText },
           });
 
           setPages(generatedPages);
@@ -870,6 +893,31 @@ export default function App() {
         };
       }),
     }));
+  }
+
+  function mergeManualLayersIntoGeneratedPages(existingPages, generatedPages) {
+    return generatedPages.map((page, pageIndex) => {
+      const existingPage = existingPages[pageIndex];
+
+      if (!existingPage) return page;
+
+      const manualLayers = existingPage.layers.filter((layer) => {
+        if (layer.sourceSegmentId) return false;
+
+        return ![
+          "default-background-rect",
+          "page-title",
+          "footer-info",
+        ].includes(layer.id);
+      });
+
+      if (!manualLayers.length) return page;
+
+      return {
+        ...page,
+        layers: [...page.layers, ...manualLayers],
+      };
+    });
   }
 
   function loadDraft() {
@@ -986,6 +1034,7 @@ export default function App() {
       form: cleanForm,
       segments: nextSegments,
       safeZones: DEFAULT_SAFE_ZONES,
+      safeZoneOptions: { fullWidthText: uiState.fullWidthText },
     });
 
     setForm((prev) => ({ ...prev, ...cleanForm }));
@@ -1043,6 +1092,72 @@ export default function App() {
       );
     });
   }, [form.player, form.reviewer, form.replayId]);
+
+  useEffect(() => {
+    setPages((prev) =>
+      prev.map((page, pageIndex) => {
+        const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pageIndex);
+        const pageFullWidthText = uiState.fullWidthText && !pageHasScreenshotContent(page, safeZones);
+        const pageSafeZones = getSafeZonesForTemplateStyle(
+          safeZones,
+          pageTemplateStyle,
+          { fullWidthText: pageFullWidthText }
+        );
+        const mainZone = pageSafeZones.find((zone) => zone.id === "mainText");
+
+        if (!mainZone) return page;
+
+        const padding = mainZone.padding || 20;
+        const gap = mainZone.gap || 16;
+        const width = mainZone.w - padding * 2;
+        let y = mainZone.y + padding;
+        let changed = false;
+
+        const layers = [];
+
+        for (const layer of page.layers) {
+          if (
+            layer.kind !== "text" ||
+            layer.zoneId !== "mainText" ||
+            !layer.autoFlow ||
+            !layer.sourceSegmentId ||
+            layer.groupName === "Description" ||
+            layer.parentGroupName === "Image"
+          ) {
+            layers.push(layer);
+            continue;
+          }
+
+          const nextLayer = {
+            ...layer,
+            x: mainZone.x + padding,
+            y,
+            w: width,
+            h: estimateTextHeight(
+              layer.text,
+              width - (layer.timestampGutter || 0),
+              layer.fontSize
+            ),
+          };
+
+          y = nextLayer.y + nextLayer.h + gap;
+
+          if (
+            nextLayer.x !== layer.x ||
+            nextLayer.y !== layer.y ||
+            nextLayer.w !== layer.w ||
+            nextLayer.h !== layer.h
+          ) {
+            changed = true;
+          }
+
+          layers.push(nextLayer);
+        }
+
+        return changed ? { ...page, layers } : page;
+      })
+    );
+  }, [form.hero, form.templateStyle, safeZones, uiState.fullWidthText]);
 
   useEffect(() => {
     setPages((prev) =>
@@ -1180,9 +1295,18 @@ export default function App() {
       uiState.setSegmentsOpen(true);
     }
 
+    if (step.id === "example") {
+      uiState.setLeftPanelOpen(true);
+      uiState.setSegmentsOpen(true);
+    }
+
     if (step.id === "layers") {
       uiState.setRightPanelOpen(true);
       uiState.setLayerListOpen(true);
+    }
+
+    if (step.id === "full-text-width") {
+      uiState.setRightPanelOpen(true);
     }
   }, [tutorial.isTutorialOpen, tutorial.tutorialStepIndex]);
 
@@ -1306,6 +1430,8 @@ export default function App() {
               setSelectedSegmentId={setSelectedSegmentId}
               setTool={setTool}
               autoPlaceAllSegments={() => autoPlaceAllSegments(activeSafeZones)}
+              exampleVisible={exampleVisible}
+              toggleExample={toggleExample}
               onAddEmoji={(emoji) => {
                 const zone =
                   activeSafeZones.find((safeZone) => safeZone.id === "rightMedia") ||
@@ -1333,7 +1459,6 @@ export default function App() {
             setGridEnabled={uiState.setGridEnabled}
             lockToRegions={uiState.lockToRegions}
             setLockToRegions={uiState.setLockToRegions}
-            updateFooterLayer={updateFooterLayer}
             loadPendingImage={loadPendingImage}
           />
 
@@ -1510,6 +1635,9 @@ export default function App() {
               setAllLayerVisibility={setAllLayerVisibility}
               setAllLayerLocks={setAllLayerLocks}
               groupSelectedLayers={groupSelectedLayers}
+              fullWidthText={uiState.fullWidthText}
+              setFullWidthText={uiState.setFullWidthText}
+              fullWidthTextBlocked={activeFullWidthTextBlocked}
               timestampGutterWidth={uiState.timestampGutterWidth}
               setTimestampGutterWidth={uiState.setTimestampGutterWidth}
               timestampFontSize={uiState.timestampFontSize}
@@ -1597,13 +1725,18 @@ export default function App() {
               form: formWithReplay,
               segments: nextSegments,
               safeZones: DEFAULT_SAFE_ZONES,
+              safeZoneOptions: { fullWidthText: uiState.fullWidthText },
             });
+            const pagesWithManualLayers = mergeManualLayersIntoGeneratedPages(
+              pages,
+              generatedPages
+            );
 
             setForm(formWithReplay);
             setRawText(nextRawText);
             setSegments(nextSegments);
-            setPages(generatedPages);
-            setActivePageId(generatedPages[0]?.id);
+            setPages(pagesWithManualLayers);
+            setActivePageId(pagesWithManualLayers[0]?.id);
             deselectAll();
             setSafeZones(DEFAULT_SAFE_ZONES);
             setTool("select");
@@ -1617,6 +1750,76 @@ export default function App() {
           key={textEditorLayer.id}
           layer={textEditorLayer}
           previewBackgroundLayer={textEditorPreviewBackgroundLayer}
+          appendableSegments={segments}
+          onAppendToSegment={(segmentId, text) => {
+            const targetSegment = segments.find((segment) => segment.id === segmentId);
+            const appendedText = String(text || "").trim();
+
+            if (!targetSegment || !appendedText) return;
+
+            const nextText = [targetSegment.text, appendedText]
+              .filter(Boolean)
+              .join("\n\n");
+
+            setSegments((prev) =>
+              prev.map((segment) =>
+                segment.id === segmentId
+                  ? { ...segment, text: nextText }
+                  : segment
+              )
+            );
+
+            setPages((prev) =>
+              prev.map((page) => ({
+                ...page,
+                layers: page.layers
+                  .filter((layer) => layer.id !== textEditorLayer.id)
+                  .map((layer) => {
+                    if (layer.sourceSegmentId !== segmentId || layer.kind !== "text") {
+                      return layer;
+                    }
+
+                    const padding = Number(layer.padding) || 0;
+                    return {
+                      ...layer,
+                      text: nextText,
+                      h: layer.autoFlow
+                        ? estimateTextHeight(
+                          nextText,
+                          layer.w - (layer.timestampGutter || 0) - padding * 2,
+                          layer.fontSize
+                        ) + padding * 2
+                        : layer.h,
+                    };
+                  }),
+              }))
+            );
+            setTextEditorLayerId(null);
+          }}
+          onCreateSegment={(text) => {
+            const segmentText = String(text || "").trim();
+
+            if (!segmentText) return;
+
+            const nextSegment = {
+              id: crypto.randomUUID(),
+              type: "paragraph",
+              title: "Custom segment",
+              section: "Custom segment",
+              timestamp: "",
+              text: segmentText,
+              used: true,
+            };
+
+            setSegments((prev) => [...prev, nextSegment]);
+            setLayer(textEditorLayer.id, {
+              sourceSegmentId: nextSegment.id,
+              segmentType: nextSegment.type,
+              text: nextSegment.text,
+              autoFlow: false,
+            });
+            setTextEditorLayerId(null);
+          }}
           onClose={() => setTextEditorLayerId(null)}
           onSave={(layerId, patch) => {
             if (layerId === "page-title") {

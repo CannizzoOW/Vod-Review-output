@@ -17,7 +17,6 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Label } from "../FormFields/Label.jsx";
-import { NumberField } from "../FormFields/NumberField.jsx";
 
 function clampWeight(value) {
   return Math.max(100, Math.min(1000, Number(value) || 500));
@@ -58,7 +57,15 @@ function hexToRgba(hex, opacity = 1) {
   return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
 }
 
-export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave }) {
+export function TextEditorModal({
+  layer,
+  previewBackgroundLayer,
+  appendableSegments = [],
+  onAppendToSegment,
+  onCreateSegment,
+  onClose,
+  onSave,
+}) {
   const textareaRef = useRef(null);
   const selectionRef = useRef({ start: 0, end: 0 });
   const [draft, setDraft] = useState(() => ({ ...layer }));
@@ -67,6 +74,8 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
     : "#efeae7";
   const isPageTitle = layer.id === "page-title";
   const isHeading = inferSegmentType(draft) === "heading";
+  const canManageSegment = !isPageTitle && !layer.sourceSegmentId;
+  const [appendSegmentId, setAppendSegmentId] = useState("");
 
   function update(patch) {
     setDraft((prev) => ({ ...prev, ...patch }));
@@ -329,76 +338,43 @@ export function TextEditorModal({ layer, previewBackgroundLayer, onClose, onSave
             </div>
 
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-2">
-                <NumberField
-                  label="Font size"
-                  value={draft.fontSize}
-                  onChange={(v) => update({ fontSize: clampFontSize(v) })}
-                />
-                <NumberField
-                  label="Weight"
-                  value={draft.weight}
-                  step={100}
-                  onChange={(v) => update({ weight: clampWeight(v) })}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <label className="block">
-                  <Label>Color</Label>
-                  <input
-                    className="input h-10 p-1"
-                    type="color"
-                    value={draft.color || "#000000"}
-                    onChange={(e) => update({ color: e.target.value })}
-                  />
-                </label>
-
-                <label className="block">
-                  <Label>Mode</Label>
+              {canManageSegment && (
+                <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
+                  <Label>Segment</Label>
+                  {appendableSegments.length > 0 && (
+                    <>
+                      <select
+                        className="input mt-1"
+                        value={appendSegmentId}
+                        onChange={(e) => setAppendSegmentId(e.target.value)}
+                      >
+                        <option value="">Choose segment</option>
+                        {appendableSegments.map((segment) => (
+                          <option key={segment.id} value={segment.id}>
+                            {segment.title || segment.section || segment.type}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="btn-secondary mt-2 w-full disabled:cursor-not-allowed disabled:opacity-40"
+                        disabled={!appendSegmentId || !String(draft.text || "").trim()}
+                        onClick={() => onAppendToSegment?.(appendSegmentId, draft.text)}
+                      >
+                        Append to segment
+                      </button>
+                    </>
+                  )}
                   <button
                     type="button"
-                    className={`tool-btn h-10 w-full ${draft.markdown ? "tool-btn-active" : ""}`}
-                    onClick={() => update({ markdown: !draft.markdown })}
+                    className="btn-secondary mt-2 w-full disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={!String(draft.text || "").trim()}
+                    onClick={() => onCreateSegment?.(draft.text)}
                   >
-                    Markdown
+                    Make new segment
                   </button>
-                </label>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className={`tool-btn flex-1 ${draft.weight >= 700 ? "tool-btn-active" : ""}`}
-                  onClick={() => update({ weight: draft.weight >= 700 ? 500 : 900 })}
-                >
-                  Bold
-                </button>
-                <button
-                  type="button"
-                  className={`tool-btn flex-1 ${draft.italic ? "tool-btn-active" : ""}`}
-                  onClick={() => update({ italic: !draft.italic })}
-                >
-                  Italic
-                </button>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className={`tool-btn flex-1 ${draft.underline ? "tool-btn-active" : ""}`}
-                  onClick={() => update({ underline: !draft.underline })}
-                >
-                  Underline
-                </button>
-                <button
-                  type="button"
-                  className={`tool-btn flex-1 ${draft.strikethrough ? "tool-btn-active" : ""}`}
-                  onClick={() => update({ strikethrough: !draft.strikethrough })}
-                >
-                  Strike
-                </button>
-              </div>
+                </div>
+              )}
 
               <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4">
                 <Label>Preview</Label>

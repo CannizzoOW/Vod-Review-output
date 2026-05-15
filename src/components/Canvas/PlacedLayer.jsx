@@ -54,8 +54,7 @@ export function PlacedLayer({
   const hasTimestampGutter =
     timestampGutterWidth > 0 &&
     layer.kind === "text" &&
-    layer.sourceSegmentId &&
-    !layer.locked;
+    layer.sourceSegmentId;
   const timestampGutter = timestampGutterWidth;
 
   const style = {

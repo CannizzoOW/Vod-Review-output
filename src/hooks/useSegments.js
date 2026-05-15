@@ -5,16 +5,30 @@ import { SAMPLE_REVIEW } from "../utils/constants.js";
 import { makeTextSegmentGroupPatch } from "../utils/layerFactory.js";
 
 export function useSegments(pages, activePageId, setPages) {
-  const [rawText, setRawText] = useState(SAMPLE_REVIEW);
-  const [segments, setSegments] = useState(
-    () => parseDiscordReview(SAMPLE_REVIEW).segments
-  );
+  const [rawText, setRawText] = useState("");
+  const [segments, setSegments] = useState([]);
   const [selectedSegmentId, setSelectedSegmentId] = useState(null);
 
   const selectedSegment = segments.find((s) => s.id === selectedSegmentId);
+  const exampleVisible = rawText === SAMPLE_REVIEW;
 
   function runParser() {
     const parsed = parseDiscordReview(rawText);
+    setSegments(parsed.segments);
+    setSelectedSegmentId(parsed.segments[0]?.id || null);
+  }
+
+  function toggleExample() {
+    if (exampleVisible) {
+      setRawText("");
+      setSegments([]);
+      setSelectedSegmentId(null);
+      return;
+    }
+
+    const parsed = parseDiscordReview(SAMPLE_REVIEW);
+
+    setRawText(SAMPLE_REVIEW);
     setSegments(parsed.segments);
     setSelectedSegmentId(parsed.segments[0]?.id || null);
   }
@@ -138,6 +152,8 @@ export function useSegments(pages, activePageId, setPages) {
     selectedSegmentId,
     setSelectedSegmentId,
     selectedSegment,
+    exampleVisible,
+    toggleExample,
     runParser,
     markSegmentUsed,
     syncSegmentUsage,

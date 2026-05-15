@@ -29,6 +29,9 @@ export function RightPanel({
   setAllLayerVisibility,
   setAllLayerLocks,
   groupSelectedLayers,
+  fullWidthText,
+  setFullWidthText,
+  fullWidthTextBlocked,
   timestampGutterWidth,
   setTimestampGutterWidth,
   timestampFontSize,
@@ -554,6 +557,37 @@ export function RightPanel({
           </button>
         </div>
       ) : null}
+
+      <div className="panel mt-3" data-tutorial="full-text-width">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="font-black">Full text width</p>
+            <p className="h-5 max-w-[190px] truncate text-sm text-slate-400">
+              {fullWidthText && fullWidthTextBlocked
+                ? "Blocked by screenshot zone"
+                : fullWidthText
+                  ? "Text can span the canvas"
+                  : "Text respects screenshots"}
+            </p>
+          </div>
+
+          <button
+            className={`relative h-7 w-12 rounded-full border transition ${
+              fullWidthText
+                ? "border-blue-400 bg-blue-600"
+                : "border-slate-700 bg-slate-950"
+            }`}
+            onClick={() => setFullWidthText(!fullWidthText)}
+            title={fullWidthText ? "Disable full text width" : "Enable full text width"}
+          >
+            <span
+              className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                fullWidthText ? "left-6" : "left-1"
+              }`}
+            />
+          </button>
+        </div>
+      </div>
 
       <div className="panel mt-3">
         <div className="flex items-center justify-between gap-3">

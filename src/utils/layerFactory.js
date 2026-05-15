@@ -142,6 +142,30 @@ export function makeTextLayer(segment, x = 80, y = 380) {
   };
 }
 
+export function makeFreeTextLayer(x = 80, y = 380) {
+  return {
+    id: uid(),
+    kind: "text",
+    visible: true,
+    color: "#000000",
+    x,
+    y,
+    w: 420,
+    h: 80,
+    fontSize: 24,
+    weight: 500,
+    italic: false,
+    underline: false,
+    strikethrough: false,
+    align: "left",
+    markdown: true,
+    autoFlow: false,
+    zoneId: null,
+    text: "Text",
+    name: "Text",
+  };
+}
+
 export function makeImageLayer(source, x = 700, y = 420) {
   const imageSource = typeof source === "string" ? { src: source } : source || {};
   const naturalW = Number(imageSource.naturalWidth) || 0;

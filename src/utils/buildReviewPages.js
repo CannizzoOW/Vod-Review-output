@@ -3,9 +3,9 @@ import { makeDefaultBackgroundRectLayer, makePageTitleLayer, makeFooterLayer, ma
 import { makeAutoTextLayerAtY } from "./canvas.js";
 import { getPageTemplateStyle, getSafeZonesForTemplateStyle } from "./constants.js";
 
-export function buildReviewPages({ form, segments = [], safeZones = [] }) {
+export function buildReviewPages({ form, segments = [], safeZones = [], safeZoneOptions = {} }) {
   const firstPageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, 0);
-  const firstPageSafeZones = getSafeZonesForTemplateStyle(safeZones, firstPageTemplateStyle);
+  const firstPageSafeZones = getSafeZonesForTemplateStyle(safeZones, firstPageTemplateStyle, safeZoneOptions);
   let mainZone = firstPageSafeZones.find((zone) => zone.id === "mainText") || firstPageSafeZones[0];
   const titleLayer = makePageTitleLayer("VOD FEEDBACK", firstPageTemplateStyle);
   const footerLayer = makeFooterLayer(form);
@@ -32,7 +32,7 @@ export function buildReviewPages({ form, segments = [], safeZones = [] }) {
 
   function setPageSafeZones(pageIndex) {
     const pageTemplateStyle = getPageTemplateStyle(form.hero, form.templateStyle, pageIndex);
-    const pageSafeZones = getSafeZonesForTemplateStyle(safeZones, pageTemplateStyle);
+    const pageSafeZones = getSafeZonesForTemplateStyle(safeZones, pageTemplateStyle, safeZoneOptions);
 
     mainZone = pageSafeZones.find((zone) => zone.id === "mainText") || pageSafeZones[0];
     padding = mainZone.padding || 20;

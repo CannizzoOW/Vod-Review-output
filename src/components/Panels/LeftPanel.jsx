@@ -6,6 +6,8 @@ export function LeftPanel({
   setSelectedSegmentId,
   setTool,
   autoPlaceAllSegments,
+  exampleVisible,
+  toggleExample,
   onAddEmoji,
   segmentsOpen,
   setSegmentsOpen,
@@ -93,6 +95,20 @@ export function LeftPanel({
         </button>
       </div>
 
+      <button
+        className="btn-secondary mt-2 w-full"
+        data-tutorial="view-example"
+        onClick={() => {
+          toggleExample();
+
+          if (!exampleVisible) {
+            setSegmentsOpen(true);
+          }
+        }}
+      >
+        {exampleVisible ? "Hide example" : "View example"}
+      </button>
+
       {segmentsOpen && (
         <div className="mt-2 space-y-2">
           {segments.map((segment) => (
@@ -100,7 +116,7 @@ export function LeftPanel({
               key={segment.id}
               onClick={() => {
                 setSelectedSegmentId(segment.id);
-                setTool("insertText");
+                setTool("insertSegment");
               }}
               className={`w-full rounded-xl border p-3 text-left transition ${selectedSegmentId === segment.id
                   ? "border-blue-400 bg-blue-600/25"

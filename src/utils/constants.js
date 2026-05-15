@@ -102,29 +102,67 @@ export const DEFAULT_SAFE_ZONES = [
 ];
 
 const PAGE_TWO_SAFE_ZONE_Y = 255;
+const SAFE_ZONE_GAP = 20;
+const FULL_WIDTH_MAIN_TEXT_W = 1050;
 
 export function isPageTwoTemplateStyle(templateStyle = "") {
   return /(?:^|-)page-2(?:$|-)/i.test(String(templateStyle || ""));
 }
 
-export function getSafeZonesForTemplateStyle(safeZones = DEFAULT_SAFE_ZONES, templateStyle = "") {
-  if (!isPageTwoTemplateStyle(templateStyle)) {
-    return safeZones;
-  }
+export function getSafeZonesForTemplateStyle(safeZones = DEFAULT_SAFE_ZONES, templateStyle = "", options = {}) {
+  const isPageTwoTemplate = isPageTwoTemplateStyle(templateStyle);
+  const screenshotZone = safeZones.find((zone) => zone.id === "rightMedia");
 
   return safeZones.map((zone) => {
-    if (zone.id !== "mainText" && zone.id !== "rightMedia") {
+    const isMainText = zone.id === "mainText";
+    const isScreenshotZone = zone.id === "rightMedia";
+
+    if (!isMainText && (!isPageTwoTemplate || !isScreenshotZone)) {
       return zone;
     }
 
-    const yDelta = zone.y - PAGE_TWO_SAFE_ZONE_Y;
+    const yDelta = isPageTwoTemplate ? zone.y - PAGE_TWO_SAFE_ZONE_Y : 0;
+    const maxMainTextW = screenshotZone
+      ? Math.max(120, screenshotZone.x - zone.x - SAFE_ZONE_GAP)
+      : zone.w;
 
     return {
       ...zone,
-      y: PAGE_TWO_SAFE_ZONE_Y,
-      h: zone.h + Math.max(0, yDelta),
+      ...(isMainText
+        ? {
+          w: options.fullWidthText ? FULL_WIDTH_MAIN_TEXT_W : Math.min(zone.w, maxMainTextW),
+        }
+        : {}),
+      ...(isPageTwoTemplate
+        ? {
+          y: PAGE_TWO_SAFE_ZONE_Y,
+          h: zone.h + Math.max(0, yDelta),
+        }
+        : {}),
     };
   });
+}
+
+export function pageHasScreenshotContent(page, safeZones = DEFAULT_SAFE_ZONES) {
+  const screenshotZone = safeZones.find((zone) => zone.id === "rightMedia");
+
+  if (!page || !screenshotZone) return false;
+
+  return (page.layers || []).some((layer) => {
+    if (layer.visible === false || layer.kind !== "image") return false;
+    if (layer.zoneId === screenshotZone.id) return true;
+
+    return rectanglesIntersect(layer, screenshotZone);
+  });
+}
+
+function rectanglesIntersect(a, b) {
+  return (
+    a.x < b.x + b.w &&
+    a.x + a.w > b.x &&
+    a.y < b.y + b.h &&
+    a.y + a.h > b.y
+  );
 }
 
 export const SAMPLE_REVIEW = `Replay ID: 10903088673

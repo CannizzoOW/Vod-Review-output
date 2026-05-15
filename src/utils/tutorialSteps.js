@@ -41,7 +41,14 @@ export const tutorialSteps = [
     id: "canvas",
     target: "review-canvas",
     title: "Edit on the canvas",
-    body: "Drag, resize, rotate, group, and double-click text layers to edit them with the full text editor.",
+    body: "Drag, resize, rotate, group, and double-click text layers to edit them. Free text can be appended into an existing segment or turned into a new segment from the text editor.",
+    placement: "left",
+  },
+  {
+    id: "full-text-width",
+    target: "full-text-width",
+    title: "Choose text width",
+    body: "Use this switch when text should span the page instead of reserving space for the screenshots safe zone.",
     placement: "left",
   },
   {
@@ -58,5 +65,12 @@ export const tutorialSteps = [
     body: "Export PNGs for the active page or use Print for all pages. If you use Print make sure to enable 'background graphics' and select 'Save as PDF' in the Destination selection.",
     placement: "bottom",
     spotlightOffsetY: -2,
+  },
+  {
+    id: "example",
+    target: "view-example",
+    title: "View an example",
+    body: "Open the example review here whenever you want a reference for the expected Discord review format.",
+    placement: "right",
   },
 ];

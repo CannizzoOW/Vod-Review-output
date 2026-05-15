@@ -1,12 +1,17 @@
 import { useState } from "react";
 import { snap, clampToZones } from "../utils/canvas.js";
 import { estimateTextHeight } from "../utils/textUtils.js";
-import { DEFAULT_SAFE_ZONES, getSafeZonesForTemplateStyle } from "../utils/constants.js";
+import { DEFAULT_SAFE_ZONES, getSafeZonesForTemplateStyle, pageHasScreenshotContent } from "../utils/constants.js";
 
-export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegions, activeTemplateStyle = "") {
+export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegions, activeTemplateStyle = "", safeZoneOptions = {}) {
   const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
   const [selectedSafeZoneId, setSelectedSafeZoneId] = useState(null);
-  const effectiveSafeZones = getSafeZonesForTemplateStyle(safeZones, activeTemplateStyle);
+  const activePage = pages.find((page) => page.id === activePageId) || pages[0];
+  const fullWidthText = safeZoneOptions.fullWidthText && !pageHasScreenshotContent(activePage, safeZones);
+  const effectiveSafeZones = getSafeZonesForTemplateStyle(safeZones, activeTemplateStyle, {
+    ...safeZoneOptions,
+    fullWidthText,
+  });
 
   const selectedSafeZone = effectiveSafeZones.find((z) => z.id === selectedSafeZoneId);
 

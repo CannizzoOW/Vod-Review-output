@@ -189,7 +189,7 @@ export function EditReviewDetailsModal({
             <p className="font-bold">Regenerate warning</p>
             <p className="mt-1">
               Regenerating will rebuild pages and auto-placed text from this raw review text.
-              Manual layer edits on the current pages may be overwritten.
+              Existing text segments will be replaced, while manually added layers such as images are kept.
             </p>
           </div>
         </div>

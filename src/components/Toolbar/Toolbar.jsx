@@ -28,7 +28,6 @@ export function Toolbar({
   setGridEnabled,
   lockToRegions,
   setLockToRegions,
-  updateFooterLayer,
   loadPendingImage,
 }) {
   const [contrastBackground, setContrastBackground] = useState("#ffffff");
@@ -229,13 +228,6 @@ export function Toolbar({
           )}
         </div>
 
-        <button
-          className="tool-btn"
-          onClick={updateFooterLayer}
-          title="Update footer info"
-        >
-          Update footer
-        </button>
       </div>
 
       <div className="flex items-center gap-2">

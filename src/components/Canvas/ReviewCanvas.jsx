@@ -30,7 +30,7 @@ export function ReviewCanvas({
   timestampColor,
 }) {
   const [snapGuides, setSnapGuides] = useState([]);
-  const cursor = tool === "insertText" || tool === "insertImage" || tool.startsWith("insertShape:")
+  const cursor = tool === "insertText" || tool === "insertSegment" || tool === "insertImage" || tool.startsWith("insertShape:")
     ? "cursor-crosshair"
     : "cursor-default";
 
