@@ -200,7 +200,7 @@ export default function App() {
 
   function restoreSnapshot(snapshot) {
     skipHistoryRef.current = true;
-    setPages(snapshot.pages);
+    setPages(stripLegacyBlobPageImages(snapshot.pages));
     setActivePageId(snapshot.activePageId);
     deselectAll();
   }
@@ -508,24 +508,30 @@ export default function App() {
   function loadPendingImage(file) {
     if (!file) return;
 
-    const src = URL.createObjectURL(file);
-    const image = new Image();
+    const reader = new FileReader();
 
-    image.onload = () => {
-      uiState.setPendingImage({
-        src,
-        naturalWidth: image.naturalWidth,
-        naturalHeight: image.naturalHeight,
-      });
-      setTool("insertImage");
+    reader.onload = () => {
+      const src = String(reader.result || "");
+      const image = new Image();
+
+      image.onload = () => {
+        uiState.setPendingImage({
+          src,
+          naturalWidth: image.naturalWidth,
+          naturalHeight: image.naturalHeight,
+        });
+        setTool("insertImage");
+      };
+
+      image.onerror = () => {
+        uiState.setPendingImage({ src });
+        setTool("insertImage");
+      };
+
+      image.src = src;
     };
 
-    image.onerror = () => {
-      uiState.setPendingImage({ src });
-      setTool("insertImage");
-    };
-
-    image.src = src;
+    reader.readAsDataURL(file);
   }
 
   function getActivePageTextSegmentGroup() {
@@ -916,7 +922,7 @@ export default function App() {
             layers: Array.isArray(p.layers) ? p.layers : [],
           }));
 
-          setPages(importedPages);
+          setPages(stripLegacyBlobPageImages(importedPages));
           setActivePageId(importedPages[0]?.id);
         } else {
           const generatedPages = buildReviewPages({
@@ -1019,6 +1025,34 @@ export default function App() {
     return src.startsWith("blob:") || src.startsWith("data:image/") || src.length > 200000;
   }
 
+  function stripLegacyBlobPageImages(pageList) {
+    return pageList.map((page) => ({
+      ...page,
+      layers: page.layers.map((layer) => {
+        const nextLayer = { ...layer };
+
+        if (layer.kind === "image" && String(layer.src || "").startsWith("blob:")) {
+          nextLayer.src = "";
+          nextLayer.missingSrc = true;
+        }
+
+        if (layer.comparisonData) {
+          nextLayer.comparisonData = {
+            ...layer.comparisonData,
+            leftImage: String(layer.comparisonData.leftImage || "").startsWith("blob:")
+              ? ""
+              : layer.comparisonData.leftImage,
+            rightImage: String(layer.comparisonData.rightImage || "").startsWith("blob:")
+              ? ""
+              : layer.comparisonData.rightImage,
+          };
+        }
+
+        return nextLayer;
+      }),
+    }));
+  }
+
   function mergeManualLayersIntoGeneratedPages(existingPages, generatedPages) {
     return generatedPages.map((page, pageIndex) => {
       const existingPage = existingPages[pageIndex];
@@ -1056,13 +1090,14 @@ export default function App() {
 
     setForm(draft.form);
     setSegments(draft.segments || []);
-    setPages(draft.pages || []);
+    setPages(stripLegacyBlobPageImages(draft.pages || []));
     setActivePageId(draft.activePageId || draft.pages?.[0]?.id);
     setSafeZones(draft.safeZones || DEFAULT_SAFE_ZONES);
   }
 
   async function exportPng() {
     tutorial.closeTutorial(false);
+    setPages((prev) => stripLegacyBlobPageImages(prev));
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
     await exportAllPages({
