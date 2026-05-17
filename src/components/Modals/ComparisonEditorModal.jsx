@@ -53,7 +53,12 @@ export function ComparisonEditorModal({ initialValue, onClose, onSave }) {
 
   function loadImage(file, key) {
     if (!file) return;
-    update({ [key]: URL.createObjectURL(file) });
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      update({ [key]: String(reader.result || "") });
+    };
+    reader.readAsDataURL(file);
   }
 
   function applyPreset(presetId) {

@@ -983,23 +983,40 @@ export default function App() {
     return pageList.map((page) => ({
       ...page,
       layers: page.layers.map((layer) => {
-        if (layer.kind !== "image") return layer;
+        const nextLayer = { ...layer };
 
-        const src = layer.src || "";
-        const shouldStripSrc =
-          src.startsWith("blob:") ||
-          src.startsWith("data:image/") ||
-          src.length > 200000;
+        if (layer.kind === "image") {
+          const src = layer.src || "";
+          const shouldStripSrc =
+            src.startsWith("blob:") ||
+            src.startsWith("data:image/") ||
+            src.length > 200000;
 
-        if (!shouldStripSrc) return layer;
+          if (shouldStripSrc) {
+            nextLayer.src = "";
+            nextLayer.missingSrc = true;
+          }
+        }
 
-        return {
-          ...layer,
-          src: "",
-          missingSrc: true,
-        };
+        if (layer.comparisonData) {
+          nextLayer.comparisonData = stripTransientComparisonImages(layer.comparisonData);
+        }
+
+        return nextLayer;
       }),
     }));
+  }
+
+  function stripTransientComparisonImages(comparisonData) {
+    return {
+      ...comparisonData,
+      leftImage: shouldStripDraftImageSrc(comparisonData.leftImage) ? "" : comparisonData.leftImage,
+      rightImage: shouldStripDraftImageSrc(comparisonData.rightImage) ? "" : comparisonData.rightImage,
+    };
+  }
+
+  function shouldStripDraftImageSrc(src = "") {
+    return src.startsWith("blob:") || src.startsWith("data:image/") || src.length > 200000;
   }
 
   function mergeManualLayersIntoGeneratedPages(existingPages, generatedPages) {
