@@ -30,11 +30,13 @@ import { buildReviewPages } from "./utils/buildReviewPages.js";
 import { makeComparisonLayers, makeEmojiLayer, makeFreeTextLayer, makeImageDescriptionBackgroundLayer, makeImageDescriptionGroupPatch, makeImageDescriptionLayer, makeImageGroupPatch, makeImageLayer, makeShapeLayer, makeTextSegmentGroupPatch, syncPageTitleLayers } from "./utils/layerFactory.js";
 import { autoPlaceInZone } from "./utils/canvas.js";
 import { estimateTextHeight } from "./utils/textUtils.js";
+import { RIVALS_EMOJIS } from "./utils/rivalsEmojis.js";
 
 const PAGE_W = 1080;
 const PAGE_H = 1527;
 const FOOTER_SAMPLE_TOP = 1482;
 const FOOTER_SAMPLE_H = 39;
+const RIVALS_EMOJI_SRC_BY_ID = new Map(RIVALS_EMOJIS.map((emoji) => [emoji.id, emoji.src]));
 
 export default function App() {
   const canvasRef = React.useRef(null);
@@ -675,6 +677,57 @@ export default function App() {
     );
   }
 
+  function resizeSelectedLayersFromBounds(nextBounds, originalBounds) {
+    if (selectedLayerIds.length < 2) return;
+
+    const selectedIdSet = new Set(selectedLayerIds);
+    const nextW = Math.max(20, nextBounds.w);
+    const nextH = Math.max(20, nextBounds.h);
+    const scaleX = nextW / Math.max(1, originalBounds.w);
+    const scaleY = nextH / Math.max(1, originalBounds.h);
+    const textScale = Math.min(scaleX, scaleY);
+
+    setPages((prev) =>
+      prev.map((page) => {
+        if (page.id !== activePageId) return page;
+
+        return {
+          ...page,
+          layers: page.layers.map((layer) => {
+            if (!selectedIdSet.has(layer.id) || (layer.locked && !layer.lockedToGroup)) {
+              return layer;
+            }
+
+            return {
+              ...layer,
+              x: Math.round(nextBounds.x + (layer.x - originalBounds.x) * scaleX),
+              y: Math.round(nextBounds.y + (layer.y - originalBounds.y) * scaleY),
+              w: Math.max(20, Math.round(layer.w * scaleX)),
+              h: Math.max(20, Math.round(layer.h * scaleY)),
+              ...(layer.kind === "text"
+                ? {
+                  fontSize: Math.max(8, Math.round((layer.fontSize || 18) * textScale)),
+                  padding: layer.padding ? Math.max(1, Math.round(layer.padding * textScale)) : layer.padding,
+                }
+                : {}),
+              ...(layer.kind === "shape" && layer.strokeWidth
+                ? { strokeWidth: Math.max(1, Math.round(layer.strokeWidth * textScale)) }
+                : {}),
+              ...(layer.comparisonData
+                ? {
+                  comparisonData: {
+                    ...layer.comparisonData,
+                    layoutScale: (layer.comparisonData.layoutScale || 1) * textScale,
+                  },
+                }
+                : {}),
+            };
+          }),
+        };
+      })
+    );
+  }
+
   function getLayerBounds(layers) {
     const left = Math.min(...layers.map((layer) => layer.x));
     const top = Math.min(...layers.map((layer) => layer.y));
@@ -1034,6 +1087,14 @@ export default function App() {
         if (layer.kind === "image" && String(layer.src || "").startsWith("blob:")) {
           nextLayer.src = "";
           nextLayer.missingSrc = true;
+        }
+
+        if (
+          layer.kind === "emoji" &&
+          String(layer.src || "").startsWith("https://rivalskins.com/") &&
+          RIVALS_EMOJI_SRC_BY_ID.has(String(layer.emojiId || ""))
+        ) {
+          nextLayer.src = RIVALS_EMOJI_SRC_BY_ID.get(String(layer.emojiId));
         }
 
         if (layer.comparisonData) {
@@ -1824,6 +1885,7 @@ export default function App() {
                   editTextLayer={setTextEditorLayerId}
                   editComparison={setComparisonEditorGroupId}
                   updateLayer={updateCanvasLayer}
+                  resizeSelectedLayers={resizeSelectedLayersFromBounds}
                   updateSafeZone={setSafeZone}
                   onLayerInteractionStart={beginCanvasInteraction}
                   onLayerInteractionEnd={endCanvasInteraction}

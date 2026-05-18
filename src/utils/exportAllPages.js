@@ -40,36 +40,36 @@ export async function exportAllPages({
         await new Promise((resolve) => requestAnimationFrame(resolve));
         await new Promise((resolve) => setTimeout(resolve, 50));
 
-        const dataUrl = await toPng(exportRef.current, {
-            cacheBust: true,
-            pixelRatio: 1,
-            canvasWidth: PAGE_W,
-            canvasHeight: PAGE_H,
-            width: PAGE_W,
-            height: PAGE_H,
+        const baseName = `vod-review-${safePlayer}-${safeHero}`;
+        const exportOptions = getPngExportOptions(PAGE_W, PAGE_H);
 
-            filter: (node) => {
-                return !node.classList?.contains("no-export");
-            },
+        if (pages.length <= 1) {
+            const dataUrl = await toPng(exportRef.current, exportOptions);
 
-            style: {
-                width: `${PAGE_W}px`,
-                height: `${PAGE_H}px`,
-                borderRadius: "0px",
-                boxShadow: "none",
-                outline: "none",
-                transform: "none",
-            },
-        });
+            downloadUrl(dataUrl, `${baseName}-page-${activePageIndex + 1}.png`);
+            return;
+        }
 
-        const link = document.createElement("a");
+        const pageNodes = Array.from(
+            document.querySelectorAll(".print-pages .print-page .editor-canvas")
+        );
 
-        link.download =
-            `vod-review-${safePlayer}-` +
-            `${safeHero}-page-${activePageIndex + 1}.png`;
+        if (pageNodes.length !== pages.length) {
+            throw new Error(`Expected ${pages.length} export pages, found ${pageNodes.length}.`);
+        }
 
-        link.href = dataUrl;
-        link.click();
+        const files = [];
+
+        for (const [index, node] of pageNodes.entries()) {
+            const dataUrl = await toPng(node, exportOptions);
+
+            files.push({
+                name: `${baseName}-page-${index + 1}.png`,
+                data: dataUrlToBytes(dataUrl),
+            });
+        }
+
+        downloadBlob(createZipBlob(files), `${baseName}-pages.zip`);
     } catch (error) {
         console.error("PNG export failed:", error);
         alert("PNG export failed. Check console for details.");
@@ -78,4 +78,177 @@ export async function exportAllPages({
         uiState.setLockToRegions(wasLockToRegions);
         uiState.setIsExporting(false);
     }
+}
+
+function getPngExportOptions(PAGE_W, PAGE_H) {
+    return {
+        cacheBust: true,
+        pixelRatio: 1,
+        canvasWidth: PAGE_W,
+        canvasHeight: PAGE_H,
+        width: PAGE_W,
+        height: PAGE_H,
+
+        filter: (node) => {
+            return !node.classList?.contains("no-export");
+        },
+
+        style: {
+            width: `${PAGE_W}px`,
+            height: `${PAGE_H}px`,
+            borderRadius: "0px",
+            boxShadow: "none",
+            outline: "none",
+            transform: "none",
+        },
+    };
+}
+
+function downloadUrl(url, filename) {
+    const link = document.createElement("a");
+
+    link.download = filename;
+    link.href = url;
+    link.click();
+}
+
+function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+
+    try {
+        downloadUrl(url, filename);
+    } finally {
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+}
+
+function dataUrlToBytes(dataUrl) {
+    const base64 = dataUrl.split(",")[1] || "";
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+
+    for (let index = 0; index < binary.length; index += 1) {
+        bytes[index] = binary.charCodeAt(index);
+    }
+
+    return bytes;
+}
+
+function createZipBlob(files) {
+    const encoder = new TextEncoder();
+    const chunks = [];
+    const centralDirectory = [];
+    let offset = 0;
+
+    for (const file of files) {
+        const nameBytes = encoder.encode(file.name);
+        const crc = crc32(file.data);
+        const localHeader = createLocalFileHeader(nameBytes, file.data.length, crc);
+
+        chunks.push(localHeader, nameBytes, file.data);
+        centralDirectory.push({
+            nameBytes,
+            size: file.data.length,
+            crc,
+            offset,
+        });
+
+        offset += localHeader.length + nameBytes.length + file.data.length;
+    }
+
+    const centralDirectoryStart = offset;
+
+    for (const entry of centralDirectory) {
+        const header = createCentralDirectoryHeader(entry);
+
+        chunks.push(header, entry.nameBytes);
+        offset += header.length + entry.nameBytes.length;
+    }
+
+    chunks.push(createEndOfCentralDirectoryRecord(
+        centralDirectory.length,
+        offset - centralDirectoryStart,
+        centralDirectoryStart
+    ));
+
+    return new Blob(chunks, { type: "application/zip" });
+}
+
+function createLocalFileHeader(nameBytes, size, crc) {
+    const view = new DataView(new ArrayBuffer(30));
+
+    writeUint32(view, 0, 0x04034b50);
+    writeUint16(view, 4, 20);
+    writeUint16(view, 6, 0);
+    writeUint16(view, 8, 0);
+    writeUint16(view, 10, 0);
+    writeUint16(view, 12, 0);
+    writeUint32(view, 14, crc);
+    writeUint32(view, 18, size);
+    writeUint32(view, 22, size);
+    writeUint16(view, 26, nameBytes.length);
+    writeUint16(view, 28, 0);
+
+    return new Uint8Array(view.buffer);
+}
+
+function createCentralDirectoryHeader(entry) {
+    const view = new DataView(new ArrayBuffer(46));
+
+    writeUint32(view, 0, 0x02014b50);
+    writeUint16(view, 4, 20);
+    writeUint16(view, 6, 20);
+    writeUint16(view, 8, 0);
+    writeUint16(view, 10, 0);
+    writeUint16(view, 12, 0);
+    writeUint16(view, 14, 0);
+    writeUint32(view, 16, entry.crc);
+    writeUint32(view, 20, entry.size);
+    writeUint32(view, 24, entry.size);
+    writeUint16(view, 28, entry.nameBytes.length);
+    writeUint16(view, 30, 0);
+    writeUint16(view, 32, 0);
+    writeUint16(view, 34, 0);
+    writeUint16(view, 36, 0);
+    writeUint32(view, 38, 0);
+    writeUint32(view, 42, entry.offset);
+
+    return new Uint8Array(view.buffer);
+}
+
+function createEndOfCentralDirectoryRecord(entryCount, centralDirectorySize, centralDirectoryStart) {
+    const view = new DataView(new ArrayBuffer(22));
+
+    writeUint32(view, 0, 0x06054b50);
+    writeUint16(view, 4, 0);
+    writeUint16(view, 6, 0);
+    writeUint16(view, 8, entryCount);
+    writeUint16(view, 10, entryCount);
+    writeUint32(view, 12, centralDirectorySize);
+    writeUint32(view, 16, centralDirectoryStart);
+    writeUint16(view, 20, 0);
+
+    return new Uint8Array(view.buffer);
+}
+
+function writeUint16(view, offset, value) {
+    view.setUint16(offset, value, true);
+}
+
+function writeUint32(view, offset, value) {
+    view.setUint32(offset, value >>> 0, true);
+}
+
+function crc32(bytes) {
+    let crc = 0xffffffff;
+
+    for (const byte of bytes) {
+        crc ^= byte;
+
+        for (let bit = 0; bit < 8; bit += 1) {
+            crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+        }
+    }
+
+    return (crc ^ 0xffffffff) >>> 0;
 }

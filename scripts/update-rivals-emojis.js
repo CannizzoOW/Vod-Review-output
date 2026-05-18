@@ -1,7 +1,10 @@
-import { writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { Buffer } from "node:buffer";
+import path from "node:path";
 
 const SOURCE_URL = "https://rivalskins.com/?type=emoji";
 const OUTPUT_PATH = "src/utils/rivalsEmojis.js";
+const EMOJI_OUTPUT_DIR = "public/emojis";
 
 function decodeHtml(value) {
   return value
@@ -44,6 +47,40 @@ function parseEmojiCards(html) {
   return emojis;
 }
 
+function getEmojiFilename(emoji) {
+  const sourceFilename = path.basename(new URL(emoji.remoteSrc).pathname);
+  return `${emoji.id}-${sourceFilename}`.replace(/[^a-zA-Z0-9._-]/g, "-");
+}
+
+async function fileExists(filePath) {
+  try {
+    const existing = await readFile(filePath);
+    return existing.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function downloadEmojiImage(emoji) {
+  const filename = getEmojiFilename(emoji);
+  const outputPath = path.join(EMOJI_OUTPUT_DIR, filename);
+
+  if (await fileExists(outputPath)) {
+    return `emojis/${filename}`;
+  }
+
+  const response = await fetch(emoji.remoteSrc);
+
+  if (!response.ok) {
+    throw new Error(`Could not fetch emoji image ${emoji.remoteSrc}: ${response.status}`);
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  await writeFile(outputPath, buffer);
+
+  return `emojis/${filename}`;
+}
+
 function toModule(emojis) {
   return `export const RIVALS_EMOJI_SOURCE = ${JSON.stringify(SOURCE_URL)};\n\nexport const RIVALS_EMOJIS = ${JSON.stringify(emojis, null, 2)};\n`;
 }
@@ -61,5 +98,20 @@ if (!emojis.length) {
   throw new Error("No Rivals emoji cards found.");
 }
 
-await writeFile(OUTPUT_PATH, toModule(emojis), "utf8");
-console.log(`Updated ${OUTPUT_PATH} with ${emojis.length} Rivals emojis.`);
+await mkdir(EMOJI_OUTPUT_DIR, { recursive: true });
+
+const localEmojis = [];
+
+for (const emoji of emojis) {
+  const remoteSrc = emoji.src;
+  const localSrc = await downloadEmojiImage({ ...emoji, remoteSrc });
+
+  localEmojis.push({
+    ...emoji,
+    src: localSrc,
+    remoteSrc,
+  });
+}
+
+await writeFile(OUTPUT_PATH, toModule(localEmojis), "utf8");
+console.log(`Updated ${OUTPUT_PATH} with ${localEmojis.length} Rivals emojis.`);

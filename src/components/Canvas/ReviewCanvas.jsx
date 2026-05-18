@@ -19,6 +19,7 @@ export function ReviewCanvas({
   editTextLayer,
   editComparison,
   updateLayer,
+  resizeSelectedLayers,
   updateSafeZone,
   onLayerInteractionStart,
   onLayerInteractionEnd,
@@ -126,14 +127,11 @@ export function ReviewCanvas({
         ))}
 
         {selectedBounds && !isExporting && (
-          <div
-            className="pointer-events-none absolute z-30 border-2 border-blue-400"
-            style={{
-              left: `${(selectedBounds.x / PAGE_W) * 100}%`,
-              top: `${(selectedBounds.y / PAGE_H) * 100}%`,
-              width: `${(selectedBounds.w / PAGE_W) * 100}%`,
-              height: `${(selectedBounds.h / PAGE_H) * 100}%`,
-            }}
+          <SelectedGroupBox
+            bounds={selectedBounds}
+            onResize={resizeSelectedLayers}
+            onInteractionStart={onLayerInteractionStart}
+            onInteractionEnd={onLayerInteractionEnd}
           />
         )}
 
@@ -179,4 +177,96 @@ function getLayerBounds(layers) {
     w: right - left,
     h: bottom - top,
   };
+}
+
+const GROUP_RESIZE_HANDLES = [
+  { id: "n", className: "left-1/2 top-0 h-2 w-5 -translate-x-1/2 -translate-y-1/2 cursor-ns-resize" },
+  { id: "s", className: "bottom-0 left-1/2 h-2 w-5 -translate-x-1/2 translate-y-1/2 cursor-ns-resize" },
+  { id: "e", className: "right-0 top-1/2 h-5 w-2 -translate-y-1/2 translate-x-1/2 cursor-ew-resize" },
+  { id: "w", className: "left-0 top-1/2 h-5 w-2 -translate-x-1/2 -translate-y-1/2 cursor-ew-resize" },
+  { id: "ne", className: "right-0 top-0 h-3 w-3 -translate-y-1/2 translate-x-1/2 cursor-nesw-resize" },
+  { id: "nw", className: "left-0 top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 cursor-nwse-resize" },
+  { id: "se", className: "bottom-0 right-0 h-3 w-3 translate-x-1/2 translate-y-1/2 cursor-nwse-resize" },
+  { id: "sw", className: "bottom-0 left-0 h-3 w-3 -translate-x-1/2 translate-y-1/2 cursor-nesw-resize" },
+];
+
+function SelectedGroupBox({ bounds, onResize, onInteractionStart, onInteractionEnd }) {
+  function startResize(e, handle) {
+    e.preventDefault();
+    e.stopPropagation();
+    onInteractionStart?.("resize");
+
+    const start = {
+      handle,
+      pointerX: e.clientX,
+      pointerY: e.clientY,
+      bounds,
+    };
+    let lastBounds = bounds;
+
+    function move(moveEvent) {
+      const dx = ((moveEvent.clientX - start.pointerX) / 860) * PAGE_W;
+      const dy = ((moveEvent.clientY - start.pointerY) / 1212) * PAGE_H;
+      const nextBounds = getNextGroupBounds(start.bounds, start.handle, dx, dy);
+      onResize(nextBounds, lastBounds);
+      lastBounds = nextBounds;
+    }
+
+    function stop() {
+      onInteractionEnd?.();
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+    }
+
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  }
+
+  return (
+    <div
+      className="pointer-events-none absolute z-30 border-2 border-blue-400"
+      style={{
+        left: `${(bounds.x / PAGE_W) * 100}%`,
+        top: `${(bounds.y / PAGE_H) * 100}%`,
+        width: `${(bounds.w / PAGE_W) * 100}%`,
+        height: `${(bounds.h / PAGE_H) * 100}%`,
+      }}
+    >
+      {GROUP_RESIZE_HANDLES.map((handle) => (
+        <button
+          key={handle.id}
+          type="button"
+          className={`pointer-events-auto absolute rounded-full bg-blue-500 ring-2 ring-white ${handle.className}`}
+          onPointerDown={(e) => startResize(e, handle.id)}
+          title={`Resize selection ${handle.id}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function getNextGroupBounds(bounds, handle, dx, dy) {
+  const next = { ...bounds };
+
+  if (handle.includes("e")) {
+    next.w = Math.max(20, Math.round(bounds.w + dx));
+  }
+
+  if (handle.includes("s")) {
+    next.h = Math.max(20, Math.round(bounds.h + dy));
+  }
+
+  if (handle.includes("w")) {
+    const nextW = Math.max(20, Math.round(bounds.w - dx));
+    next.x = Math.round(bounds.x + bounds.w - nextW);
+    next.w = nextW;
+  }
+
+  if (handle.includes("n")) {
+    const nextH = Math.max(20, Math.round(bounds.h - dy));
+    next.y = Math.round(bounds.y + bounds.h - nextH);
+    next.h = nextH;
+  }
+
+  return next;
 }
