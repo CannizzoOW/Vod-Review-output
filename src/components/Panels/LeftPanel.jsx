@@ -7,6 +7,7 @@ export function LeftPanel({
   setTool,
   autoPlaceAllSegments,
   exampleVisible,
+  exampleDisabled,
   toggleExample,
   onAddEmoji,
   segmentsOpen,
@@ -96,9 +97,12 @@ export function LeftPanel({
       </div>
 
       <button
-        className="btn-secondary mt-2 w-full"
+        className="btn-secondary mt-2 w-full disabled:cursor-not-allowed disabled:opacity-45"
         data-tutorial="view-example"
+        disabled={exampleDisabled && !exampleVisible}
+        title={exampleDisabled && !exampleVisible ? "Example is disabled while a review is loaded" : undefined}
         onClick={() => {
+          if (exampleDisabled && !exampleVisible) return;
           toggleExample();
 
           if (!exampleVisible) {

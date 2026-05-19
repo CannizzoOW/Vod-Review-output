@@ -72,7 +72,7 @@ export async function exportAllPages({
         downloadBlob(createZipBlob(files), `${baseName}-pages.zip`);
     } catch (error) {
         console.error("PNG export failed:", error);
-        alert("PNG export failed. Check console for details.");
+        alert("PNG export failed. Check console (F12) for details.");
     } finally {
         uiState.setGridEnabled(wasGridEnabled);
         uiState.setLockToRegions(wasLockToRegions);

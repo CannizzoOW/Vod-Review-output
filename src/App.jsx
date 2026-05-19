@@ -117,6 +117,19 @@ export default function App() {
       ),
     [activePage?.layers, selectedLayerIds]
   );
+  const hasLoadedReview = React.useMemo(
+    () =>
+      Boolean(
+        rawText.trim() ||
+        segments.length ||
+        pages.some((page) =>
+          (page.layers || []).some((layer) =>
+            !["default-background-rect", "page-title", "footer-info"].includes(layer.id)
+          )
+        )
+      ),
+    [pages, rawText, segments.length]
+  );
   const textEditorLayer = React.useMemo(
     () =>
       (activePage?.layers || []).find(
@@ -1731,6 +1744,7 @@ export default function App() {
               setTool={setTool}
               autoPlaceAllSegments={() => autoPlaceAllSegments(activeSafeZones)}
               exampleVisible={exampleVisible}
+              exampleDisabled={hasLoadedReview && !exampleVisible}
               toggleExample={toggleExample}
               onAddEmoji={(emoji) => {
                 const zone =
