@@ -37,6 +37,8 @@ const PAGE_H = 1527;
 const FOOTER_SAMPLE_TOP = 1482;
 const FOOTER_SAMPLE_H = 39;
 const RIVALS_EMOJI_SRC_BY_ID = new Map(RIVALS_EMOJIS.map((emoji) => [emoji.id, emoji.src]));
+const IMAGE_DESCRIPTION_GAP = 12;
+const IMAGE_DESCRIPTION_H = 52;
 
 export default function App() {
   const canvasRef = React.useRef(null);
@@ -523,30 +525,43 @@ export default function App() {
   function loadPendingImage(file) {
     if (!file) return;
 
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const src = String(reader.result || "");
-      const image = new Image();
-
-      image.onload = () => {
-        uiState.setPendingImage({
-          src,
-          naturalWidth: image.naturalWidth,
-          naturalHeight: image.naturalHeight,
-        });
+    readImageFile(file)
+      .then((imageSource) => {
+        uiState.setPendingImage(imageSource);
         setTool("insertImage");
+      })
+      .catch((error) => {
+        console.error("Could not load image:", error);
+        alert("Could not load image.");
+      });
+  }
+
+  function readImageFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const src = String(reader.result || "");
+        const image = new Image();
+
+        image.onload = () => {
+          resolve({
+            src,
+            naturalWidth: image.naturalWidth,
+            naturalHeight: image.naturalHeight,
+          });
+        };
+
+        image.onerror = () => {
+          resolve({ src });
+        };
+
+        image.src = src;
       };
 
-      image.onerror = () => {
-        uiState.setPendingImage({ src });
-        setTool("insertImage");
-      };
-
-      image.src = src;
-    };
-
-    reader.readAsDataURL(file);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
+    });
   }
 
   function getActivePageTextSegmentGroup() {
@@ -574,12 +589,7 @@ export default function App() {
   function centerLayerInZone(layer, zone) {
     if (!zone) return layer;
 
-    return {
-      ...layer,
-      zoneId: zone.id,
-      x: Math.round(zone.x + Math.max(0, (zone.w - layer.w) / 2)),
-      y: Math.round(zone.y + Math.max(0, (zone.h - layer.h) / 2)),
-    };
+    return placeImageLayerInZone(layer, zone, zone.x + zone.w / 2, zone.y + zone.h / 2);
   }
 
   function addImageWithDescription(source, zone) {
@@ -596,6 +606,95 @@ export default function App() {
     });
     addLayer(descriptionBackgroundLayer);
     addLayer(descriptionLayer);
+  }
+
+  function addImageAtPoint(source, x, y) {
+    const zone = getPlacementZone(x, y, "rightMedia");
+    const groupPatch = makeImageGroupPatch();
+    const placedImageLayer = placeImageLayerInZone(makeImageLayer(source), zone, x, y);
+    const descriptionGroupPatch = makeImageDescriptionGroupPatch(groupPatch);
+    const descriptionLayer = makeImageDescriptionLayer(placedImageLayer, descriptionGroupPatch);
+    const descriptionBackgroundLayer = makeImageDescriptionBackgroundLayer(descriptionLayer, descriptionGroupPatch);
+
+    addLayer({
+      ...placedImageLayer,
+      ...groupPatch,
+      name: "Screenshot",
+    });
+    addLayer(descriptionBackgroundLayer);
+    addLayer(descriptionLayer);
+    setTool("select");
+  }
+
+  async function addImageFileAtPoint(file, x, y) {
+    if (!file?.type?.startsWith("image/")) return;
+
+    try {
+      const imageSource = await readImageFile(file);
+      addImageAtPoint(imageSource, x, y);
+    } catch (error) {
+      console.error("Could not insert image:", error);
+      alert("Could not insert image.");
+    }
+  }
+
+  function getCanvasPointFromClientEvent(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * PAGE_W,
+      y: ((e.clientY - rect.top) / rect.height) * PAGE_H,
+    };
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function placeImageLayerInZone(layer, zone, centerX, centerY) {
+    const bounds = zone
+      ? {
+        x: zone.x + (zone.padding || 0),
+        y: zone.y + (zone.padding || 0),
+        w: Math.max(20, zone.w - (zone.padding || 0) * 2),
+        h: Math.max(20, zone.h - (zone.padding || 0) * 2),
+        zoneId: zone.id,
+      }
+      : {
+        x: 0,
+        y: 0,
+        w: PAGE_W,
+        h: PAGE_H,
+        zoneId: null,
+      };
+    const maxImageW = bounds.w;
+    const maxImageH = Math.max(40, bounds.h - IMAGE_DESCRIPTION_GAP - IMAGE_DESCRIPTION_H);
+    const scale = Math.min(1, maxImageW / Math.max(1, layer.w), maxImageH / Math.max(1, layer.h));
+    const w = Math.max(40, Math.round(layer.w * scale));
+    const h = Math.max(40, Math.round(layer.h * scale));
+    const x = clamp(centerX - w / 2, bounds.x, bounds.x + bounds.w - w);
+    const y = clamp(
+      centerY - (h + IMAGE_DESCRIPTION_GAP + IMAGE_DESCRIPTION_H) / 2,
+      bounds.y,
+      bounds.y + bounds.h - h - IMAGE_DESCRIPTION_GAP - IMAGE_DESCRIPTION_H
+    );
+
+    return {
+      ...layer,
+      zoneId: bounds.zoneId,
+      x: Math.round(x),
+      y: Math.round(y),
+      w,
+      h,
+    };
+  }
+
+  function isTypingInEditableField() {
+    const activeElement = document.activeElement;
+
+    return Boolean(
+      activeElement?.closest?.("input, textarea, select, [contenteditable='true']")
+    );
   }
 
   function updateCanvasLayer(layerId, patch, options = {}) {
@@ -865,9 +964,7 @@ export default function App() {
   function canvasClick(e) {
     if (tool === "select" || tool === "safeZone") return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * PAGE_W;
-    const y = ((e.clientY - rect.top) / rect.height) * PAGE_H;
+    const { x, y } = getCanvasPointFromClientEvent(e);
 
     if (tool === "insertText") {
       const layer = makeFreeTextLayer(Math.round(x), Math.round(y));
@@ -940,6 +1037,31 @@ export default function App() {
       addLayer(centerLayerInZone(makeShapeLayer(shapeType), zone));
       setTool("select");
     }
+  }
+
+  function handleCanvasDrop(e) {
+    const file = Array.from(e.dataTransfer?.files || []).find((item) =>
+      item.type.startsWith("image/")
+    );
+
+    if (!file) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    const { x, y } = getCanvasPointFromClientEvent(e);
+
+    addImageFileAtPoint(file, x, y);
+  }
+
+  function handleCanvasDragOver(e) {
+    const hasImage = Array.from(e.dataTransfer?.items || []).some((item) =>
+      item.kind === "file" && item.type.startsWith("image/")
+    );
+
+    if (!hasImage) return;
+
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
   }
 
   // MARK: Import/Export handlers
@@ -1311,6 +1433,30 @@ export default function App() {
     history.last = snapshot;
     bumpHistoryRevision();
   }, [pages, activePageId]);
+
+  useEffect(() => {
+    function handlePaste(e) {
+      if (isTypingInEditableField()) return;
+
+      const file = Array.from(e.clipboardData?.files || []).find((item) =>
+        item.type.startsWith("image/")
+      );
+
+      if (!file) return;
+
+      e.preventDefault();
+      const zone =
+        activeSafeZones.find((safeZone) => safeZone.id === "rightMedia") ||
+        activeSafeZones[0];
+      const x = zone ? zone.x + zone.w / 2 : PAGE_W / 2;
+      const y = zone ? zone.y + zone.h / 2 : PAGE_H / 2;
+
+      addImageFileAtPoint(file, x, y);
+    }
+
+    window.addEventListener("paste", handlePaste);
+    return () => window.removeEventListener("paste", handlePaste);
+  }, [activeSafeZones, uiState]);
 
   useEffect(() => {
     updateActivePageLayers((layers) => {
@@ -1904,6 +2050,8 @@ export default function App() {
                   onLayerInteractionStart={beginCanvasInteraction}
                   onLayerInteractionEnd={endCanvasInteraction}
                   canvasClick={canvasClick}
+                  canvasDrop={handleCanvasDrop}
+                  canvasDragOver={handleCanvasDragOver}
                   tool={tool}
                   zoom={uiState.zoom}
                   gridEnabled={uiState.gridEnabled}

@@ -24,6 +24,8 @@ export function ReviewCanvas({
   onLayerInteractionStart,
   onLayerInteractionEnd,
   canvasClick,
+  canvasDrop,
+  canvasDragOver,
   tool,
   gridEnabled,
   lockToRegions,
@@ -56,6 +58,8 @@ export function ReviewCanvas({
           exportRef.current = node;
         }}
         onClick={canvasClick}
+        onDrop={canvasDrop}
+        onDragOver={canvasDragOver}
         onPointerDown={(e) => {
           if (e.target !== e.currentTarget) return;
 

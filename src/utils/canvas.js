@@ -7,9 +7,10 @@ export function snap(value, grid) {
 
 export function clampToZones(layer, safeZones) {
   const zone =
-    layer.kind === "image"
+    (layer.zoneId ? safeZones.find((z) => z.id === layer.zoneId) : null) ||
+    (layer.kind === "image"
       ? safeZones.find((z) => z.id === "rightMedia") || safeZones[0]
-      : safeZones.find((z) => z.id === "mainText") || safeZones[0];
+      : safeZones.find((z) => z.id === "mainText") || safeZones[0]);
 
   if (!zone) return layer;
 
