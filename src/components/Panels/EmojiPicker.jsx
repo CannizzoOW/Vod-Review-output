@@ -1,11 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
-import { SmilePlus, Star } from "lucide-react";
+import { Settings, SmilePlus, Star } from "lucide-react";
 import { RIVALS_EMOJIS, RIVALS_EMOJI_SOURCE } from "../../utils/rivalsEmojis.js";
+import { EmojiSortingModal } from "../Modals/EmojiSortingModal.jsx";
+import {
+  getEmojiCharacterMap,
+  getEmojiCharacterOptions,
+  UNIVERSAL_EMOJI_CHARACTER,
+} from "../../utils/emojiCharacters.js";
 
 const FAVORITE_EMOJIS_KEY = "rivals-vod-review-favorite-emojis";
+const EMOJI_CHARACTER_OVERRIDES_KEY = "rivals-vod-review-emoji-character-overrides";
 
 export function EmojiPicker({ onAddEmoji }) {
   const [query, setQuery] = useState("");
+  const [characterFilter, setCharacterFilter] = useState("");
+  const [sortingOpen, setSortingOpen] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favoriteEmojiIds, setFavoriteEmojiIds] = useState(() => {
     try {
@@ -15,28 +24,56 @@ export function EmojiPicker({ onAddEmoji }) {
       return [];
     }
   });
+  const [characterOverrides, setCharacterOverrides] = useState(() => {
+    try {
+      const saved = localStorage.getItem(EMOJI_CHARACTER_OVERRIDES_KEY);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
 
   const favoriteEmojiIdSet = useMemo(
     () => new Set(favoriteEmojiIds),
     [favoriteEmojiIds]
   );
+  const emojiCharacterMap = useMemo(
+    () => getEmojiCharacterMap(characterOverrides),
+    [characterOverrides]
+  );
+  const characterOptions = useMemo(
+    () => getEmojiCharacterOptions(emojiCharacterMap),
+    [emojiCharacterMap]
+  );
 
   const filteredEmojis = useMemo(() => {
     const cleanQuery = query.trim().toLowerCase();
-    const source = favoritesOnly
+    let source = favoritesOnly
       ? RIVALS_EMOJIS.filter((emoji) => favoriteEmojiIdSet.has(emoji.id))
       : RIVALS_EMOJIS;
+
+    if (characterFilter) {
+      source = source.filter((emoji) => {
+        const character = emojiCharacterMap.get(emoji.id) || UNIVERSAL_EMOJI_CHARACTER;
+
+        return character === characterFilter;
+      });
+    }
 
     if (!cleanQuery) return source;
 
     return source.filter((emoji) =>
       emoji.name.toLowerCase().includes(cleanQuery)
     );
-  }, [favoriteEmojiIdSet, favoritesOnly, query]);
+  }, [characterFilter, emojiCharacterMap, favoriteEmojiIdSet, favoritesOnly, query]);
 
   useEffect(() => {
     localStorage.setItem(FAVORITE_EMOJIS_KEY, JSON.stringify(favoriteEmojiIds));
   }, [favoriteEmojiIds]);
+
+  useEffect(() => {
+    localStorage.setItem(EMOJI_CHARACTER_OVERRIDES_KEY, JSON.stringify(characterOverrides));
+  }, [characterOverrides]);
 
   function toggleFavoriteEmoji(emojiId) {
     setFavoriteEmojiIds((prev) =>
@@ -73,6 +110,19 @@ export function EmojiPicker({ onAddEmoji }) {
         onChange={(e) => setQuery(e.target.value)}
       />
 
+      <select
+        className="input mt-2"
+        value={characterFilter}
+        onChange={(e) => setCharacterFilter(e.target.value)}
+      >
+        <option value="">All characters</option>
+        {characterOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label} ({option.count})
+          </option>
+        ))}
+      </select>
+
       <div className="mt-2 flex items-center justify-between gap-2">
         <button
           className={`tool-btn flex-1 ${favoritesOnly ? "tool-btn-active" : ""}`}
@@ -87,6 +137,14 @@ export function EmojiPicker({ onAddEmoji }) {
           {favoriteEmojiIds.length} saved
         </p>
       </div>
+
+      <button
+        className="btn-secondary mt-2 w-full"
+        onClick={() => setSortingOpen(true)}
+      >
+        <Settings size={15} />
+        Sort remaining emojis
+      </button>
 
       <div className="mt-3 grid max-h-72 grid-cols-4 gap-2 overflow-y-auto pr-1">
         {filteredEmojis.map((emoji) => {
@@ -131,6 +189,15 @@ export function EmojiPicker({ onAddEmoji }) {
           <SmilePlus size={16} />
           No emojis found.
         </div>
+      )}
+
+      {sortingOpen && (
+        <EmojiSortingModal
+          emojiCharacterMap={emojiCharacterMap}
+          overrides={characterOverrides}
+          onChangeOverrides={setCharacterOverrides}
+          onClose={() => setSortingOpen(false)}
+        />
       )}
     </div>
   );
