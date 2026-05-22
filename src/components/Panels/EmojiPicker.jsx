@@ -10,10 +10,12 @@ import {
 
 const FAVORITE_EMOJIS_KEY = "rivals-vod-review-favorite-emojis";
 const EMOJI_CHARACTER_OVERRIDES_KEY = "rivals-vod-review-emoji-character-overrides";
+const EMOJI_SORTING_ENABLED_KEY = "rivals-vod-review-enable-emoji-sorting";
 
 export function EmojiPicker({ onAddEmoji }) {
   const [query, setQuery] = useState("");
   const [characterFilter, setCharacterFilter] = useState("");
+  const emojiSortingEnabled = localStorage.getItem(EMOJI_SORTING_ENABLED_KEY) === "true";
   const [sortingOpen, setSortingOpen] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [favoriteEmojiIds, setFavoriteEmojiIds] = useState(() => {
@@ -138,13 +140,15 @@ export function EmojiPicker({ onAddEmoji }) {
         </p>
       </div>
 
-      <button
-        className="btn-secondary mt-2 w-full"
-        onClick={() => setSortingOpen(true)}
-      >
-        <Settings size={15} />
-        Sort remaining emojis
-      </button>
+      {emojiSortingEnabled && (
+        <button
+          className="btn-secondary mt-2 w-full"
+          onClick={() => setSortingOpen(true)}
+        >
+          <Settings size={15} />
+          Sort remaining emojis
+        </button>
+      )}
 
       <div className="mt-3 grid max-h-72 grid-cols-4 gap-2 overflow-y-auto pr-1">
         {filteredEmojis.map((emoji) => {
@@ -191,7 +195,7 @@ export function EmojiPicker({ onAddEmoji }) {
         </div>
       )}
 
-      {sortingOpen && (
+      {emojiSortingEnabled && sortingOpen && (
         <EmojiSortingModal
           emojiCharacterMap={emojiCharacterMap}
           overrides={characterOverrides}

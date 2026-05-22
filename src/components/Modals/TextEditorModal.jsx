@@ -42,6 +42,10 @@ function inferSegmentType(layer) {
   return "paragraph";
 }
 
+function escapePastedMarkdownHeadings(value) {
+  return String(value || "").replace(/^(\s*)#{1,6}(\s+)/gm, "$1\\#$2");
+}
+
 function hexToRgba(hex, opacity = 1) {
   const value = String(hex || "").replace("#", "");
   const normalized = value.length === 3
@@ -163,6 +167,16 @@ export function TextEditorModal({
   }
 
   function setHeadingStyle() {
+    if (isHeading) {
+      update({
+        segmentType: "paragraph",
+        timestampGutter: draft.timestampGutter === 0 ? 84 : draft.timestampGutter,
+        fontSize: Math.min(Number(draft.fontSize) || 18, 18),
+        weight: Math.min(clampWeight(draft.weight), 500),
+      });
+      return;
+    }
+
     const nextText = String(draft.text || "").trim();
 
     update({
@@ -173,6 +187,31 @@ export function TextEditorModal({
       fontSize: Math.max(28, Number(draft.fontSize) || 28),
       weight: Math.max(900, clampWeight(draft.weight)),
       markdown: false,
+    });
+  }
+
+  function handlePaste(e) {
+    const pastedText = e.clipboardData?.getData("text/plain");
+    if (!pastedText) return;
+
+    const nextPastedText = escapePastedMarkdownHeadings(pastedText);
+    if (nextPastedText === pastedText) return;
+
+    e.preventDefault();
+
+    const textarea = textareaRef.current;
+    const text = draft.text || "";
+    const start = textarea?.selectionStart ?? selectionRef.current.start;
+    const end = textarea?.selectionEnd ?? selectionRef.current.end;
+    const nextText = text.slice(0, start) + nextPastedText + text.slice(end);
+    const nextCursor = start + nextPastedText.length;
+
+    update({ text: nextText });
+
+    requestAnimationFrame(() => {
+      textarea?.focus();
+      textarea?.setSelectionRange(nextCursor, nextCursor);
+      selectionRef.current = { start: nextCursor, end: nextCursor };
     });
   }
 
@@ -336,6 +375,7 @@ export function TextEditorModal({
                     update({ text: e.target.value });
                     rememberSelection();
                   }}
+                  onPaste={handlePaste}
                   onClick={rememberSelection}
                   onKeyUp={rememberSelection}
                   onSelect={rememberSelection}
