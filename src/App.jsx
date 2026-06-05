@@ -212,7 +212,7 @@ export default function App() {
   const activeTemplateThemeColor = getPageTitleBackgroundColor(Math.max(0, activePageIndex)) || "#75819a";
 
   function cloneSnapshot(snapshot) {
-    return JSON.parse(JSON.stringify(snapshot));
+    return cloneHistoryValue(snapshot);
   }
 
   function restoreSnapshot(snapshot) {
@@ -2526,7 +2526,7 @@ function describeHistoryState(previous, current, index) {
   const previousById = new Map(previousLayers.map((layer) => [layer.id, layer]));
   const changedLayer = currentLayers.find((layer) => {
     const before = previousById.get(layer.id);
-    return before && JSON.stringify(before) !== JSON.stringify(layer);
+    return before && !historyValuesMatch(before, layer);
   });
 
   if (changedLayer?.kind === "text") return "Edited text";
@@ -2535,4 +2535,44 @@ function describeHistoryState(previous, current, index) {
   if (changedLayer) return "Edited layer";
 
   return `History state ${index + 1}`;
+}
+
+function cloneHistoryValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(cloneHistoryValue);
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => [key, cloneHistoryValue(entry)])
+  );
+}
+
+function historyValuesMatch(left, right) {
+  if (left === right) return true;
+  if (!left || !right || typeof left !== "object" || typeof right !== "object") {
+    return false;
+  }
+
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) {
+      return false;
+    }
+
+    return left.every((entry, index) => historyValuesMatch(entry, right[index]));
+  }
+
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+
+  if (leftKeys.length !== rightKeys.length) return false;
+
+  return leftKeys.every(
+    (key) =>
+      Object.prototype.hasOwnProperty.call(right, key) &&
+      historyValuesMatch(left[key], right[key])
+  );
 }
