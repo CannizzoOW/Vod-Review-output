@@ -1737,8 +1737,12 @@ export default function App() {
       uiState.setWizardOpen(true);
     }
 
-    if (["segments", "canvas", "layers", "export"].includes(step.id)) {
+    if (["segments", "canvas", "page-rename", "layers", "export"].includes(step.id)) {
       uiState.setWizardOpen(false);
+    }
+
+    if (step.id === "page-rename") {
+      uiState.setPageTabsOpen(true);
     }
 
     if (step.id === "segments") {
@@ -1925,7 +1929,10 @@ export default function App() {
           />
 
           {uiState.pageTabsOpen && (
-            <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 bg-[#0b1020] p-2">
+            <div
+              className="flex flex-wrap items-center gap-2 border-b border-slate-800 bg-[#0b1020] p-2"
+              data-tutorial="page-tabs"
+            >
               {pages.map((page, index) => (
                 <div
                   key={page.id}

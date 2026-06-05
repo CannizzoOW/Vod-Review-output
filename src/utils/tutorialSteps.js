@@ -45,6 +45,14 @@ export const tutorialSteps = [
     placement: "left",
   },
   {
+    id: "page-rename",
+    target: "page-tabs",
+    title: "Rename pages",
+    badge: "New",
+    body: "Double-click a page tab to rename it. The page title on the canvas updates automatically to match the new name.",
+    placement: "bottom",
+  },
+  {
     id: "comparison",
     target: "comparison-tool",
     title: "Add comparisons",
