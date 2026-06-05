@@ -1760,7 +1760,7 @@ export default function App() {
       uiState.setLayerListOpen(true);
     }
 
-    if (step.id === "full-text-width") {
+    if (["full-text-width", "timestamp-gutter"].includes(step.id)) {
       uiState.setRightPanelOpen(true);
     }
   }, [tutorial.isTutorialOpen, tutorial.tutorialStepIndex]);

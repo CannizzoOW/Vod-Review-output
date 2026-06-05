@@ -84,11 +84,11 @@ export const tutorialSteps = [
     placement: "left",
   },
   {
-    id: "history",
-    target: "history-panel",
-    title: "Review history",
+    id: "timestamp-gutter",
+    target: "timestamp-gutter",
+    title: "Organize timestamps",
     badge: "New",
-    body: "Use History to inspect recent edits and jump back to an earlier state when you need a faster way to backtrack than repeated undo.",
+    body: "Enable the Timestamp gutter to move timestamps out of the review text and align them in a dedicated column. Adjust the gutter width, timestamp size, and colour here, or leave it off to keep timestamps inline.",
     placement: "left",
   },
   {
