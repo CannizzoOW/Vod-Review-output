@@ -83,11 +83,30 @@ export function syncPageTitleLayers(layers, title = "VOD FEEDBACK", templateStyl
 
   const syncedLayers = layers.map((layer) => {
     if (layer.id === "default-background-rect") {
-      return { ...layer, ...nextRect };
+      return {
+        ...layer,
+        x: nextRect.x,
+        y: nextRect.y,
+        w: nextRect.w,
+        h: nextRect.h,
+        ...(titleBackgroundColor
+          ? {
+            fillColor: titleBackgroundColor,
+            strokeColor: titleBackgroundColor,
+          }
+          : {}),
+      };
     }
 
     if (layer.id === "page-title") {
-      return { ...layer, ...nextTitle };
+      return {
+        ...layer,
+        x: nextTitle.x,
+        y: nextTitle.y,
+        w: nextTitle.w,
+        h: nextTitle.h,
+        text: nextTitle.text,
+      };
     }
 
     return layer;
