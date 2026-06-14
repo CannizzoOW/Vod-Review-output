@@ -2,6 +2,7 @@ import { useState } from "react";
 import { snap, clampToZones } from "../utils/canvas.js";
 import { estimateTextHeight } from "../utils/textUtils.js";
 import { DEFAULT_SAFE_ZONES, getSafeZonesForTemplateStyle, pageHasScreenshotContent } from "../utils/constants.js";
+import { warnIfLockedLayers } from "../utils/layerGuards.js";
 
 export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegions, activeTemplateStyle = "", safeZoneOptions = {}) {
   const [safeZones, setSafeZones] = useState(DEFAULT_SAFE_ZONES);
@@ -125,6 +126,10 @@ export function useLayers(pages, activePageId, setPages, gridEnabled, lockToRegi
   }
 
   function removeLayer(id, syncSegmentUsage) {
+    const layerToRemove = activePage?.layers.find((layer) => layer.id === id);
+
+    if (warnIfLockedLayers(layerToRemove ? [layerToRemove] : [])) return;
+
     let nextPagesSnapshot = null;
 
     setPages((prev) => {

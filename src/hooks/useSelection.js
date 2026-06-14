@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { warnIfLockedLayers } from "../utils/layerGuards.js";
 
 export function useSelection(pages, activePageId, setPages) {
   const [selectedLayerId, setSelectedLayerId] = useState(null);
@@ -60,6 +61,12 @@ export function useSelection(pages, activePageId, setPages) {
         : [];
 
     if (!idsToDelete.length) return;
+
+    const selectedLayers = activePage?.layers.filter((layer) =>
+      idsToDelete.includes(layer.id)
+    ) || [];
+
+    if (warnIfLockedLayers(selectedLayers)) return;
 
     let nextPagesSnapshot = null;
 
