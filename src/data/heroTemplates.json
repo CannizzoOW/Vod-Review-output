@@ -31,9 +31,25 @@
   },
   "Black Cat": {
     "slug": "black-cat",
-    "template": "templates/Black Cat/URBAN PREDATOR V1 Page 1.png",
-    "defaultStyle": "urban-predator-v1-page-1",
+    "template": "templates/Black Cat/SOLO RUN V1 Page 1.png",
+    "defaultStyle": "solo-run-v1-page-1",
     "styles": {
+      "solo-run-v1-page-1": {
+        "label": "Solo Run V1 Page 1",
+        "template": "templates/Black Cat/SOLO RUN V1 Page 1.png"
+      },
+      "solo-run-v1-page-2": {
+        "label": "Solo Run V1 Page 2",
+        "template": "templates/Black Cat/SOLO RUN V1 Page 2.png"
+      },
+      "solo-run-v2-page-1": {
+        "label": "Solo Run V2 Page 1",
+        "template": "templates/Black Cat/SOLO RUN V2 Page 1.png"
+      },
+      "solo-run-v2-page-2": {
+        "label": "Solo Run V2 Page 2",
+        "template": "templates/Black Cat/SOLO RUN V2 Page 2.png"
+      },
       "urban-predator-v1-page-1": {
         "label": "Urban Predator V1 Page 1",
         "template": "templates/Black Cat/URBAN PREDATOR V1 Page 1.png"
@@ -41,6 +57,22 @@
       "urban-predator-v1-page-2": {
         "label": "Urban Predator V1 Page 2",
         "template": "templates/Black Cat/URBAN PREDATOR V1 Page 2.png"
+      },
+      "urban-predator-v2-page-1": {
+        "label": "Urban Predator V2 Page 1",
+        "template": "templates/Black Cat/URBAN PREDATOR V2 Page 1.png"
+      },
+      "urban-predator-v2-page-2": {
+        "label": "Urban Predator V2 Page 2",
+        "template": "templates/Black Cat/URBAN PREDATOR V2 Page 2.png"
+      },
+      "urban-predator-v3-page-1": {
+        "label": "Urban Predator V3 Page 1",
+        "template": "templates/Black Cat/URBAN PREDATOR V3 Page 1.png"
+      },
+      "urban-predator-v3-page-2": {
+        "label": "Urban Predator V3 Page 2",
+        "template": "templates/Black Cat/URBAN PREDATOR V3 Page 2.png"
       }
     }
   },
@@ -106,9 +138,101 @@
   },
   "Cloak & Dagger": {
     "slug": "cloak-dagger",
-    "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 1.png",
-    "defaultStyle": "ice-pas-de-deux-v1-page-1",
+    "template": "templates/Cloak & Dagger/Dance Partner V1 Page 1.png",
+    "defaultStyle": "dance-partner-v1-page-1",
     "styles": {
+      "dance-partner-v1-page-1": {
+        "label": "Dance Partner V1 Page 1",
+        "template": "templates/Cloak & Dagger/Dance Partner V1 Page 1.png"
+      },
+      "dance-partner-v1-page-2": {
+        "label": "Dance Partner V1 Page 2",
+        "template": "templates/Cloak & Dagger/Dance Partner V1 Page 2.png"
+      },
+      "dance-partner-v2-page-1": {
+        "label": "Dance Partner V2 Page 1",
+        "template": "templates/Cloak & Dagger/Dance Partner V2 Page 1.png"
+      },
+      "dance-partner-v2-page-2": {
+        "label": "Dance Partner V2 Page 2",
+        "template": "templates/Cloak & Dagger/Dance Partner V2 Page 2.png"
+      },
+      "dance-partner-v3-page-1": {
+        "label": "Dance Partner V3 Page 1",
+        "template": "templates/Cloak & Dagger/Dance Partner V3 Page 1.png"
+      },
+      "dance-partner-v3-page-2": {
+        "label": "Dance Partner V3 Page 2",
+        "template": "templates/Cloak & Dagger/Dance Partner V3 Page 2.png"
+      },
+      "daring-duo-v1-page-1": {
+        "label": "Daring Duo V1 Page 1",
+        "template": "templates/Cloak & Dagger/DARING DUO V1 Page 1.png"
+      },
+      "daring-duo-v1-page-2": {
+        "label": "Daring Duo V1 Page 2",
+        "template": "templates/Cloak & Dagger/DARING DUO V1 Page 2.png"
+      },
+      "daring-duo-v2-page-1": {
+        "label": "Daring Duo V2 Page 1",
+        "template": "templates/Cloak & Dagger/DARING DUO V2 Page 1.png"
+      },
+      "daring-duo-v2-page-2": {
+        "label": "Daring Duo V2 Page 2",
+        "template": "templates/Cloak & Dagger/DARING DUO V2 Page 2.png"
+      },
+      "daring-duo-v3-page-1": {
+        "label": "Daring Duo V3 Page 1",
+        "template": "templates/Cloak & Dagger/DARING DUO V3 Page 1.png"
+      },
+      "daring-duo-v3-page-2": {
+        "label": "Daring Duo V3 Page 2",
+        "template": "templates/Cloak & Dagger/DARING DUO V3 Page 2.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Cloak & Dagger/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Cloak & Dagger/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Cloak & Dagger/DEFAULT V2 Page 2.png"
+      },
+      "default-v3-page-1": {
+        "label": "Default V3 Page 1",
+        "template": "templates/Cloak & Dagger/DEFAULT V3 Page 1.png"
+      },
+      "default-v3-page-2": {
+        "label": "Default V3 Page 2",
+        "template": "templates/Cloak & Dagger/DEFAULT V3 Page 2.png"
+      },
+      "growth-decay-v1-page-1": {
+        "label": "Growth Decay V1 Page 1",
+        "template": "templates/Cloak & Dagger/Growth & Decay V1 Page 1.png"
+      },
+      "growth-decay-v1-page-2": {
+        "label": "Growth Decay V1 Page 2",
+        "template": "templates/Cloak & Dagger/Growth & Decay V1 Page 2.png"
+      },
+      "growth-decay-v2-page-1": {
+        "label": "Growth Decay V2 Page 1",
+        "template": "templates/Cloak & Dagger/Growth & Decay V2 Page 1.png"
+      },
+      "growth-decay-v2-page-2": {
+        "label": "Growth Decay V2 Page 2",
+        "template": "templates/Cloak & Dagger/Growth & Decay V2 Page 2.png"
+      },
+      "growth-decay-v3-page-1": {
+        "label": "Growth Decay V3 Page 1",
+        "template": "templates/Cloak & Dagger/Growth & Decay V3 Page 1.png"
+      },
+      "growth-decay-v3-page-2": {
+        "label": "Growth Decay V3 Page 2",
+        "template": "templates/Cloak & Dagger/Growth & Decay V3 Page 2.png"
+      },
       "ice-pas-de-deux-v1-page-1": {
         "label": "Ice Pas De Deux V1 Page 1",
         "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 1.png"
@@ -116,6 +240,101 @@
       "ice-pas-de-deux-v1-page-2": {
         "label": "Ice Pas De Deux V1 Page 2",
         "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 2.png"
+      },
+      "ice-pas-de-deux-v2-page-1": {
+        "label": "Ice Pas De Deux V2 Page 1",
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V2 Page 1.png"
+      },
+      "ice-pas-de-deux-v2-page-2": {
+        "label": "Ice Pas De Deux V2 Page 2",
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V2 Page 2.png"
+      },
+      "ice-pas-de-deux-v3-page-1": {
+        "label": "Ice Pas De Deux V3 Page 1",
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V3 Page 1.png"
+      },
+      "ice-pas-de-deux-v3-page-2": {
+        "label": "Ice Pas De Deux V3 Page 2",
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V3 Page 2.png"
+      },
+      "polarity-bond-v1-page-1": {
+        "label": "Polarity Bond V1 Page 1",
+        "template": "templates/Cloak & Dagger/POLARITY BOND V1 Page 1.png"
+      },
+      "polarity-bond-v1-page-2": {
+        "label": "Polarity Bond V1 Page 2",
+        "template": "templates/Cloak & Dagger/POLARITY BOND V1 Page 2.png"
+      },
+      "polarity-bond-v2-page-1": {
+        "label": "Polarity Bond V2 Page 1",
+        "template": "templates/Cloak & Dagger/POLARITY BOND V2 Page 1.png"
+      },
+      "polarity-bond-v2-page-2": {
+        "label": "Polarity Bond V2 Page 2",
+        "template": "templates/Cloak & Dagger/POLARITY BOND V2 Page 2.png"
+      },
+      "twilight-duo-v1-page-1": {
+        "label": "Twilight Duo V1 Page 1",
+        "template": "templates/Cloak & Dagger/Twilight Duo V1 Page 1.png"
+      },
+      "twilight-duo-v1-page-2": {
+        "label": "Twilight Duo V1 Page 2",
+        "template": "templates/Cloak & Dagger/Twilight Duo V1 Page 2.png"
+      },
+      "twilight-duo-v2-page-1": {
+        "label": "Twilight Duo V2 Page 1",
+        "template": "templates/Cloak & Dagger/Twilight Duo V2 Page 1.png"
+      },
+      "twilight-duo-v2-page-2": {
+        "label": "Twilight Duo V2 Page 2",
+        "template": "templates/Cloak & Dagger/Twilight Duo V2 Page 2.png"
+      },
+      "twilight-duo-v3-page-1": {
+        "label": "Twilight Duo V3 Page 1",
+        "template": "templates/Cloak & Dagger/Twilight Duo V3 Page 1.png"
+      },
+      "twilight-duo-v3-page-2": {
+        "label": "Twilight Duo V3 Page 2",
+        "template": "templates/Cloak & Dagger/Twilight Duo V3 Page 2.png"
+      },
+      "twilight-duo-v4-page-1": {
+        "label": "Twilight Duo V4 Page 1",
+        "template": "templates/Cloak & Dagger/Twilight Duo V4 Page 1.png"
+      },
+      "twilight-duo-v4-page-2": {
+        "label": "Twilight Duo V4 Page 2",
+        "template": "templates/Cloak & Dagger/Twilight Duo V4 Page 2.png"
+      }
+    }
+  },
+  "Cyclops": {
+    "slug": "cyclops",
+    "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 1.png",
+    "defaultStyle": "beam-breakout-v1-page-1",
+    "styles": {
+      "beam-breakout-v1-page-1": {
+        "label": "Beam Breakout V1 Page 1",
+        "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 1.png"
+      },
+      "beam-breakout-v1-page-2": {
+        "label": "Beam Breakout V1 Page 2",
+        "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 2.png"
+      },
+      "beam-breakout-v2-page-1": {
+        "label": "Beam Breakout V2 Page 1",
+        "template": "templates/Cyclops/BEAM BREAKOUT V2 Page 1.png"
+      },
+      "beam-breakout-v2-page-2": {
+        "label": "Beam Breakout V2 Page 2",
+        "template": "templates/Cyclops/BEAM BREAKOUT V2 Page 2.png"
+      },
+      "beam-breakout-v3-page-1": {
+        "label": "Beam Breakout V3 Page 1",
+        "template": "templates/Cyclops/BEAM BREAKOUT V3 Page 1.png"
+      },
+      "beam-breakout-v3-page-2": {
+        "label": "Beam Breakout V3 Page 2",
+        "template": "templates/Cyclops/BEAM BREAKOUT V3 Page 2.png"
       }
     }
   },
@@ -174,9 +393,33 @@
   },
   "Doctor Strange": {
     "slug": "doctor-strange",
-    "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 1.png",
-    "defaultStyle": "god-of-magic-v1-page-1",
+    "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 1.png",
+    "defaultStyle": "bleeker-street-strut-v1-page-1",
     "styles": {
+      "bleeker-street-strut-v1-page-1": {
+        "label": "Bleeker Street Strut V1 Page 1",
+        "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 1.png"
+      },
+      "bleeker-street-strut-v1-page-2": {
+        "label": "Bleeker Street Strut V1 Page 2",
+        "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 2.png"
+      },
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Doctor Strange/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Doctor Strange/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Doctor Strange/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Doctor Strange/DEFAULT V2 Page 2.png"
+      },
       "god-of-magic-v1-page-1": {
         "label": "God Of Magic V1 Page 1",
         "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 1.png"
@@ -184,6 +427,46 @@
       "god-of-magic-v1-page-2": {
         "label": "God Of Magic V1 Page 2",
         "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 2.png"
+      },
+      "multiverse-of-madness-v1-page-1": {
+        "label": "Multiverse Of Madness V1 Page 1",
+        "template": "templates/Doctor Strange/Multiverse of Madness V1 Page 1.png"
+      },
+      "multiverse-of-madness-v1-page-2": {
+        "label": "Multiverse Of Madness V1 Page 2",
+        "template": "templates/Doctor Strange/Multiverse of Madness V1 Page 2.png"
+      },
+      "phantom-sorcerer-v1-page-1": {
+        "label": "Phantom Sorcerer V1 Page 1",
+        "template": "templates/Doctor Strange/PHANTOM SORCERER V1 Page 1.png"
+      },
+      "phantom-sorcerer-v1-page-2": {
+        "label": "Phantom Sorcerer V1 Page 2",
+        "template": "templates/Doctor Strange/PHANTOM SORCERER V1 Page 2.png"
+      },
+      "sorcerer-immortal-v1-page-1": {
+        "label": "Sorcerer Immortal V1 Page 1",
+        "template": "templates/Doctor Strange/Sorcerer Immortal V1 Page 1.png"
+      },
+      "sorcerer-immortal-v1-page-2": {
+        "label": "Sorcerer Immortal V1 Page 2",
+        "template": "templates/Doctor Strange/Sorcerer Immortal V1 Page 2.png"
+      },
+      "sorcerer-supreme-of-the-galaxy-v1-page-1": {
+        "label": "Sorcerer Supreme Of The Galaxy V1 Page 1",
+        "template": "templates/Doctor Strange/Sorcerer Supreme of the Galaxy V1 Page 1.png"
+      },
+      "sorcerer-supreme-of-the-galaxy-v1-page-2": {
+        "label": "Sorcerer Supreme Of The Galaxy V1 Page 2",
+        "template": "templates/Doctor Strange/Sorcerer Supreme of the Galaxy V1 Page 2.png"
+      },
+      "the-doctor-v1-page-1": {
+        "label": "The Doctor V1 Page 1",
+        "template": "templates/Doctor Strange/THE DOCTOR V1 Page 1.png"
+      },
+      "the-doctor-v1-page-2": {
+        "label": "The Doctor V1 Page 2",
+        "template": "templates/Doctor Strange/THE DOCTOR V1 Page 2.png"
       }
     }
   },
@@ -219,9 +502,81 @@
   },
   "Gambit": {
     "slug": "gambit",
-    "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 1.png",
-    "defaultStyle": "thieves-guildmaster-v1-page-1",
+    "template": "templates/Gambit/ALLURING ACE V1 Page 1.png",
+    "defaultStyle": "alluring-ace-v1-page-1",
     "styles": {
+      "alluring-ace-v1-page-1": {
+        "label": "Alluring Ace V1 Page 1",
+        "template": "templates/Gambit/ALLURING ACE V1 Page 1.png"
+      },
+      "alluring-ace-v1-page-2": {
+        "label": "Alluring Ace V1 Page 2",
+        "template": "templates/Gambit/ALLURING ACE V1 Page 2.png"
+      },
+      "alluring-ace-v2-page-1": {
+        "label": "Alluring Ace V2 Page 1",
+        "template": "templates/Gambit/ALLURING ACE V2 Page 1.png"
+      },
+      "alluring-ace-v2-page-2": {
+        "label": "Alluring Ace V2 Page 2",
+        "template": "templates/Gambit/ALLURING ACE V2 Page 2.png"
+      },
+      "barrier-buster-v1-page-1": {
+        "label": "Barrier Buster V1 Page 1",
+        "template": "templates/Gambit/BARRIER BUSTER V1 Page 1.png"
+      },
+      "barrier-buster-v1-page-2": {
+        "label": "Barrier Buster V1 Page 2",
+        "template": "templates/Gambit/BARRIER BUSTER V1 Page 2.png"
+      },
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Gambit/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Gambit/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Gambit/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Gambit/DEFAULT V2 Page 2.png"
+      },
+      "default-v3-page-1": {
+        "label": "Default V3 Page 1",
+        "template": "templates/Gambit/DEFAULT V3 Page 1.png"
+      },
+      "default-v3-page-2": {
+        "label": "Default V3 Page 2",
+        "template": "templates/Gambit/DEFAULT V3 Page 2.png"
+      },
+      "mr-x-v1-page-1": {
+        "label": "Mr X V1 Page 1",
+        "template": "templates/Gambit/MR. X V1 Page 1.png"
+      },
+      "mr-x-v1-page-2": {
+        "label": "Mr X V1 Page 2",
+        "template": "templates/Gambit/MR. X V1 Page 2.png"
+      },
+      "mr-x-v2-page-1": {
+        "label": "Mr X V2 Page 1",
+        "template": "templates/Gambit/MR. X V2 Page 1.png"
+      },
+      "mr-x-v2-page-2": {
+        "label": "Mr X V2 Page 2",
+        "template": "templates/Gambit/MR. X V2 Page 2.png"
+      },
+      "mr-x-v3-page-1": {
+        "label": "Mr X V3 Page 1",
+        "template": "templates/Gambit/MR. X V3 Page 1.png"
+      },
+      "mr-x-v3-page-2": {
+        "label": "Mr X V3 Page 2",
+        "template": "templates/Gambit/MR. X V3 Page 2.png"
+      },
       "thieves-guildmaster-v1-page-1": {
         "label": "Thieves Guildmaster V1 Page 1",
         "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 1.png"
@@ -229,6 +584,14 @@
       "thieves-guildmaster-v1-page-2": {
         "label": "Thieves Guildmaster V1 Page 2",
         "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 2.png"
+      },
+      "thieves-guildmaster-v2-page-1": {
+        "label": "Thieves Guildmaster V2 Page 1",
+        "template": "templates/Gambit/THIEVES GUILDMASTER V2 Page 1.png"
+      },
+      "thieves-guildmaster-v2-page-2": {
+        "label": "Thieves Guildmaster V2 Page 2",
+        "template": "templates/Gambit/THIEVES GUILDMASTER V2 Page 2.png"
       }
     }
   },
@@ -279,9 +642,73 @@
   },
   "Hulk": {
     "slug": "hulk",
-    "template": "templates/Hulk/MAESTRO V1 Page 1.png",
-    "defaultStyle": "maestro-v1-page-1",
+    "template": "templates/Hulk/DEFAULT V1 Page 1.png",
+    "defaultStyle": "default-v1-page-1",
     "styles": {
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Hulk/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Hulk/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Hulk/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Hulk/DEFAULT V2 Page 2.png"
+      },
+      "green-scar-v1-page-1": {
+        "label": "Green Scar V1 Page 1",
+        "template": "templates/Hulk/GREEN SCAR V1 Page 1.png"
+      },
+      "green-scar-v1-page-2": {
+        "label": "Green Scar V1 Page 2",
+        "template": "templates/Hulk/GREEN SCAR V1 Page 2.png"
+      },
+      "infinity-v1-page-1": {
+        "label": "Infinity V1 Page 1",
+        "template": "templates/Hulk/INFINITY V1 Page 1.png"
+      },
+      "infinity-v1-page-2": {
+        "label": "Infinity V1 Page 2",
+        "template": "templates/Hulk/INFINITY V1 Page 2.png"
+      },
+      "infinity-v2-page-1": {
+        "label": "Infinity V2 Page 1",
+        "template": "templates/Hulk/INFINITY V2 Page 1.png"
+      },
+      "infinity-v2-page-2": {
+        "label": "Infinity V2 Page 2",
+        "template": "templates/Hulk/INFINITY V2 Page 2.png"
+      },
+      "infinity-v3-page-1": {
+        "label": "Infinity V3 Page 1",
+        "template": "templates/Hulk/INFINITY V3 Page 1.png"
+      },
+      "infinity-v3-page-2": {
+        "label": "Infinity V3 Page 2",
+        "template": "templates/Hulk/INFINITY V3 Page 2.png"
+      },
+      "joe-fixit-v1-page-1": {
+        "label": "Joe Fixit V1 Page 1",
+        "template": "templates/Hulk/Joe Fixit V1 Page 1.png"
+      },
+      "joe-fixit-v1-page-2": {
+        "label": "Joe Fixit V1 Page 2",
+        "template": "templates/Hulk/Joe Fixit V1 Page 2.png"
+      },
+      "joe-fixit-v2-page-1": {
+        "label": "Joe Fixit V2 Page 1",
+        "template": "templates/Hulk/Joe Fixit V2 Page 1.png"
+      },
+      "joe-fixit-v2-page-2": {
+        "label": "Joe Fixit V2 Page 2",
+        "template": "templates/Hulk/Joe Fixit V2 Page 2.png"
+      },
       "maestro-v1-page-1": {
         "label": "Maestro V1 Page 1",
         "template": "templates/Hulk/MAESTRO V1 Page 1.png"
@@ -289,6 +716,30 @@
       "maestro-v1-page-2": {
         "label": "Maestro V1 Page 2",
         "template": "templates/Hulk/MAESTRO V1 Page 2.png"
+      },
+      "punk-rage-v1-page-1": {
+        "label": "Punk Rage V1 Page 1",
+        "template": "templates/Hulk/Punk Rage V1 Page 1.png"
+      },
+      "punk-rage-v1-page-2": {
+        "label": "Punk Rage V1 Page 2",
+        "template": "templates/Hulk/Punk Rage V1 Page 2.png"
+      },
+      "punk-rage-v2-page-1": {
+        "label": "Punk Rage V2 Page 1",
+        "template": "templates/Hulk/Punk Rage V2 Page 1.png"
+      },
+      "punk-rage-v2-page-2": {
+        "label": "Punk Rage V2 Page 2",
+        "template": "templates/Hulk/Punk Rage V2 Page 2.png"
+      },
+      "punk-rage-v3-page-1": {
+        "label": "Punk Rage V3 Page 1",
+        "template": "templates/Hulk/Punk Rage V3 Page 1.png"
+      },
+      "punk-rage-v3-page-2": {
+        "label": "Punk Rage V3 Page 2",
+        "template": "templates/Hulk/Punk Rage V3 Page 2.png"
       }
     }
   },
@@ -395,6 +846,14 @@
       "disappearing-dessert-v4-page-2": {
         "label": "Disappearing Dessert V4 Page 2",
         "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 2.png"
+      },
+      "disappearing-dessert-v5-page-1": {
+        "label": "Disappearing Dessert V5 Page 1",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V5 Page 1.png"
+      },
+      "disappearing-dessert-v5-page-2": {
+        "label": "Disappearing Dessert V5 Page 2",
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V5 Page 2.png"
       },
       "future-foundation-v1-page-1": {
         "label": "Future Foundation V1 Page 1",
@@ -540,9 +999,153 @@
   },
   "Luna Snow": {
     "slug": "luna-snow",
-    "template": "templates/Luna Snow/SHINING STAR V1 Page 1.png",
-    "defaultStyle": "shining-star-v1-page-1",
+    "template": "templates/Luna Snow/Abyssal Glow V1 Page 1.png",
+    "defaultStyle": "abyssal-glow-v1-page-1",
     "styles": {
+      "abyssal-glow-v1-page-1": {
+        "label": "Abyssal Glow V1 Page 1",
+        "template": "templates/Luna Snow/Abyssal Glow V1 Page 1.png"
+      },
+      "abyssal-glow-v1-page-2": {
+        "label": "Abyssal Glow V1 Page 2",
+        "template": "templates/Luna Snow/Abyssal Glow V1 Page 2.png"
+      },
+      "abyssal-glow-v2-page-1": {
+        "label": "Abyssal Glow V2 Page 1",
+        "template": "templates/Luna Snow/Abyssal Glow V2 Page 1.png"
+      },
+      "abyssal-glow-v2-page-2": {
+        "label": "Abyssal Glow V2 Page 2",
+        "template": "templates/Luna Snow/Abyssal Glow V2 Page 2.png"
+      },
+      "cherry-delight-v1-page-1": {
+        "label": "Cherry Delight V1 Page 1",
+        "template": "templates/Luna Snow/Cherry Delight V1 Page 1.png"
+      },
+      "cherry-delight-v1-page-2": {
+        "label": "Cherry Delight V1 Page 2",
+        "template": "templates/Luna Snow/Cherry Delight V1 Page 2.png"
+      },
+      "cherry-delight-v2-page-1": {
+        "label": "Cherry Delight V2 Page 1",
+        "template": "templates/Luna Snow/Cherry Delight V2 Page 1.png"
+      },
+      "cherry-delight-v2-page-2": {
+        "label": "Cherry Delight V2 Page 2",
+        "template": "templates/Luna Snow/Cherry Delight V2 Page 2.png"
+      },
+      "cherry-delight-v3-page-1": {
+        "label": "Cherry Delight V3 Page 1",
+        "template": "templates/Luna Snow/Cherry Delight V3 Page 1.png"
+      },
+      "cherry-delight-v3-page-2": {
+        "label": "Cherry Delight V3 Page 2",
+        "template": "templates/Luna Snow/Cherry Delight V3 Page 2.png"
+      },
+      "cherry-delight-v4-page-1": {
+        "label": "Cherry Delight V4 Page 1",
+        "template": "templates/Luna Snow/Cherry Delight V4 Page 1.png"
+      },
+      "cherry-delight-v4-page-2": {
+        "label": "Cherry Delight V4 Page 2",
+        "template": "templates/Luna Snow/Cherry Delight V4 Page 2.png"
+      },
+      "cherry-delight-v5-page-1": {
+        "label": "Cherry Delight V5 Page 1",
+        "template": "templates/Luna Snow/Cherry Delight V5 Page 1.png"
+      },
+      "cherry-delight-v5-page-2": {
+        "label": "Cherry Delight V5 Page 2",
+        "template": "templates/Luna Snow/Cherry Delight V5 Page 2.png"
+      },
+      "cool-summer-v1-page-1": {
+        "label": "Cool Summer V1 Page 1",
+        "template": "templates/Luna Snow/Cool Summer V1 Page 1.png"
+      },
+      "cool-summer-v1-page-2": {
+        "label": "Cool Summer V1 Page 2",
+        "template": "templates/Luna Snow/Cool Summer V1 Page 2.png"
+      },
+      "cool-summer-v2-page-1": {
+        "label": "Cool Summer V2 Page 1",
+        "template": "templates/Luna Snow/Cool Summer V2 Page 1.png"
+      },
+      "cool-summer-v2-page-2": {
+        "label": "Cool Summer V2 Page 2",
+        "template": "templates/Luna Snow/Cool Summer V2 Page 2.png"
+      },
+      "cool-summer-v3-page-1": {
+        "label": "Cool Summer V3 Page 1",
+        "template": "templates/Luna Snow/Cool Summer V3 Page 1.png"
+      },
+      "cool-summer-v3-page-2": {
+        "label": "Cool Summer V3 Page 2",
+        "template": "templates/Luna Snow/Cool Summer V3 Page 2.png"
+      },
+      "cool-summer-v4-page-1": {
+        "label": "Cool Summer V4 Page 1",
+        "template": "templates/Luna Snow/Cool Summer V4 Page 1.png"
+      },
+      "cool-summer-v4-page-2": {
+        "label": "Cool Summer V4 Page 2",
+        "template": "templates/Luna Snow/Cool Summer V4 Page 2.png"
+      },
+      "disco-pop-v1-page-1": {
+        "label": "Disco Pop V1 Page 1",
+        "template": "templates/Luna Snow/DISCO POP V1 Page 1.png"
+      },
+      "disco-pop-v1-page-2": {
+        "label": "Disco Pop V1 Page 2",
+        "template": "templates/Luna Snow/DISCO POP V1 Page 2.png"
+      },
+      "disco-pop-v2-page-1": {
+        "label": "Disco Pop V2 Page 1",
+        "template": "templates/Luna Snow/DISCO POP V2 Page 1.png"
+      },
+      "disco-pop-v2-page-2": {
+        "label": "Disco Pop V2 Page 2",
+        "template": "templates/Luna Snow/DISCO POP V2 Page 2.png"
+      },
+      "disco-pop-v3-page-1": {
+        "label": "Disco Pop V3 Page 1",
+        "template": "templates/Luna Snow/DISCO POP V3 Page 1.png"
+      },
+      "disco-pop-v3-page-2": {
+        "label": "Disco Pop V3 Page 2",
+        "template": "templates/Luna Snow/DISCO POP V3 Page 2.png"
+      },
+      "mirae-2099-v1-page-1": {
+        "label": "Mirae 2099 V1 Page 1",
+        "template": "templates/Luna Snow/Mirae 2099 V1 Page 1.png"
+      },
+      "mirae-2099-v1-page-2": {
+        "label": "Mirae 2099 V1 Page 2",
+        "template": "templates/Luna Snow/Mirae 2099 V1 Page 2.png"
+      },
+      "mirae-2099-v2-page-1": {
+        "label": "Mirae 2099 V2 Page 1",
+        "template": "templates/Luna Snow/Mirae 2099 V2 Page 1.png"
+      },
+      "mirae-2099-v2-page-2": {
+        "label": "Mirae 2099 V2 Page 2",
+        "template": "templates/Luna Snow/Mirae 2099 V2 Page 2.png"
+      },
+      "mirae-2099-v3-page-1": {
+        "label": "Mirae 2099 V3 Page 1",
+        "template": "templates/Luna Snow/Mirae 2099 V3 Page 1.png"
+      },
+      "mirae-2099-v3-page-2": {
+        "label": "Mirae 2099 V3 Page 2",
+        "template": "templates/Luna Snow/Mirae 2099 V3 Page 2.png"
+      },
+      "mirae-2099-v4-page-1": {
+        "label": "Mirae 2099 V4 Page 1",
+        "template": "templates/Luna Snow/Mirae 2099 V4 Page 1.png"
+      },
+      "mirae-2099-v4-page-2": {
+        "label": "Mirae 2099 V4 Page 2",
+        "template": "templates/Luna Snow/Mirae 2099 V4 Page 2.png"
+      },
       "shining-star-v1-page-1": {
         "label": "Shining Star V1 Page 1",
         "template": "templates/Luna Snow/SHINING STAR V1 Page 1.png"
@@ -558,6 +1161,46 @@
       "shining-star-v2-page-2": {
         "label": "Shining Star V2 Page 2",
         "template": "templates/Luna Snow/SHINING STAR V2 Page 2.png"
+      },
+      "sonic-trailblazer-v1-page-1": {
+        "label": "Sonic Trailblazer V1 Page 1",
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V1 Page 1.png"
+      },
+      "sonic-trailblazer-v1-page-2": {
+        "label": "Sonic Trailblazer V1 Page 2",
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V1 Page 2.png"
+      },
+      "sonic-trailblazer-v2-page-1": {
+        "label": "Sonic Trailblazer V2 Page 1",
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V2 Page 1.png"
+      },
+      "sonic-trailblazer-v2-page-2": {
+        "label": "Sonic Trailblazer V2 Page 2",
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V2 Page 2.png"
+      },
+      "the-dancer-v1-page-1": {
+        "label": "The Dancer V1 Page 1",
+        "template": "templates/Luna Snow/THE DANCER V1 Page 1.png"
+      },
+      "the-dancer-v1-page-2": {
+        "label": "The Dancer V1 Page 2",
+        "template": "templates/Luna Snow/THE DANCER V1 Page 2.png"
+      },
+      "the-dancer-v2-page-1": {
+        "label": "The Dancer V2 Page 1",
+        "template": "templates/Luna Snow/THE DANCER V2 Page 1.png"
+      },
+      "the-dancer-v2-page-2": {
+        "label": "The Dancer V2 Page 2",
+        "template": "templates/Luna Snow/THE DANCER V2 Page 2.png"
+      },
+      "the-dancer-v3-page-1": {
+        "label": "The Dancer V3 Page 1",
+        "template": "templates/Luna Snow/THE DANCER V3 Page 1.png"
+      },
+      "the-dancer-v3-page-2": {
+        "label": "The Dancer V3 Page 2",
+        "template": "templates/Luna Snow/THE DANCER V3 Page 2.png"
       }
     }
   },
@@ -647,9 +1290,153 @@
   },
   "Moon Knight": {
     "slug": "moon-knight",
-    "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 1.png",
-    "defaultStyle": "suave-spector-v1-page-1",
+    "template": "templates/Moon Knight/DEFAULT V1 Page 1.png",
+    "defaultStyle": "default-v1-page-1",
     "styles": {
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Moon Knight/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Moon Knight/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Moon Knight/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Moon Knight/DEFAULT V2 Page 2.png"
+      },
+      "eclipse-knight-v1-page-1": {
+        "label": "Eclipse Knight V1 Page 1",
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V1 Page 1.png"
+      },
+      "eclipse-knight-v1-page-2": {
+        "label": "Eclipse Knight V1 Page 2",
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V1 Page 2.png"
+      },
+      "eclipse-knight-v2-page-1": {
+        "label": "Eclipse Knight V2 Page 1",
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V2 Page 1.png"
+      },
+      "eclipse-knight-v2-page-2": {
+        "label": "Eclipse Knight V2 Page 2",
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V2 Page 2.png"
+      },
+      "eclipse-knight-v3-page-1": {
+        "label": "Eclipse Knight V3 Page 1",
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V3 Page 1.png"
+      },
+      "eclipse-knight-v3-page-2": {
+        "label": "Eclipse Knight V3 Page 2",
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V3 Page 2.png"
+      },
+      "fist-of-vengeance-v1-page-1": {
+        "label": "Fist Of Vengeance V1 Page 1",
+        "template": "templates/Moon Knight/Fist Of Vengeance V1 Page 1.png"
+      },
+      "fist-of-vengeance-v1-page-2": {
+        "label": "Fist Of Vengeance V1 Page 2",
+        "template": "templates/Moon Knight/Fist Of Vengeance V1 Page 2.png"
+      },
+      "fist-of-vengeance-v2-page-1": {
+        "label": "Fist Of Vengeance V2 Page 1",
+        "template": "templates/Moon Knight/Fist Of Vengeance V2 Page 1.png"
+      },
+      "fist-of-vengeance-v2-page-2": {
+        "label": "Fist Of Vengeance V2 Page 2",
+        "template": "templates/Moon Knight/Fist Of Vengeance V2 Page 2.png"
+      },
+      "king-of-clubs-v1-page-1": {
+        "label": "King Of Clubs V1 Page 1",
+        "template": "templates/Moon Knight/King of Clubs V1 Page 1.png"
+      },
+      "king-of-clubs-v1-page-2": {
+        "label": "King Of Clubs V1 Page 2",
+        "template": "templates/Moon Knight/King of Clubs V1 Page 2.png"
+      },
+      "king-of-clubs-v2-page-1": {
+        "label": "King Of Clubs V2 Page 1",
+        "template": "templates/Moon Knight/King of Clubs V2 Page 1.png"
+      },
+      "king-of-clubs-v2-page-2": {
+        "label": "King Of Clubs V2 Page 2",
+        "template": "templates/Moon Knight/King of Clubs V2 Page 2.png"
+      },
+      "king-of-clubs-v3-page-1": {
+        "label": "King Of Clubs V3 Page 1",
+        "template": "templates/Moon Knight/King of Clubs V3 Page 1.png"
+      },
+      "king-of-clubs-v3-page-2": {
+        "label": "King Of Clubs V3 Page 2",
+        "template": "templates/Moon Knight/King of Clubs V3 Page 2.png"
+      },
+      "lunar-general-v1-page-1": {
+        "label": "Lunar General V1 Page 1",
+        "template": "templates/Moon Knight/Lunar General V1 Page 1.png"
+      },
+      "lunar-general-v1-page-2": {
+        "label": "Lunar General V1 Page 2",
+        "template": "templates/Moon Knight/Lunar General V1 Page 2.png"
+      },
+      "lunar-general-v2-page-1": {
+        "label": "Lunar General V2 Page 1",
+        "template": "templates/Moon Knight/Lunar General V2 Page 1.png"
+      },
+      "lunar-general-v2-page-2": {
+        "label": "Lunar General V2 Page 2",
+        "template": "templates/Moon Knight/Lunar General V2 Page 2.png"
+      },
+      "mister-knight-v1-page-1": {
+        "label": "Mister Knight V1 Page 1",
+        "template": "templates/Moon Knight/MISTER KNIGHT V1 Page 1.png"
+      },
+      "mister-knight-v1-page-2": {
+        "label": "Mister Knight V1 Page 2",
+        "template": "templates/Moon Knight/MISTER KNIGHT V1 Page 2.png"
+      },
+      "mister-knight-v2-page-1": {
+        "label": "Mister Knight V2 Page 1",
+        "template": "templates/Moon Knight/MISTER KNIGHT V2 Page 1.png"
+      },
+      "mister-knight-v2-page-2": {
+        "label": "Mister Knight V2 Page 2",
+        "template": "templates/Moon Knight/MISTER KNIGHT V2 Page 2.png"
+      },
+      "moon-knight-mech-v1-page-1": {
+        "label": "Moon Knight Mech V1 Page 1",
+        "template": "templates/Moon Knight/Moon Knight Mech V1 Page 1.png"
+      },
+      "moon-knight-mech-v1-page-2": {
+        "label": "Moon Knight Mech V1 Page 2",
+        "template": "templates/Moon Knight/Moon Knight Mech V1 Page 2.png"
+      },
+      "moon-knight-mech-v2-page-1": {
+        "label": "Moon Knight Mech V2 Page 1",
+        "template": "templates/Moon Knight/Moon Knight Mech V2 Page 1.png"
+      },
+      "moon-knight-mech-v2-page-2": {
+        "label": "Moon Knight Mech V2 Page 2",
+        "template": "templates/Moon Knight/Moon Knight Mech V2 Page 2.png"
+      },
+      "phoenix-knight-v1-page-1": {
+        "label": "Phoenix Knight V1 Page 1",
+        "template": "templates/Moon Knight/Phoenix Knight V1 Page 1.png"
+      },
+      "phoenix-knight-v1-page-2": {
+        "label": "Phoenix Knight V1 Page 2",
+        "template": "templates/Moon Knight/Phoenix Knight V1 Page 2.png"
+      },
+      "phoenix-knight-v2-page-1": {
+        "label": "Phoenix Knight V2 Page 1",
+        "template": "templates/Moon Knight/Phoenix Knight V2 Page 1.png"
+      },
+      "phoenix-knight-v2-page-2": {
+        "label": "Phoenix Knight V2 Page 2",
+        "template": "templates/Moon Knight/Phoenix Knight V2 Page 2.png"
+      },
       "suave-spector-v1-page-1": {
         "label": "Suave Spector V1 Page 1",
         "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 1.png"
@@ -657,6 +1444,22 @@
       "suave-spector-v1-page-2": {
         "label": "Suave Spector V1 Page 2",
         "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 2.png"
+      },
+      "suave-spector-v2-page-1": {
+        "label": "Suave Spector V2 Page 1",
+        "template": "templates/Moon Knight/SUAVE SPECTOR V2 Page 1.png"
+      },
+      "suave-spector-v2-page-2": {
+        "label": "Suave Spector V2 Page 2",
+        "template": "templates/Moon Knight/SUAVE SPECTOR V2 Page 2.png"
+      },
+      "suave-spector-v3-page-1": {
+        "label": "Suave Spector V3 Page 1",
+        "template": "templates/Moon Knight/SUAVE SPECTOR V3 Page 1.png"
+      },
+      "suave-spector-v3-page-2": {
+        "label": "Suave Spector V3 Page 2",
+        "template": "templates/Moon Knight/SUAVE SPECTOR V3 Page 2.png"
       }
     }
   },
@@ -722,9 +1525,89 @@
   },
   "Rocket Raccoon": {
     "slug": "rocket-raccoon",
-    "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 1.png",
-    "defaultStyle": "sunshine-raccoon-v1-page-1",
+    "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 1.png",
+    "defaultStyle": "bounty-hunter-v1-page-1",
     "styles": {
+      "bounty-hunter-v1-page-1": {
+        "label": "Bounty Hunter V1 Page 1",
+        "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 1.png"
+      },
+      "bounty-hunter-v1-page-2": {
+        "label": "Bounty Hunter V1 Page 2",
+        "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 2.png"
+      },
+      "bounty-hunter-v2-page-1": {
+        "label": "Bounty Hunter V2 Page 1",
+        "template": "templates/Rocket Raccoon/Bounty Hunter V2 Page 1.png"
+      },
+      "bounty-hunter-v2-page-2": {
+        "label": "Bounty Hunter V2 Page 2",
+        "template": "templates/Rocket Raccoon/Bounty Hunter V2 Page 2.png"
+      },
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Rocket Raccoon/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Rocket Raccoon/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Rocket Raccoon/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Rocket Raccoon/DEFAULT V2 Page 2.png"
+      },
+      "giant-panda-v1-page-1": {
+        "label": "Giant Panda V1 Page 1",
+        "template": "templates/Rocket Raccoon/GIANT PANDA V1 Page 1.png"
+      },
+      "giant-panda-v1-page-2": {
+        "label": "Giant Panda V1 Page 2",
+        "template": "templates/Rocket Raccoon/GIANT PANDA V1 Page 2.png"
+      },
+      "giant-panda-v2-page-1": {
+        "label": "Giant Panda V2 Page 1",
+        "template": "templates/Rocket Raccoon/GIANT PANDA V2 Page 1.png"
+      },
+      "giant-panda-v2-page-2": {
+        "label": "Giant Panda V2 Page 2",
+        "template": "templates/Rocket Raccoon/GIANT PANDA V2 Page 2.png"
+      },
+      "guardians-of-the-galaxy-vol-3-v1-page-1": {
+        "label": "Guardians Of The Galaxy Vol 3 V1 Page 1",
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V1 Page 1.png"
+      },
+      "guardians-of-the-galaxy-vol-3-v1-page-2": {
+        "label": "Guardians Of The Galaxy Vol 3 V1 Page 2",
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V1 Page 2.png"
+      },
+      "guardians-of-the-galaxy-vol-3-v2-page-1": {
+        "label": "Guardians Of The Galaxy Vol 3 V2 Page 1",
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V2 Page 1.png"
+      },
+      "guardians-of-the-galaxy-vol-3-v2-page-2": {
+        "label": "Guardians Of The Galaxy Vol 3 V2 Page 2",
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V2 Page 2.png"
+      },
+      "rocket-of-the-rafters-v1-page-1": {
+        "label": "Rocket Of The Rafters V1 Page 1",
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V1 Page 1.png"
+      },
+      "rocket-of-the-rafters-v1-page-2": {
+        "label": "Rocket Of The Rafters V1 Page 2",
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V1 Page 2.png"
+      },
+      "rocket-of-the-rafters-v2-page-1": {
+        "label": "Rocket Of The Rafters V2 Page 1",
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V2 Page 1.png"
+      },
+      "rocket-of-the-rafters-v2-page-2": {
+        "label": "Rocket Of The Rafters V2 Page 2",
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V2 Page 2.png"
+      },
       "sunshine-raccoon-v1-page-1": {
         "label": "Sunshine Raccoon V1 Page 1",
         "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 1.png"
@@ -732,14 +1615,102 @@
       "sunshine-raccoon-v1-page-2": {
         "label": "Sunshine Raccoon V1 Page 2",
         "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 2.png"
+      },
+      "sunshine-raccoon-v2-page-1": {
+        "label": "Sunshine Raccoon V2 Page 1",
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V2 Page 1.png"
+      },
+      "sunshine-raccoon-v2-page-2": {
+        "label": "Sunshine Raccoon V2 Page 2",
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V2 Page 2.png"
+      },
+      "sunshine-raccoon-v3-page-1": {
+        "label": "Sunshine Raccoon V3 Page 1",
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V3 Page 1.png"
+      },
+      "sunshine-raccoon-v3-page-2": {
+        "label": "Sunshine Raccoon V3 Page 2",
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V3 Page 2.png"
+      },
+      "symbiote-raccoon-v1-page-1": {
+        "label": "Symbiote Raccoon V1 Page 1",
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V1 Page 1.png"
+      },
+      "symbiote-raccoon-v1-page-2": {
+        "label": "Symbiote Raccoon V1 Page 2",
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V1 Page 2.png"
+      },
+      "symbiote-raccoon-v2-page-1": {
+        "label": "Symbiote Raccoon V2 Page 1",
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V2 Page 1.png"
+      },
+      "symbiote-raccoon-v2-page-2": {
+        "label": "Symbiote Raccoon V2 Page 2",
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V2 Page 2.png"
+      },
+      "wild-winter-v1-page-1": {
+        "label": "Wild Winter V1 Page 1",
+        "template": "templates/Rocket Raccoon/Wild Winter V1 Page 1.png"
+      },
+      "wild-winter-v1-page-2": {
+        "label": "Wild Winter V1 Page 2",
+        "template": "templates/Rocket Raccoon/Wild Winter V1 Page 2.png"
+      },
+      "wild-winter-v2-page-1": {
+        "label": "Wild Winter V2 Page 1",
+        "template": "templates/Rocket Raccoon/Wild Winter V2 Page 1.png"
+      },
+      "wild-winter-v2-page-2": {
+        "label": "Wild Winter V2 Page 2",
+        "template": "templates/Rocket Raccoon/Wild Winter V2 Page 2.png"
+      },
+      "wild-winter-v3-page-1": {
+        "label": "Wild Winter V3 Page 1",
+        "template": "templates/Rocket Raccoon/Wild Winter V3 Page 1.png"
+      },
+      "wild-winter-v3-page-2": {
+        "label": "Wild Winter V3 Page 2",
+        "template": "templates/Rocket Raccoon/Wild Winter V3 Page 2.png"
       }
     }
   },
   "Rogue": {
     "slug": "rogue",
-    "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 1.png",
-    "defaultStyle": "savage-land-redux-v1-page-1",
+    "template": "templates/Rogue/DEFAULT V1 Page 1.png",
+    "defaultStyle": "default-v1-page-1",
     "styles": {
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/Rogue/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/Rogue/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/Rogue/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/Rogue/DEFAULT V2 Page 2.png"
+      },
+      "mrs-x-v1-page-1": {
+        "label": "Mrs X V1 Page 1",
+        "template": "templates/Rogue/MRS. X V1 Page 1.png"
+      },
+      "mrs-x-v1-page-2": {
+        "label": "Mrs X V1 Page 2",
+        "template": "templates/Rogue/MRS. X V1 Page 2.png"
+      },
+      "mrs-x-v2-page-1": {
+        "label": "Mrs X V2 Page 1",
+        "template": "templates/Rogue/MRS. X V2 Page 1.png"
+      },
+      "mrs-x-v2-page-2": {
+        "label": "Mrs X V2 Page 2",
+        "template": "templates/Rogue/MRS. X V2 Page 2.png"
+      },
       "savage-land-redux-v1-page-1": {
         "label": "Savage Land Redux V1 Page 1",
         "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 1.png"
@@ -747,6 +1718,30 @@
       "savage-land-redux-v1-page-2": {
         "label": "Savage Land Redux V1 Page 2",
         "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 2.png"
+      },
+      "savage-land-redux-v2-page-1": {
+        "label": "Savage Land Redux V2 Page 1",
+        "template": "templates/Rogue/SAVAGE LAND REDUX V2 Page 1.png"
+      },
+      "savage-land-redux-v2-page-2": {
+        "label": "Savage Land Redux V2 Page 2",
+        "template": "templates/Rogue/SAVAGE LAND REDUX V2 Page 2.png"
+      },
+      "starlit-rebel-v1-page-1": {
+        "label": "Starlit Rebel V1 Page 1",
+        "template": "templates/Rogue/STARLIT REBEL V1 Page 1.png"
+      },
+      "starlit-rebel-v1-page-2": {
+        "label": "Starlit Rebel V1 Page 2",
+        "template": "templates/Rogue/STARLIT REBEL V1 Page 2.png"
+      },
+      "starlit-rebel-v2-page-1": {
+        "label": "Starlit Rebel V2 Page 1",
+        "template": "templates/Rogue/STARLIT REBEL V2 Page 1.png"
+      },
+      "starlit-rebel-v2-page-2": {
+        "label": "Starlit Rebel V2 Page 2",
+        "template": "templates/Rogue/STARLIT REBEL V2 Page 2.png"
       }
     }
   },
@@ -858,9 +1853,41 @@
   },
   "The Thing": {
     "slug": "the-thing",
-    "template": "templates/The Thing/ROCKY TIDE V1 Page 1.png",
-    "defaultStyle": "rocky-tide-v1-page-1",
+    "template": "templates/The Thing/DEFAULT V1 Page 1.png",
+    "defaultStyle": "default-v1-page-1",
     "styles": {
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/The Thing/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/The Thing/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/The Thing/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/The Thing/DEFAULT V2 Page 2.png"
+      },
+      "fear-itself-v1-page-1": {
+        "label": "Fear Itself V1 Page 1",
+        "template": "templates/The Thing/FEAR ITSELF V1 Page 1.png"
+      },
+      "fear-itself-v1-page-2": {
+        "label": "Fear Itself V1 Page 2",
+        "template": "templates/The Thing/FEAR ITSELF V1 Page 2.png"
+      },
+      "future-foundation-v1-page-1": {
+        "label": "Future Foundation V1 Page 1",
+        "template": "templates/The Thing/Future Foundation V1 Page 1.png"
+      },
+      "future-foundation-v1-page-2": {
+        "label": "Future Foundation V1 Page 2",
+        "template": "templates/The Thing/Future Foundation V1 Page 2.png"
+      },
       "rocky-tide-v1-page-1": {
         "label": "Rocky Tide V1 Page 1",
         "template": "templates/The Thing/ROCKY TIDE V1 Page 1.png"
@@ -868,6 +1895,22 @@
       "rocky-tide-v1-page-2": {
         "label": "Rocky Tide V1 Page 2",
         "template": "templates/The Thing/ROCKY TIDE V1 Page 2.png"
+      },
+      "symbiote-thing-v1-page-1": {
+        "label": "Symbiote Thing V1 Page 1",
+        "template": "templates/The Thing/Symbiote-Thing V1 Page 1.png"
+      },
+      "symbiote-thing-v1-page-2": {
+        "label": "Symbiote Thing V1 Page 2",
+        "template": "templates/The Thing/Symbiote-Thing V1 Page 2.png"
+      },
+      "trench-coat-v1-page-1": {
+        "label": "Trench Coat V1 Page 1",
+        "template": "templates/The Thing/Trench Coat V1 Page 1.png"
+      },
+      "trench-coat-v1-page-2": {
+        "label": "Trench Coat V1 Page 2",
+        "template": "templates/The Thing/Trench Coat V1 Page 2.png"
       }
     }
   },
@@ -918,9 +1961,25 @@
   },
   "White Fox": {
     "slug": "white-fox",
-    "template": "templates/White Fox/The Leader V1 Page 1.png",
-    "defaultStyle": "the-leader-v1-page-1",
+    "template": "templates/White Fox/DEFAULT V1 Page 1.png",
+    "defaultStyle": "default-v1-page-1",
     "styles": {
+      "default-v1-page-1": {
+        "label": "Default V1 Page 1",
+        "template": "templates/White Fox/DEFAULT V1 Page 1.png"
+      },
+      "default-v1-page-2": {
+        "label": "Default V1 Page 2",
+        "template": "templates/White Fox/DEFAULT V1 Page 2.png"
+      },
+      "default-v2-page-1": {
+        "label": "Default V2 Page 1",
+        "template": "templates/White Fox/DEFAULT V2 Page 1.png"
+      },
+      "default-v2-page-2": {
+        "label": "Default V2 Page 2",
+        "template": "templates/White Fox/DEFAULT V2 Page 2.png"
+      },
       "the-leader-v1-page-1": {
         "label": "The Leader V1 Page 1",
         "template": "templates/White Fox/The Leader V1 Page 1.png"

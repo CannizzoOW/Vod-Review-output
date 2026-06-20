@@ -2,6 +2,531 @@ export const RIVALS_EMOJI_SOURCE = "https://rivalskins.com/?type=emoji";
 
 export const RIVALS_EMOJIS = [
   {
+    "id": "3524",
+    "name": "VOLLEY-FAIL",
+    "src": "emojis/3524-img_icon_volley-fail.png",
+    "href": "https://rivalskins.com/item/3524/universal-emoji-volley-fail/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_volley-fail.png"
+  },
+  {
+    "id": "3525",
+    "name": "PETER TINGLE",
+    "src": "emojis/3525-img_icon_peter-tingle.png",
+    "href": "https://rivalskins.com/item/3525/universal-emoji-peter-tingle/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_peter-tingle.png"
+  },
+  {
+    "id": "3526",
+    "name": "SPIDEY SNOOZE",
+    "src": "emojis/3526-img_icon_spidey-snooze.png",
+    "href": "https://rivalskins.com/item/3526/universal-emoji-spidey-snooze/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_spidey-snooze.png"
+  },
+  {
+    "id": "3527",
+    "name": "BEACH HAZARDS",
+    "src": "emojis/3527-img_icon_beach-hazards.png",
+    "href": "https://rivalskins.com/item/3527/universal-emoji-beach-hazards/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_beach-hazards.png"
+  },
+  {
+    "id": "3528",
+    "name": "RULE BREAKER",
+    "src": "emojis/3528-img_icon_rule-breaker.png",
+    "href": "https://rivalskins.com/item/3528/universal-emoji-rule-breaker/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_rule-breaker.png"
+  },
+  {
+    "id": "3529",
+    "name": "SPIDEY OUT",
+    "src": "emojis/3529-img_icon_spidey-out.png",
+    "href": "https://rivalskins.com/item/3529/universal-emoji-spidey-out/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_spidey-out.png"
+  },
+  {
+    "id": "3530",
+    "name": "DONUT DRIFT",
+    "src": "emojis/3530-img_icon_donut-drift.png",
+    "href": "https://rivalskins.com/item/3530/universal-emoji-donut-drift/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_donut-drift.png"
+  },
+  {
+    "id": "3531",
+    "name": "MAKING A SPLASH",
+    "src": "emojis/3531-img_icon_making-a-splash.png",
+    "href": "https://rivalskins.com/item/3531/universal-emoji-making-a-splash/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_making-a-splash.png"
+  },
+  {
+    "id": "3532",
+    "name": "CHILLED CHALLENGE",
+    "src": "emojis/3532-img_icon_chilled-challenge.png",
+    "href": "https://rivalskins.com/item/3532/universal-emoji-chilled-challenge/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_chilled-challenge.png"
+  },
+  {
+    "id": "3533",
+    "name": "BRAIN FREEZE!",
+    "src": "emojis/3533-img_icon_brain-freeze.png",
+    "href": "https://rivalskins.com/item/3533/universal-emoji-brain-freeze/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_brain-freeze.png"
+  },
+  {
+    "id": "3534",
+    "name": "WATER FIGHT",
+    "src": "emojis/3534-img_icon_water-fight.png",
+    "href": "https://rivalskins.com/item/3534/universal-emoji-water-fight/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_water-fight.png"
+  },
+  {
+    "id": "3535",
+    "name": "ENDLESS SUMMER",
+    "src": "emojis/3535-img_icon_endless-summer.png",
+    "href": "https://rivalskins.com/item/3535/universal-emoji-endless-summer/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_endless-summer.png"
+  },
+  {
+    "id": "3542",
+    "name": "HUSH",
+    "src": "emojis/3542-img_icon_hush.png",
+    "href": "https://rivalskins.com/item/3542/universal-emoji-hush/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_hush.png"
+  },
+  {
+    "id": "3543",
+    "name": "EFFORTLESS ELEGANCE",
+    "src": "emojis/3543-img_icon_effortless-elegance.png",
+    "href": "https://rivalskins.com/item/3543/universal-emoji-effortless-elegance/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_effortless-elegance.png"
+  },
+  {
+    "id": "3544",
+    "name": "THE QUEEN CALLS",
+    "src": "emojis/3544-img_icon_the-queen-calls.png",
+    "href": "https://rivalskins.com/item/3544/universal-emoji-the-queen-calls/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_the-queen-calls.png"
+  },
+  {
+    "id": "3545",
+    "name": "BEAUTY SLEEP",
+    "src": "emojis/3545-img_icon_beauty-sleep.png",
+    "href": "https://rivalskins.com/item/3545/universal-emoji-beauty-sleep/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_beauty-sleep.png"
+  },
+  {
+    "id": "3546",
+    "name": "SWEET THOUGHTS",
+    "src": "emojis/3546-img_icon_sweet-thoughts.png",
+    "href": "https://rivalskins.com/item/3546/universal-emoji-sweet-thoughts/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_sweet-thoughts.png"
+  },
+  {
+    "id": "3547",
+    "name": "FROST INDULGENCE",
+    "src": "emojis/3547-img_icon_frost-indulgence.png",
+    "href": "https://rivalskins.com/item/3547/universal-emoji-frost-indulgence/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_frost-indulgence.png"
+  },
+  {
+    "id": "3548",
+    "name": "14 MILLION FUTURES",
+    "src": "emojis/3548-img_icon_14-million-futures.png",
+    "href": "https://rivalskins.com/item/3548/universal-emoji-14-million-futures/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_14-million-futures.png"
+  },
+  {
+    "id": "3549",
+    "name": "SUMMER SLUMP",
+    "src": "emojis/3549-img_icon_summer-slump.png",
+    "href": "https://rivalskins.com/item/3549/universal-emoji-summer-slump/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_summer-slump.png"
+  },
+  {
+    "id": "3550",
+    "name": "SUPREME CHILL",
+    "src": "emojis/3550-img_icon_supreme-chill.png",
+    "href": "https://rivalskins.com/item/3550/universal-emoji-supreme-chill/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_supreme-chill.png"
+  },
+  {
+    "id": "3551",
+    "name": "SORCERER'S SPF",
+    "src": "emojis/3551-img_icon_sorcerers-spf.png",
+    "href": "https://rivalskins.com/item/3551/universal-emoji-sorcerers-spf/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_sorcerers-spf.png"
+  },
+  {
+    "id": "3552",
+    "name": "SORCERER'S SENTENCE",
+    "src": "emojis/3552-img_icon_sorcerers-sentence.png",
+    "href": "https://rivalskins.com/item/3552/universal-emoji-sorcerers-sentence/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_sorcerers-sentence.png"
+  },
+  {
+    "id": "3553",
+    "name": "TA-DA!",
+    "src": "emojis/3553-img_icon_ta-da.png",
+    "href": "https://rivalskins.com/item/3553/universal-emoji-ta-da/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_ta-da.png"
+  },
+  {
+    "id": "3536",
+    "name": "PERFECT BLOCK",
+    "src": "emojis/3536-img_icon_perfect-block.png",
+    "href": "https://rivalskins.com/item/3536/universal-emoji-perfect-block/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_perfect-block.png"
+  },
+  {
+    "id": "3537",
+    "name": "STRETCH FOR A SIP",
+    "src": "emojis/3537-img_icon_stretch-for-a-sip.png",
+    "href": "https://rivalskins.com/item/3537/universal-emoji-stretch-for-a-sip/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_stretch-for-a-sip.png"
+  },
+  {
+    "id": "3538",
+    "name": "MELTING POINT",
+    "src": "emojis/3538-img_icon_melting-point.png",
+    "href": "https://rivalskins.com/item/3538/universal-emoji-melting-point/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_melting-point.png"
+  },
+  {
+    "id": "3539",
+    "name": "FANTASTIC SURFBOARD",
+    "src": "emojis/3539-img_icon_fantastic-surfboard.png",
+    "href": "https://rivalskins.com/item/3539/universal-emoji-fantastic-surfboard/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_fantastic-surfboard.png"
+  },
+  {
+    "id": "3540",
+    "name": "SPIDEY FAN",
+    "src": "emojis/3540-img_icon_spidey-fan.png",
+    "href": "https://rivalskins.com/item/3540/universal-emoji-spidey-fan/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_spidey-fan.png"
+  },
+  {
+    "id": "3541",
+    "name": "LIGHT & SHADOW SPIKE",
+    "src": "emojis/3541-img_icon_light-shadow-spike.png",
+    "href": "https://rivalskins.com/item/3541/universal-emoji-light-shadow-spike/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_light-shadow-spike.png"
+  },
+  {
+    "id": "3458",
+    "name": "OPTIC ARRIVAL",
+    "src": "emojis/3458-img_icon_optic-arrival.png",
+    "href": "https://rivalskins.com/item/3458/universal-emoji-optic-arrival/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_optic-arrival.png"
+  },
+  {
+    "id": "3459",
+    "name": "CAPTAIN SUMMERS",
+    "src": "emojis/3459-img_icon_captain-summers.png",
+    "href": "https://rivalskins.com/item/3459/universal-emoji-captain-summers/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_captain-summers.png"
+  },
+  {
+    "id": "3460",
+    "name": "SCANNING...",
+    "src": "emojis/3460-img_icon_scanning.png",
+    "href": "https://rivalskins.com/item/3460/universal-emoji-scanning/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_scanning.png"
+  },
+  {
+    "id": "3461",
+    "name": "X MARKS THE SPOT",
+    "src": "emojis/3461-img_icon_x-marks-the-spot.png",
+    "href": "https://rivalskins.com/item/3461/universal-emoji-x-marks-the-spot/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_x-marks-the-spot.png"
+  },
+  {
+    "id": "3462",
+    "name": "WHERE'S MY VISOR?",
+    "src": "emojis/3462-img_icon_wheres-my-visor.png",
+    "href": "https://rivalskins.com/item/3462/universal-emoji-wheres-my-visor/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_wheres-my-visor.png"
+  },
+  {
+    "id": "3463",
+    "name": "SHARP AND READY",
+    "src": "emojis/3463-img_icon_sharp-and-ready.png",
+    "href": "https://rivalskins.com/item/3463/universal-emoji-sharp-and-ready/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_sharp-and-ready.png"
+  },
+  {
+    "id": "3464",
+    "name": "KNUCKLE CRACKER",
+    "src": "emojis/3464-img_icon_knuckle-cracker.png",
+    "href": "https://rivalskins.com/item/3464/universal-emoji-knuckle-cracker/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_knuckle-cracker.png"
+  },
+  {
+    "id": "3465",
+    "name": "CONNECTING...",
+    "src": "emojis/3465-img_icon_connecting.png",
+    "href": "https://rivalskins.com/item/3465/universal-emoji-connecting/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_connecting.png"
+  },
+  {
+    "id": "3466",
+    "name": "CORPORATE APPROVAL",
+    "src": "emojis/3466-img_icon_corporate-approval.png",
+    "href": "https://rivalskins.com/item/3466/universal-emoji-corporate-approval/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_corporate-approval.png"
+  },
+  {
+    "id": "3467",
+    "name": "WHO'S NEXT?",
+    "src": "emojis/3467-img_icon_whos-next.png",
+    "href": "https://rivalskins.com/item/3467/universal-emoji-whos-next/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_whos-next.png"
+  },
+  {
+    "id": "3468",
+    "name": "DOES NOT COMPUTE",
+    "src": "emojis/3468-img_icon_does-not-compute.png",
+    "href": "https://rivalskins.com/item/3468/universal-emoji-does-not-compute/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_does-not-compute.png"
+  },
+  {
+    "id": "3469",
+    "name": "SMH",
+    "src": "emojis/3469-img_icon_smh.png",
+    "href": "https://rivalskins.com/item/3469/universal-emoji-smh/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_smh.png"
+  },
+  {
+    "id": "3403",
+    "name": "IRON THRUST",
+    "src": "emojis/3403-img_icon_iron-thrust.png",
+    "href": "https://rivalskins.com/item/3403/universal-emoji-iron-thrust/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_iron-thrust.png"
+  },
+  {
+    "id": "3404",
+    "name": "STARK DISBELIEF",
+    "src": "emojis/3404-img_icon_stark-disbelief.png",
+    "href": "https://rivalskins.com/item/3404/universal-emoji-stark-disbelief/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_stark-disbelief.png"
+  },
+  {
+    "id": "3405",
+    "name": "SAMURAI DROP",
+    "src": "emojis/3405-img_icon_samurai-drop.png",
+    "href": "https://rivalskins.com/item/3405/universal-emoji-samurai-drop/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_samurai-drop.png"
+  },
+  {
+    "id": "3406",
+    "name": "SEEING RED",
+    "src": "emojis/3406-img_icon_seeing-red-2.png",
+    "href": "https://rivalskins.com/item/3406/universal-emoji-seeing-red/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_seeing-red-2.png"
+  },
+  {
+    "id": "3407",
+    "name": "MATCHA MOMENT",
+    "src": "emojis/3407-img_icon_matcha-moment.png",
+    "href": "https://rivalskins.com/item/3407/universal-emoji-matcha-moment/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_matcha-moment.png"
+  },
+  {
+    "id": "3408",
+    "name": "SAMURAI REPULSOR",
+    "src": "emojis/3408-img_icon_samurai-repulsor.png",
+    "href": "https://rivalskins.com/item/3408/universal-emoji-samurai-repulsor/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_samurai-repulsor.png"
+  },
+  {
+    "id": "3397",
+    "name": "FEELING SHARP",
+    "src": "emojis/3397-img_icon_feeling-sharp.png",
+    "href": "https://rivalskins.com/item/3397/universal-emoji-feeling-sharp/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_feeling-sharp.png"
+  },
+  {
+    "id": "3398",
+    "name": "PICTURE PURR-FECT",
+    "src": "emojis/3398-img_icon_picture-purr-fect.png",
+    "href": "https://rivalskins.com/item/3398/universal-emoji-picture-purr-fect/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_picture-purr-fect.png"
+  },
+  {
+    "id": "3399",
+    "name": "CIAO~♬",
+    "src": "emojis/3399-img_icon_ciao.png",
+    "href": "https://rivalskins.com/item/3399/universal-emoji-ciao/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_ciao.png"
+  },
+  {
+    "id": "3400",
+    "name": "CHRONO CRUISE",
+    "src": "emojis/3400-img_icon_chrono-cruise.png",
+    "href": "https://rivalskins.com/item/3400/universal-emoji-chrono-cruise/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_chrono-cruise.png"
+  },
+  {
+    "id": "3401",
+    "name": "GOLDEN GRAB",
+    "src": "emojis/3401-img_icon_golden-grab.png",
+    "href": "https://rivalskins.com/item/3401/universal-emoji-golden-grab/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_golden-grab.png"
+  },
+  {
+    "id": "3402",
+    "name": "BY A THREAD",
+    "src": "emojis/3402-img_icon_by-a-thread.png",
+    "href": "https://rivalskins.com/item/3402/universal-emoji-by-a-thread/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_by-a-thread.png"
+  },
+  {
+    "id": "3331",
+    "name": "POWER CRITICAL",
+    "src": "emojis/3331-img_icon_power-critical.png",
+    "href": "https://rivalskins.com/item/3331/universal-emoji-power-critical/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_power-critical.png"
+  },
+  {
+    "id": "3332",
+    "name": "ERROR 404",
+    "src": "emojis/3332-img_icon_error-404.png",
+    "href": "https://rivalskins.com/item/3332/universal-emoji-error-404/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_error-404.png"
+  },
+  {
+    "id": "3333",
+    "name": "DELETE THIS",
+    "src": "emojis/3333-img_icon_delete-this.png",
+    "href": "https://rivalskins.com/item/3333/universal-emoji-delete-this/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_delete-this.png"
+  },
+  {
+    "id": "3334",
+    "name": "JUST A POKE",
+    "src": "emojis/3334-img_icon_just-a-poke.png",
+    "href": "https://rivalskins.com/item/3334/universal-emoji-just-a-poke/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_just-a-poke.png"
+  },
+  {
+    "id": "3335",
+    "name": "PLAYTIME'S OVER",
+    "src": "emojis/3335-img_icon_playtimes-over.png",
+    "href": "https://rivalskins.com/item/3335/universal-emoji-playtimes-over/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_playtimes-over.png"
+  },
+  {
+    "id": "3336",
+    "name": "BONK!",
+    "src": "emojis/3336-img_icon_bonk.png",
+    "href": "https://rivalskins.com/item/3336/universal-emoji-bonk/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_bonk.png"
+  },
+  {
+    "id": "3337",
+    "name": "GRINDING AWAY",
+    "src": "emojis/3337-img_icon_grinding-away.png",
+    "href": "https://rivalskins.com/item/3337/universal-emoji-grinding-away/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_grinding-away.png"
+  },
+  {
+    "id": "3338",
+    "name": "LAYING LOW",
+    "src": "emojis/3338-img_icon_laying-low.png",
+    "href": "https://rivalskins.com/item/3338/universal-emoji-laying-low/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_laying-low.png"
+  },
+  {
+    "id": "3339",
+    "name": "QUEEN OF THE JUNGLE",
+    "src": "emojis/3339-img_icon_queen-of-the-jungle.png",
+    "href": "https://rivalskins.com/item/3339/universal-emoji-queen-of-the-jungle/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_queen-of-the-jungle.png"
+  },
+  {
+    "id": "3340",
+    "name": "START YOUR ENGINES",
+    "src": "emojis/3340-img_icon_start-your-engines.png",
+    "href": "https://rivalskins.com/item/3340/universal-emoji-start-your-engines/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_start-your-engines.png"
+  },
+  {
+    "id": "3341",
+    "name": "FAST & FABULOUS",
+    "src": "emojis/3341-img_icon_fast-fabulous.png",
+    "href": "https://rivalskins.com/item/3341/universal-emoji-fast-fabulous/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_fast-fabulous.png"
+  },
+  {
+    "id": "3342",
+    "name": "POP IT!",
+    "src": "emojis/3342-img_icon_pop-it.png",
+    "href": "https://rivalskins.com/item/3342/universal-emoji-pop-it/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_pop-it.png"
+  },
+  {
+    "id": "3343",
+    "name": "FULL SPEED AHEAD",
+    "src": "emojis/3343-img_icon_full-speed-ahead-2.png",
+    "href": "https://rivalskins.com/item/3343/universal-emoji-full-speed-ahead/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_full-speed-ahead-2.png"
+  },
+  {
+    "id": "3344",
+    "name": "MWAH!",
+    "src": "emojis/3344-img_icon_mwah-2.png",
+    "href": "https://rivalskins.com/item/3344/universal-emoji-mwah/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_mwah-2.png"
+  },
+  {
+    "id": "3345",
+    "name": "BLOWN AWAY",
+    "src": "emojis/3345-img_icon_blown-away.png",
+    "href": "https://rivalskins.com/item/3345/universal-emoji-blown-away/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_blown-away.png"
+  },
+  {
+    "id": "3376",
+    "name": "OOH, OOH!",
+    "src": "emojis/3376-img_icon_ooh-ooh.png",
+    "href": "https://rivalskins.com/item/3376/universal-emoji-ooh-ooh/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_ooh-ooh.png"
+  },
+  {
+    "id": "3377",
+    "name": "GOTTA GO!",
+    "src": "emojis/3377-img_icon_gotta-go.png",
+    "href": "https://rivalskins.com/item/3377/universal-emoji-gotta-go/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_gotta-go.png"
+  },
+  {
+    "id": "3378",
+    "name": "NAILED IT!",
+    "src": "emojis/3378-img_icon_nailed-it.png",
+    "href": "https://rivalskins.com/item/3378/universal-emoji-nailed-it/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_nailed-it.png"
+  },
+  {
+    "id": "3379",
+    "name": "EARTH TO PENI!",
+    "src": "emojis/3379-img_icon_earth-to-peni.png",
+    "href": "https://rivalskins.com/item/3379/universal-emoji-earth-to-peni/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_earth-to-peni.png"
+  },
+  {
+    "id": "3380",
+    "name": "PEN ON FIRE",
+    "src": "emojis/3380-img_icon_pen-on-fire.png",
+    "href": "https://rivalskins.com/item/3380/universal-emoji-pen-on-fire/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_pen-on-fire.png"
+  },
+  {
+    "id": "3381",
+    "name": "SUS",
+    "src": "emojis/3381-img_icon_sus.png",
+    "href": "https://rivalskins.com/item/3381/universal-emoji-sus/",
+    "remoteSrc": "https://rivalskins.com/wp-content/uploads/marvel-assets/items/emoji/universal/img_icon_sus.png"
+  },
+  {
     "id": "3312",
     "name": "DD DANCE",
     "src": "emojis/3312-img_icon_dd-dance.png",
