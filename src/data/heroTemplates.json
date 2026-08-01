@@ -982,6 +982,21 @@
       }
     }
   },
+  "Jubilee": {
+    "slug": "jubilee",
+    "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png",
+    "defaultStyle": "blood-trap-v1-page-1",
+    "styles": {
+      "blood-trap-v1-page-1": {
+        "label": "Blood Trap V1 Page 1",
+        "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png"
+      },
+      "blood-trap-v1-page-2": {
+        "label": "Blood Trap V1 Page 2",
+        "template": "templates/Jubilee/BLOOD TRAP V1 Page 2.png"
+      }
+    }
+  },
   "Loki": {
     "slug": "loki",
     "template": "templates/Loki/LOKI S2 V1 Page 1.png",
