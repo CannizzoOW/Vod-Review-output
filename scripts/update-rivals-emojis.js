@@ -103,7 +103,7 @@ await mkdir(EMOJI_OUTPUT_DIR, { recursive: true });
 const localEmojis = [];
 
 for (const emoji of emojis) {
-  const remoteSrc = emoji.src;
+  const remoteSrc = new URL(emoji.src, SOURCE_URL).href;
   const localSrc = await downloadEmojiImage({ ...emoji, remoteSrc });
 
   localEmojis.push({
