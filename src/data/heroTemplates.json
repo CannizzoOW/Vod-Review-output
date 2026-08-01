@@ -984,16 +984,16 @@
   },
   "Jubilee": {
     "slug": "jubilee",
-    "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png.png",
-    "defaultStyle": "blood-trap-v1-page-1png",
+    "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png",
+    "defaultStyle": "blood-trap-v1-page-1",
     "styles": {
-      "blood-trap-v1-page-1png": {
-        "label": "Blood Trap V1 Page 1png",
-        "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png.png"
+      "blood-trap-v1-page-1": {
+        "label": "Blood Trap V1 Page 1",
+        "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png"
       },
-      "blood-trap-v1-page-2png": {
-        "label": "Blood Trap V1 Page 2png",
-        "template": "templates/Jubilee/BLOOD TRAP V1 Page 2.png.png"
+      "blood-trap-v1-page-2": {
+        "label": "Blood Trap V1 Page 2",
+        "template": "templates/Jubilee/BLOOD TRAP V1 Page 2.png"
       }
     }
   },
