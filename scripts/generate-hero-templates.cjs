@@ -22,6 +22,7 @@ const nameOverrides = {
     "spider-man": "Spider-Man",
     "the-punisher": "The Punisher",
     "invisible-woman": "Invisible Woman",
+    "mr-default": "MR Default",
 };
 
 function cleanSlug(filename) {
