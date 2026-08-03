@@ -1219,6 +1219,21 @@
       }
     }
   },
+  "MR Default": {
+    "slug": "mr-default",
+    "template": "templates/MR Default/MR Default V1 Page 1.png",
+    "defaultStyle": "mr-default-v1-page-1",
+    "styles": {
+      "mr-default-v1-page-1": {
+        "label": "Mr Default V1 Page 1",
+        "template": "templates/MR Default/MR Default V1 Page 1.png"
+      },
+      "mr-default-v1-page-2": {
+        "label": "Mr Default V1 Page 2",
+        "template": "templates/MR Default/MR Default V1 Page 2.png"
+      }
+    }
+  },
   "Magik": {
     "slug": "magik",
     "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 1.png",
