@@ -1,2068 +1,2068 @@
 {
   "Adam Warlock": {
     "slug": "adam-warlock",
-    "template": "templates/Adam Warlock/IMMORTAL AVATAR V1 Page 1.png",
+    "template": "templates/Adam Warlock/IMMORTAL AVATAR V1 Page 1.webp",
     "defaultStyle": "immortal-avatar-v1-page-1",
     "styles": {
       "immortal-avatar-v1-page-1": {
         "label": "Immortal Avatar V1 Page 1",
-        "template": "templates/Adam Warlock/IMMORTAL AVATAR V1 Page 1.png"
+        "template": "templates/Adam Warlock/IMMORTAL AVATAR V1 Page 1.webp"
       },
       "immortal-avatar-v1-page-2": {
         "label": "Immortal Avatar V1 Page 2",
-        "template": "templates/Adam Warlock/IMMORTAL AVATAR V1 Page 2.png"
+        "template": "templates/Adam Warlock/IMMORTAL AVATAR V1 Page 2.webp"
       }
     }
   },
   "Angela": {
     "slug": "angela",
-    "template": "templates/Angela/ACE TORNADO V1 Page 1.png",
+    "template": "templates/Angela/ACE TORNADO V1 Page 1.webp",
     "defaultStyle": "ace-tornado-v1-page-1",
     "styles": {
       "ace-tornado-v1-page-1": {
         "label": "Ace Tornado V1 Page 1",
-        "template": "templates/Angela/ACE TORNADO V1 Page 1.png"
+        "template": "templates/Angela/ACE TORNADO V1 Page 1.webp"
       },
       "ace-tornado-v1-page-2": {
         "label": "Ace Tornado V1 Page 2",
-        "template": "templates/Angela/ACE TORNADO V1 Page 2.png"
+        "template": "templates/Angela/ACE TORNADO V1 Page 2.webp"
       }
     }
   },
   "Black Cat": {
     "slug": "black-cat",
-    "template": "templates/Black Cat/SOLO RUN V1 Page 1.png",
+    "template": "templates/Black Cat/SOLO RUN V1 Page 1.webp",
     "defaultStyle": "solo-run-v1-page-1",
     "styles": {
       "solo-run-v1-page-1": {
         "label": "Solo Run V1 Page 1",
-        "template": "templates/Black Cat/SOLO RUN V1 Page 1.png"
+        "template": "templates/Black Cat/SOLO RUN V1 Page 1.webp"
       },
       "solo-run-v1-page-2": {
         "label": "Solo Run V1 Page 2",
-        "template": "templates/Black Cat/SOLO RUN V1 Page 2.png"
+        "template": "templates/Black Cat/SOLO RUN V1 Page 2.webp"
       },
       "solo-run-v2-page-1": {
         "label": "Solo Run V2 Page 1",
-        "template": "templates/Black Cat/SOLO RUN V2 Page 1.png"
+        "template": "templates/Black Cat/SOLO RUN V2 Page 1.webp"
       },
       "solo-run-v2-page-2": {
         "label": "Solo Run V2 Page 2",
-        "template": "templates/Black Cat/SOLO RUN V2 Page 2.png"
+        "template": "templates/Black Cat/SOLO RUN V2 Page 2.webp"
       },
       "urban-predator-v1-page-1": {
         "label": "Urban Predator V1 Page 1",
-        "template": "templates/Black Cat/URBAN PREDATOR V1 Page 1.png"
+        "template": "templates/Black Cat/URBAN PREDATOR V1 Page 1.webp"
       },
       "urban-predator-v1-page-2": {
         "label": "Urban Predator V1 Page 2",
-        "template": "templates/Black Cat/URBAN PREDATOR V1 Page 2.png"
+        "template": "templates/Black Cat/URBAN PREDATOR V1 Page 2.webp"
       },
       "urban-predator-v2-page-1": {
         "label": "Urban Predator V2 Page 1",
-        "template": "templates/Black Cat/URBAN PREDATOR V2 Page 1.png"
+        "template": "templates/Black Cat/URBAN PREDATOR V2 Page 1.webp"
       },
       "urban-predator-v2-page-2": {
         "label": "Urban Predator V2 Page 2",
-        "template": "templates/Black Cat/URBAN PREDATOR V2 Page 2.png"
+        "template": "templates/Black Cat/URBAN PREDATOR V2 Page 2.webp"
       },
       "urban-predator-v3-page-1": {
         "label": "Urban Predator V3 Page 1",
-        "template": "templates/Black Cat/URBAN PREDATOR V3 Page 1.png"
+        "template": "templates/Black Cat/URBAN PREDATOR V3 Page 1.webp"
       },
       "urban-predator-v3-page-2": {
         "label": "Urban Predator V3 Page 2",
-        "template": "templates/Black Cat/URBAN PREDATOR V3 Page 2.png"
+        "template": "templates/Black Cat/URBAN PREDATOR V3 Page 2.webp"
       }
     }
   },
   "Black Panther": {
     "slug": "black-panther",
-    "template": "templates/Black Panther/GALACTIC CLAW V1 Page 1.png",
+    "template": "templates/Black Panther/GALACTIC CLAW V1 Page 1.webp",
     "defaultStyle": "galactic-claw-v1-page-1",
     "styles": {
       "galactic-claw-v1-page-1": {
         "label": "Galactic Claw V1 Page 1",
-        "template": "templates/Black Panther/GALACTIC CLAW V1 Page 1.png"
+        "template": "templates/Black Panther/GALACTIC CLAW V1 Page 1.webp"
       },
       "galactic-claw-v1-page-2": {
         "label": "Galactic Claw V1 Page 2",
-        "template": "templates/Black Panther/GALACTIC CLAW V1 Page 2.png"
+        "template": "templates/Black Panther/GALACTIC CLAW V1 Page 2.webp"
       }
     }
   },
   "Black Widow": {
     "slug": "black-widow",
-    "template": "templates/Black Widow/RED RUNWAY VEIL V1 Page 1.png",
+    "template": "templates/Black Widow/RED RUNWAY VEIL V1 Page 1.webp",
     "defaultStyle": "red-runway-veil-v1-page-1",
     "styles": {
       "red-runway-veil-v1-page-1": {
         "label": "Red Runway Veil V1 Page 1",
-        "template": "templates/Black Widow/RED RUNWAY VEIL V1 Page 1.png"
+        "template": "templates/Black Widow/RED RUNWAY VEIL V1 Page 1.webp"
       },
       "red-runway-veil-v1-page-2": {
         "label": "Red Runway Veil V1 Page 2",
-        "template": "templates/Black Widow/RED RUNWAY VEIL V1 Page 2.png"
+        "template": "templates/Black Widow/RED RUNWAY VEIL V1 Page 2.webp"
       }
     }
   },
   "Blade": {
     "slug": "blade",
-    "template": "templates/Blade/BLADE KNIGHT V1 Page 1.png",
+    "template": "templates/Blade/BLADE KNIGHT V1 Page 1.webp",
     "defaultStyle": "blade-knight-v1-page-1",
     "styles": {
       "blade-knight-v1-page-1": {
         "label": "Blade Knight V1 Page 1",
-        "template": "templates/Blade/BLADE KNIGHT V1 Page 1.png"
+        "template": "templates/Blade/BLADE KNIGHT V1 Page 1.webp"
       },
       "blade-knight-v1-page-2": {
         "label": "Blade Knight V1 Page 2",
-        "template": "templates/Blade/BLADE KNIGHT V1 Page 2.png"
+        "template": "templates/Blade/BLADE KNIGHT V1 Page 2.webp"
       }
     }
   },
   "Captain America": {
     "slug": "captain-america",
-    "template": "templates/Captain America/INFINITY WAR V1 Page 1.png",
+    "template": "templates/Captain America/INFINITY WAR V1 Page 1.webp",
     "defaultStyle": "infinity-war-v1-page-1",
     "styles": {
       "infinity-war-v1-page-1": {
         "label": "Infinity War V1 Page 1",
-        "template": "templates/Captain America/INFINITY WAR V1 Page 1.png"
+        "template": "templates/Captain America/INFINITY WAR V1 Page 1.webp"
       },
       "infinity-war-v1-page-2": {
         "label": "Infinity War V1 Page 2",
-        "template": "templates/Captain America/INFINITY WAR V1 Page 2.png"
+        "template": "templates/Captain America/INFINITY WAR V1 Page 2.webp"
       }
     }
   },
   "Cloak & Dagger": {
     "slug": "cloak-dagger",
-    "template": "templates/Cloak & Dagger/Dance Partner V1 Page 1.png",
+    "template": "templates/Cloak & Dagger/Dance Partner V1 Page 1.webp",
     "defaultStyle": "dance-partner-v1-page-1",
     "styles": {
       "dance-partner-v1-page-1": {
         "label": "Dance Partner V1 Page 1",
-        "template": "templates/Cloak & Dagger/Dance Partner V1 Page 1.png"
+        "template": "templates/Cloak & Dagger/Dance Partner V1 Page 1.webp"
       },
       "dance-partner-v1-page-2": {
         "label": "Dance Partner V1 Page 2",
-        "template": "templates/Cloak & Dagger/Dance Partner V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/Dance Partner V1 Page 2.webp"
       },
       "dance-partner-v2-page-1": {
         "label": "Dance Partner V2 Page 1",
-        "template": "templates/Cloak & Dagger/Dance Partner V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/Dance Partner V2 Page 1.webp"
       },
       "dance-partner-v2-page-2": {
         "label": "Dance Partner V2 Page 2",
-        "template": "templates/Cloak & Dagger/Dance Partner V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/Dance Partner V2 Page 2.webp"
       },
       "dance-partner-v3-page-1": {
         "label": "Dance Partner V3 Page 1",
-        "template": "templates/Cloak & Dagger/Dance Partner V3 Page 1.png"
+        "template": "templates/Cloak & Dagger/Dance Partner V3 Page 1.webp"
       },
       "dance-partner-v3-page-2": {
         "label": "Dance Partner V3 Page 2",
-        "template": "templates/Cloak & Dagger/Dance Partner V3 Page 2.png"
+        "template": "templates/Cloak & Dagger/Dance Partner V3 Page 2.webp"
       },
       "daring-duo-v1-page-1": {
         "label": "Daring Duo V1 Page 1",
-        "template": "templates/Cloak & Dagger/DARING DUO V1 Page 1.png"
+        "template": "templates/Cloak & Dagger/DARING DUO V1 Page 1.webp"
       },
       "daring-duo-v1-page-2": {
         "label": "Daring Duo V1 Page 2",
-        "template": "templates/Cloak & Dagger/DARING DUO V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/DARING DUO V1 Page 2.webp"
       },
       "daring-duo-v2-page-1": {
         "label": "Daring Duo V2 Page 1",
-        "template": "templates/Cloak & Dagger/DARING DUO V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/DARING DUO V2 Page 1.webp"
       },
       "daring-duo-v2-page-2": {
         "label": "Daring Duo V2 Page 2",
-        "template": "templates/Cloak & Dagger/DARING DUO V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/DARING DUO V2 Page 2.webp"
       },
       "daring-duo-v3-page-1": {
         "label": "Daring Duo V3 Page 1",
-        "template": "templates/Cloak & Dagger/DARING DUO V3 Page 1.png"
+        "template": "templates/Cloak & Dagger/DARING DUO V3 Page 1.webp"
       },
       "daring-duo-v3-page-2": {
         "label": "Daring Duo V3 Page 2",
-        "template": "templates/Cloak & Dagger/DARING DUO V3 Page 2.png"
+        "template": "templates/Cloak & Dagger/DARING DUO V3 Page 2.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Cloak & Dagger/DEFAULT V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Cloak & Dagger/DEFAULT V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Cloak & Dagger/DEFAULT V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/DEFAULT V2 Page 2.webp"
       },
       "default-v3-page-1": {
         "label": "Default V3 Page 1",
-        "template": "templates/Cloak & Dagger/DEFAULT V3 Page 1.png"
+        "template": "templates/Cloak & Dagger/DEFAULT V3 Page 1.webp"
       },
       "default-v3-page-2": {
         "label": "Default V3 Page 2",
-        "template": "templates/Cloak & Dagger/DEFAULT V3 Page 2.png"
+        "template": "templates/Cloak & Dagger/DEFAULT V3 Page 2.webp"
       },
       "growth-decay-v1-page-1": {
         "label": "Growth Decay V1 Page 1",
-        "template": "templates/Cloak & Dagger/Growth & Decay V1 Page 1.png"
+        "template": "templates/Cloak & Dagger/Growth & Decay V1 Page 1.webp"
       },
       "growth-decay-v1-page-2": {
         "label": "Growth Decay V1 Page 2",
-        "template": "templates/Cloak & Dagger/Growth & Decay V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/Growth & Decay V1 Page 2.webp"
       },
       "growth-decay-v2-page-1": {
         "label": "Growth Decay V2 Page 1",
-        "template": "templates/Cloak & Dagger/Growth & Decay V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/Growth & Decay V2 Page 1.webp"
       },
       "growth-decay-v2-page-2": {
         "label": "Growth Decay V2 Page 2",
-        "template": "templates/Cloak & Dagger/Growth & Decay V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/Growth & Decay V2 Page 2.webp"
       },
       "growth-decay-v3-page-1": {
         "label": "Growth Decay V3 Page 1",
-        "template": "templates/Cloak & Dagger/Growth & Decay V3 Page 1.png"
+        "template": "templates/Cloak & Dagger/Growth & Decay V3 Page 1.webp"
       },
       "growth-decay-v3-page-2": {
         "label": "Growth Decay V3 Page 2",
-        "template": "templates/Cloak & Dagger/Growth & Decay V3 Page 2.png"
+        "template": "templates/Cloak & Dagger/Growth & Decay V3 Page 2.webp"
       },
       "ice-pas-de-deux-v1-page-1": {
         "label": "Ice Pas De Deux V1 Page 1",
-        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 1.png"
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 1.webp"
       },
       "ice-pas-de-deux-v1-page-2": {
         "label": "Ice Pas De Deux V1 Page 2",
-        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V1 Page 2.webp"
       },
       "ice-pas-de-deux-v2-page-1": {
         "label": "Ice Pas De Deux V2 Page 1",
-        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V2 Page 1.webp"
       },
       "ice-pas-de-deux-v2-page-2": {
         "label": "Ice Pas De Deux V2 Page 2",
-        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V2 Page 2.webp"
       },
       "ice-pas-de-deux-v3-page-1": {
         "label": "Ice Pas De Deux V3 Page 1",
-        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V3 Page 1.png"
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V3 Page 1.webp"
       },
       "ice-pas-de-deux-v3-page-2": {
         "label": "Ice Pas De Deux V3 Page 2",
-        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V3 Page 2.png"
+        "template": "templates/Cloak & Dagger/ICE PAS DE DEUX V3 Page 2.webp"
       },
       "polarity-bond-v1-page-1": {
         "label": "Polarity Bond V1 Page 1",
-        "template": "templates/Cloak & Dagger/POLARITY BOND V1 Page 1.png"
+        "template": "templates/Cloak & Dagger/POLARITY BOND V1 Page 1.webp"
       },
       "polarity-bond-v1-page-2": {
         "label": "Polarity Bond V1 Page 2",
-        "template": "templates/Cloak & Dagger/POLARITY BOND V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/POLARITY BOND V1 Page 2.webp"
       },
       "polarity-bond-v2-page-1": {
         "label": "Polarity Bond V2 Page 1",
-        "template": "templates/Cloak & Dagger/POLARITY BOND V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/POLARITY BOND V2 Page 1.webp"
       },
       "polarity-bond-v2-page-2": {
         "label": "Polarity Bond V2 Page 2",
-        "template": "templates/Cloak & Dagger/POLARITY BOND V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/POLARITY BOND V2 Page 2.webp"
       },
       "twilight-duo-v1-page-1": {
         "label": "Twilight Duo V1 Page 1",
-        "template": "templates/Cloak & Dagger/Twilight Duo V1 Page 1.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V1 Page 1.webp"
       },
       "twilight-duo-v1-page-2": {
         "label": "Twilight Duo V1 Page 2",
-        "template": "templates/Cloak & Dagger/Twilight Duo V1 Page 2.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V1 Page 2.webp"
       },
       "twilight-duo-v2-page-1": {
         "label": "Twilight Duo V2 Page 1",
-        "template": "templates/Cloak & Dagger/Twilight Duo V2 Page 1.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V2 Page 1.webp"
       },
       "twilight-duo-v2-page-2": {
         "label": "Twilight Duo V2 Page 2",
-        "template": "templates/Cloak & Dagger/Twilight Duo V2 Page 2.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V2 Page 2.webp"
       },
       "twilight-duo-v3-page-1": {
         "label": "Twilight Duo V3 Page 1",
-        "template": "templates/Cloak & Dagger/Twilight Duo V3 Page 1.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V3 Page 1.webp"
       },
       "twilight-duo-v3-page-2": {
         "label": "Twilight Duo V3 Page 2",
-        "template": "templates/Cloak & Dagger/Twilight Duo V3 Page 2.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V3 Page 2.webp"
       },
       "twilight-duo-v4-page-1": {
         "label": "Twilight Duo V4 Page 1",
-        "template": "templates/Cloak & Dagger/Twilight Duo V4 Page 1.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V4 Page 1.webp"
       },
       "twilight-duo-v4-page-2": {
         "label": "Twilight Duo V4 Page 2",
-        "template": "templates/Cloak & Dagger/Twilight Duo V4 Page 2.png"
+        "template": "templates/Cloak & Dagger/Twilight Duo V4 Page 2.webp"
       }
     }
   },
   "Cyclops": {
     "slug": "cyclops",
-    "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 1.png",
+    "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 1.webp",
     "defaultStyle": "beam-breakout-v1-page-1",
     "styles": {
       "beam-breakout-v1-page-1": {
         "label": "Beam Breakout V1 Page 1",
-        "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 1.png"
+        "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 1.webp"
       },
       "beam-breakout-v1-page-2": {
         "label": "Beam Breakout V1 Page 2",
-        "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 2.png"
+        "template": "templates/Cyclops/BEAM BREAKOUT V1 Page 2.webp"
       },
       "beam-breakout-v2-page-1": {
         "label": "Beam Breakout V2 Page 1",
-        "template": "templates/Cyclops/BEAM BREAKOUT V2 Page 1.png"
+        "template": "templates/Cyclops/BEAM BREAKOUT V2 Page 1.webp"
       },
       "beam-breakout-v2-page-2": {
         "label": "Beam Breakout V2 Page 2",
-        "template": "templates/Cyclops/BEAM BREAKOUT V2 Page 2.png"
+        "template": "templates/Cyclops/BEAM BREAKOUT V2 Page 2.webp"
       },
       "beam-breakout-v3-page-1": {
         "label": "Beam Breakout V3 Page 1",
-        "template": "templates/Cyclops/BEAM BREAKOUT V3 Page 1.png"
+        "template": "templates/Cyclops/BEAM BREAKOUT V3 Page 1.webp"
       },
       "beam-breakout-v3-page-2": {
         "label": "Beam Breakout V3 Page 2",
-        "template": "templates/Cyclops/BEAM BREAKOUT V3 Page 2.png"
+        "template": "templates/Cyclops/BEAM BREAKOUT V3 Page 2.webp"
       }
     }
   },
   "Daredevil": {
     "slug": "daredevil",
-    "template": "templates/Daredevil/BORN AGAIN S2 V1 Page 1.png",
+    "template": "templates/Daredevil/BORN AGAIN S2 V1 Page 1.webp",
     "defaultStyle": "born-again-s2-v1-page-1",
     "styles": {
       "born-again-s2-v1-page-1": {
         "label": "Born Again S2 V1 Page 1",
-        "template": "templates/Daredevil/BORN AGAIN S2 V1 Page 1.png"
+        "template": "templates/Daredevil/BORN AGAIN S2 V1 Page 1.webp"
       },
       "born-again-s2-v1-page-2": {
         "label": "Born Again S2 V1 Page 2",
-        "template": "templates/Daredevil/BORN AGAIN S2 V1 Page 2.png"
+        "template": "templates/Daredevil/BORN AGAIN S2 V1 Page 2.webp"
       }
     }
   },
   "Deadpool": {
     "slug": "deadpool",
-    "template": "templates/Deadpool/CAPTAIN POOL V1 Page 1.png",
+    "template": "templates/Deadpool/CAPTAIN POOL V1 Page 1.webp",
     "defaultStyle": "captain-pool-v1-page-1",
     "styles": {
       "captain-pool-v1-page-1": {
         "label": "Captain Pool V1 Page 1",
-        "template": "templates/Deadpool/CAPTAIN POOL V1 Page 1.png"
+        "template": "templates/Deadpool/CAPTAIN POOL V1 Page 1.webp"
       },
       "captain-pool-v1-page-2": {
         "label": "Captain Pool V1 Page 2",
-        "template": "templates/Deadpool/CAPTAIN POOL V1 Page 2.png"
+        "template": "templates/Deadpool/CAPTAIN POOL V1 Page 2.webp"
       }
     }
   },
   "Devil Dinosaur": {
     "slug": "devil-dinosaur",
-    "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 1.png",
+    "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 1.webp",
     "defaultStyle": "wreck-and-ruin-page-1",
     "styles": {
       "wreck-and-ruin-page-1": {
         "label": "Wreck And Ruin Page 1",
-        "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 1.png"
+        "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 1.webp"
       },
       "wreck-and-ruin-page-2": {
         "label": "Wreck And Ruin Page 2",
-        "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 2.png"
+        "template": "templates/Devil Dinosaur/WRECK AND RUIN Page 2.webp"
       },
       "wreck-and-ruin-v1-page-1": {
         "label": "Wreck And Ruin V1 Page 1",
-        "template": "templates/Devil Dinosaur/WRECK AND RUIN V1 Page 1.png"
+        "template": "templates/Devil Dinosaur/WRECK AND RUIN V1 Page 1.webp"
       },
       "wreck-and-ruin-v1-page-2": {
         "label": "Wreck And Ruin V1 Page 2",
-        "template": "templates/Devil Dinosaur/WRECK AND RUIN V1 Page 2.png"
+        "template": "templates/Devil Dinosaur/WRECK AND RUIN V1 Page 2.webp"
       }
     }
   },
   "Doctor Strange": {
     "slug": "doctor-strange",
-    "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 1.png",
+    "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 1.webp",
     "defaultStyle": "bleeker-street-strut-v1-page-1",
     "styles": {
       "bleeker-street-strut-v1-page-1": {
         "label": "Bleeker Street Strut V1 Page 1",
-        "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 1.png"
+        "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 1.webp"
       },
       "bleeker-street-strut-v1-page-2": {
         "label": "Bleeker Street Strut V1 Page 2",
-        "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 2.png"
+        "template": "templates/Doctor Strange/BLEEKER STREET STRUT V1 Page 2.webp"
       },
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Doctor Strange/DEFAULT V1 Page 1.png"
+        "template": "templates/Doctor Strange/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Doctor Strange/DEFAULT V1 Page 2.png"
+        "template": "templates/Doctor Strange/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Doctor Strange/DEFAULT V2 Page 1.png"
+        "template": "templates/Doctor Strange/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Doctor Strange/DEFAULT V2 Page 2.png"
+        "template": "templates/Doctor Strange/DEFAULT V2 Page 2.webp"
       },
       "god-of-magic-v1-page-1": {
         "label": "God Of Magic V1 Page 1",
-        "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 1.png"
+        "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 1.webp"
       },
       "god-of-magic-v1-page-2": {
         "label": "God Of Magic V1 Page 2",
-        "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 2.png"
+        "template": "templates/Doctor Strange/GOD OF MAGIC V1 Page 2.webp"
       },
       "multiverse-of-madness-v1-page-1": {
         "label": "Multiverse Of Madness V1 Page 1",
-        "template": "templates/Doctor Strange/Multiverse of Madness V1 Page 1.png"
+        "template": "templates/Doctor Strange/Multiverse of Madness V1 Page 1.webp"
       },
       "multiverse-of-madness-v1-page-2": {
         "label": "Multiverse Of Madness V1 Page 2",
-        "template": "templates/Doctor Strange/Multiverse of Madness V1 Page 2.png"
+        "template": "templates/Doctor Strange/Multiverse of Madness V1 Page 2.webp"
       },
       "phantom-sorcerer-v1-page-1": {
         "label": "Phantom Sorcerer V1 Page 1",
-        "template": "templates/Doctor Strange/PHANTOM SORCERER V1 Page 1.png"
+        "template": "templates/Doctor Strange/PHANTOM SORCERER V1 Page 1.webp"
       },
       "phantom-sorcerer-v1-page-2": {
         "label": "Phantom Sorcerer V1 Page 2",
-        "template": "templates/Doctor Strange/PHANTOM SORCERER V1 Page 2.png"
+        "template": "templates/Doctor Strange/PHANTOM SORCERER V1 Page 2.webp"
       },
       "sorcerer-immortal-v1-page-1": {
         "label": "Sorcerer Immortal V1 Page 1",
-        "template": "templates/Doctor Strange/Sorcerer Immortal V1 Page 1.png"
+        "template": "templates/Doctor Strange/Sorcerer Immortal V1 Page 1.webp"
       },
       "sorcerer-immortal-v1-page-2": {
         "label": "Sorcerer Immortal V1 Page 2",
-        "template": "templates/Doctor Strange/Sorcerer Immortal V1 Page 2.png"
+        "template": "templates/Doctor Strange/Sorcerer Immortal V1 Page 2.webp"
       },
       "sorcerer-supreme-of-the-galaxy-v1-page-1": {
         "label": "Sorcerer Supreme Of The Galaxy V1 Page 1",
-        "template": "templates/Doctor Strange/Sorcerer Supreme of the Galaxy V1 Page 1.png"
+        "template": "templates/Doctor Strange/Sorcerer Supreme of the Galaxy V1 Page 1.webp"
       },
       "sorcerer-supreme-of-the-galaxy-v1-page-2": {
         "label": "Sorcerer Supreme Of The Galaxy V1 Page 2",
-        "template": "templates/Doctor Strange/Sorcerer Supreme of the Galaxy V1 Page 2.png"
+        "template": "templates/Doctor Strange/Sorcerer Supreme of the Galaxy V1 Page 2.webp"
       },
       "the-doctor-v1-page-1": {
         "label": "The Doctor V1 Page 1",
-        "template": "templates/Doctor Strange/THE DOCTOR V1 Page 1.png"
+        "template": "templates/Doctor Strange/THE DOCTOR V1 Page 1.webp"
       },
       "the-doctor-v1-page-2": {
         "label": "The Doctor V1 Page 2",
-        "template": "templates/Doctor Strange/THE DOCTOR V1 Page 2.png"
+        "template": "templates/Doctor Strange/THE DOCTOR V1 Page 2.webp"
       }
     }
   },
   "Elsa Bloodstone": {
     "slug": "elsa-bloodstone",
-    "template": "templates/Elsa Bloodstone/YOUNG BLOOD V1 Page 1.png",
+    "template": "templates/Elsa Bloodstone/YOUNG BLOOD V1 Page 1.webp",
     "defaultStyle": "young-blood-v1-page-1",
     "styles": {
       "young-blood-v1-page-1": {
         "label": "Young Blood V1 Page 1",
-        "template": "templates/Elsa Bloodstone/YOUNG BLOOD V1 Page 1.png"
+        "template": "templates/Elsa Bloodstone/YOUNG BLOOD V1 Page 1.webp"
       },
       "young-blood-v1-page-2": {
         "label": "Young Blood V1 Page 2",
-        "template": "templates/Elsa Bloodstone/YOUNG BLOOD V1 Page 2.png"
+        "template": "templates/Elsa Bloodstone/YOUNG BLOOD V1 Page 2.webp"
       }
     }
   },
   "Emma Frost": {
     "slug": "emma-frost",
-    "template": "templates/Emma Frost/MARAUDERS BLACK QUEEN V1 Page 1.png",
+    "template": "templates/Emma Frost/MARAUDERS BLACK QUEEN V1 Page 1.webp",
     "defaultStyle": "marauders-black-queen-v1-page-1",
     "styles": {
       "marauders-black-queen-v1-page-1": {
         "label": "Marauders Black Queen V1 Page 1",
-        "template": "templates/Emma Frost/MARAUDERS BLACK QUEEN V1 Page 1.png"
+        "template": "templates/Emma Frost/MARAUDERS BLACK QUEEN V1 Page 1.webp"
       },
       "marauders-black-queen-v1-page-2": {
         "label": "Marauders Black Queen V1 Page 2",
-        "template": "templates/Emma Frost/MARAUDERS BLACK QUEEN V1 Page 2.png"
+        "template": "templates/Emma Frost/MARAUDERS BLACK QUEEN V1 Page 2.webp"
       }
     }
   },
   "Gambit": {
     "slug": "gambit",
-    "template": "templates/Gambit/ALLURING ACE V1 Page 1.png",
+    "template": "templates/Gambit/ALLURING ACE V1 Page 1.webp",
     "defaultStyle": "alluring-ace-v1-page-1",
     "styles": {
       "alluring-ace-v1-page-1": {
         "label": "Alluring Ace V1 Page 1",
-        "template": "templates/Gambit/ALLURING ACE V1 Page 1.png"
+        "template": "templates/Gambit/ALLURING ACE V1 Page 1.webp"
       },
       "alluring-ace-v1-page-2": {
         "label": "Alluring Ace V1 Page 2",
-        "template": "templates/Gambit/ALLURING ACE V1 Page 2.png"
+        "template": "templates/Gambit/ALLURING ACE V1 Page 2.webp"
       },
       "alluring-ace-v2-page-1": {
         "label": "Alluring Ace V2 Page 1",
-        "template": "templates/Gambit/ALLURING ACE V2 Page 1.png"
+        "template": "templates/Gambit/ALLURING ACE V2 Page 1.webp"
       },
       "alluring-ace-v2-page-2": {
         "label": "Alluring Ace V2 Page 2",
-        "template": "templates/Gambit/ALLURING ACE V2 Page 2.png"
+        "template": "templates/Gambit/ALLURING ACE V2 Page 2.webp"
       },
       "barrier-buster-v1-page-1": {
         "label": "Barrier Buster V1 Page 1",
-        "template": "templates/Gambit/BARRIER BUSTER V1 Page 1.png"
+        "template": "templates/Gambit/BARRIER BUSTER V1 Page 1.webp"
       },
       "barrier-buster-v1-page-2": {
         "label": "Barrier Buster V1 Page 2",
-        "template": "templates/Gambit/BARRIER BUSTER V1 Page 2.png"
+        "template": "templates/Gambit/BARRIER BUSTER V1 Page 2.webp"
       },
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Gambit/DEFAULT V1 Page 1.png"
+        "template": "templates/Gambit/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Gambit/DEFAULT V1 Page 2.png"
+        "template": "templates/Gambit/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Gambit/DEFAULT V2 Page 1.png"
+        "template": "templates/Gambit/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Gambit/DEFAULT V2 Page 2.png"
+        "template": "templates/Gambit/DEFAULT V2 Page 2.webp"
       },
       "default-v3-page-1": {
         "label": "Default V3 Page 1",
-        "template": "templates/Gambit/DEFAULT V3 Page 1.png"
+        "template": "templates/Gambit/DEFAULT V3 Page 1.webp"
       },
       "default-v3-page-2": {
         "label": "Default V3 Page 2",
-        "template": "templates/Gambit/DEFAULT V3 Page 2.png"
+        "template": "templates/Gambit/DEFAULT V3 Page 2.webp"
       },
       "mr-x-v1-page-1": {
         "label": "Mr X V1 Page 1",
-        "template": "templates/Gambit/MR. X V1 Page 1.png"
+        "template": "templates/Gambit/MR. X V1 Page 1.webp"
       },
       "mr-x-v1-page-2": {
         "label": "Mr X V1 Page 2",
-        "template": "templates/Gambit/MR. X V1 Page 2.png"
+        "template": "templates/Gambit/MR. X V1 Page 2.webp"
       },
       "mr-x-v2-page-1": {
         "label": "Mr X V2 Page 1",
-        "template": "templates/Gambit/MR. X V2 Page 1.png"
+        "template": "templates/Gambit/MR. X V2 Page 1.webp"
       },
       "mr-x-v2-page-2": {
         "label": "Mr X V2 Page 2",
-        "template": "templates/Gambit/MR. X V2 Page 2.png"
+        "template": "templates/Gambit/MR. X V2 Page 2.webp"
       },
       "mr-x-v3-page-1": {
         "label": "Mr X V3 Page 1",
-        "template": "templates/Gambit/MR. X V3 Page 1.png"
+        "template": "templates/Gambit/MR. X V3 Page 1.webp"
       },
       "mr-x-v3-page-2": {
         "label": "Mr X V3 Page 2",
-        "template": "templates/Gambit/MR. X V3 Page 2.png"
+        "template": "templates/Gambit/MR. X V3 Page 2.webp"
       },
       "thieves-guildmaster-v1-page-1": {
         "label": "Thieves Guildmaster V1 Page 1",
-        "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 1.png"
+        "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 1.webp"
       },
       "thieves-guildmaster-v1-page-2": {
         "label": "Thieves Guildmaster V1 Page 2",
-        "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 2.png"
+        "template": "templates/Gambit/THIEVES GUILDMASTER V1 Page 2.webp"
       },
       "thieves-guildmaster-v2-page-1": {
         "label": "Thieves Guildmaster V2 Page 1",
-        "template": "templates/Gambit/THIEVES GUILDMASTER V2 Page 1.png"
+        "template": "templates/Gambit/THIEVES GUILDMASTER V2 Page 1.webp"
       },
       "thieves-guildmaster-v2-page-2": {
         "label": "Thieves Guildmaster V2 Page 2",
-        "template": "templates/Gambit/THIEVES GUILDMASTER V2 Page 2.png"
+        "template": "templates/Gambit/THIEVES GUILDMASTER V2 Page 2.webp"
       }
     }
   },
   "Groot": {
     "slug": "groot",
-    "template": "templates/Groot/YGGROOT V1 Page 1.png",
+    "template": "templates/Groot/YGGROOT V1 Page 1.webp",
     "defaultStyle": "yggroot-v1-page-1",
     "styles": {
       "yggroot-v1-page-1": {
         "label": "Yggroot V1 Page 1",
-        "template": "templates/Groot/YGGROOT V1 Page 1.png"
+        "template": "templates/Groot/YGGROOT V1 Page 1.webp"
       },
       "yggroot-v1-page-2": {
         "label": "Yggroot V1 Page 2",
-        "template": "templates/Groot/YGGROOT V1 Page 2.png"
+        "template": "templates/Groot/YGGROOT V1 Page 2.webp"
       }
     }
   },
   "Hawkeye": {
     "slug": "hawkeye",
-    "template": "templates/Hawkeye/FREEFALL V1 Page 1.png",
+    "template": "templates/Hawkeye/FREEFALL V1 Page 1.webp",
     "defaultStyle": "freefall-v1-page-1",
     "styles": {
       "freefall-v1-page-1": {
         "label": "Freefall V1 Page 1",
-        "template": "templates/Hawkeye/FREEFALL V1 Page 1.png"
+        "template": "templates/Hawkeye/FREEFALL V1 Page 1.webp"
       },
       "freefall-v1-page-2": {
         "label": "Freefall V1 Page 2",
-        "template": "templates/Hawkeye/FREEFALL V1 Page 2.png"
+        "template": "templates/Hawkeye/FREEFALL V1 Page 2.webp"
       }
     }
   },
   "Hela": {
     "slug": "hela",
-    "template": "templates/Hela/QUEEN IN BLACK V1 Page 1.png",
+    "template": "templates/Hela/QUEEN IN BLACK V1 Page 1.webp",
     "defaultStyle": "queen-in-black-v1-page-1",
     "styles": {
       "queen-in-black-v1-page-1": {
         "label": "Queen In Black V1 Page 1",
-        "template": "templates/Hela/QUEEN IN BLACK V1 Page 1.png"
+        "template": "templates/Hela/QUEEN IN BLACK V1 Page 1.webp"
       },
       "queen-in-black-v1-page-2": {
         "label": "Queen In Black V1 Page 2",
-        "template": "templates/Hela/QUEEN IN BLACK V1 Page 2.png"
+        "template": "templates/Hela/QUEEN IN BLACK V1 Page 2.webp"
       }
     }
   },
   "Hulk": {
     "slug": "hulk",
-    "template": "templates/Hulk/DEFAULT V1 Page 1.png",
+    "template": "templates/Hulk/DEFAULT V1 Page 1.webp",
     "defaultStyle": "default-v1-page-1",
     "styles": {
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Hulk/DEFAULT V1 Page 1.png"
+        "template": "templates/Hulk/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Hulk/DEFAULT V1 Page 2.png"
+        "template": "templates/Hulk/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Hulk/DEFAULT V2 Page 1.png"
+        "template": "templates/Hulk/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Hulk/DEFAULT V2 Page 2.png"
+        "template": "templates/Hulk/DEFAULT V2 Page 2.webp"
       },
       "green-scar-v1-page-1": {
         "label": "Green Scar V1 Page 1",
-        "template": "templates/Hulk/GREEN SCAR V1 Page 1.png"
+        "template": "templates/Hulk/GREEN SCAR V1 Page 1.webp"
       },
       "green-scar-v1-page-2": {
         "label": "Green Scar V1 Page 2",
-        "template": "templates/Hulk/GREEN SCAR V1 Page 2.png"
+        "template": "templates/Hulk/GREEN SCAR V1 Page 2.webp"
       },
       "infinity-v1-page-1": {
         "label": "Infinity V1 Page 1",
-        "template": "templates/Hulk/INFINITY V1 Page 1.png"
+        "template": "templates/Hulk/INFINITY V1 Page 1.webp"
       },
       "infinity-v1-page-2": {
         "label": "Infinity V1 Page 2",
-        "template": "templates/Hulk/INFINITY V1 Page 2.png"
+        "template": "templates/Hulk/INFINITY V1 Page 2.webp"
       },
       "infinity-v2-page-1": {
         "label": "Infinity V2 Page 1",
-        "template": "templates/Hulk/INFINITY V2 Page 1.png"
+        "template": "templates/Hulk/INFINITY V2 Page 1.webp"
       },
       "infinity-v2-page-2": {
         "label": "Infinity V2 Page 2",
-        "template": "templates/Hulk/INFINITY V2 Page 2.png"
+        "template": "templates/Hulk/INFINITY V2 Page 2.webp"
       },
       "infinity-v3-page-1": {
         "label": "Infinity V3 Page 1",
-        "template": "templates/Hulk/INFINITY V3 Page 1.png"
+        "template": "templates/Hulk/INFINITY V3 Page 1.webp"
       },
       "infinity-v3-page-2": {
         "label": "Infinity V3 Page 2",
-        "template": "templates/Hulk/INFINITY V3 Page 2.png"
+        "template": "templates/Hulk/INFINITY V3 Page 2.webp"
       },
       "joe-fixit-v1-page-1": {
         "label": "Joe Fixit V1 Page 1",
-        "template": "templates/Hulk/Joe Fixit V1 Page 1.png"
+        "template": "templates/Hulk/Joe Fixit V1 Page 1.webp"
       },
       "joe-fixit-v1-page-2": {
         "label": "Joe Fixit V1 Page 2",
-        "template": "templates/Hulk/Joe Fixit V1 Page 2.png"
+        "template": "templates/Hulk/Joe Fixit V1 Page 2.webp"
       },
       "joe-fixit-v2-page-1": {
         "label": "Joe Fixit V2 Page 1",
-        "template": "templates/Hulk/Joe Fixit V2 Page 1.png"
+        "template": "templates/Hulk/Joe Fixit V2 Page 1.webp"
       },
       "joe-fixit-v2-page-2": {
         "label": "Joe Fixit V2 Page 2",
-        "template": "templates/Hulk/Joe Fixit V2 Page 2.png"
+        "template": "templates/Hulk/Joe Fixit V2 Page 2.webp"
       },
       "maestro-v1-page-1": {
         "label": "Maestro V1 Page 1",
-        "template": "templates/Hulk/MAESTRO V1 Page 1.png"
+        "template": "templates/Hulk/MAESTRO V1 Page 1.webp"
       },
       "maestro-v1-page-2": {
         "label": "Maestro V1 Page 2",
-        "template": "templates/Hulk/MAESTRO V1 Page 2.png"
+        "template": "templates/Hulk/MAESTRO V1 Page 2.webp"
       },
       "punk-rage-v1-page-1": {
         "label": "Punk Rage V1 Page 1",
-        "template": "templates/Hulk/Punk Rage V1 Page 1.png"
+        "template": "templates/Hulk/Punk Rage V1 Page 1.webp"
       },
       "punk-rage-v1-page-2": {
         "label": "Punk Rage V1 Page 2",
-        "template": "templates/Hulk/Punk Rage V1 Page 2.png"
+        "template": "templates/Hulk/Punk Rage V1 Page 2.webp"
       },
       "punk-rage-v2-page-1": {
         "label": "Punk Rage V2 Page 1",
-        "template": "templates/Hulk/Punk Rage V2 Page 1.png"
+        "template": "templates/Hulk/Punk Rage V2 Page 1.webp"
       },
       "punk-rage-v2-page-2": {
         "label": "Punk Rage V2 Page 2",
-        "template": "templates/Hulk/Punk Rage V2 Page 2.png"
+        "template": "templates/Hulk/Punk Rage V2 Page 2.webp"
       },
       "punk-rage-v3-page-1": {
         "label": "Punk Rage V3 Page 1",
-        "template": "templates/Hulk/Punk Rage V3 Page 1.png"
+        "template": "templates/Hulk/Punk Rage V3 Page 1.webp"
       },
       "punk-rage-v3-page-2": {
         "label": "Punk Rage V3 Page 2",
-        "template": "templates/Hulk/Punk Rage V3 Page 2.png"
+        "template": "templates/Hulk/Punk Rage V3 Page 2.webp"
       }
     }
   },
   "Human Torch": {
     "slug": "human-torch",
-    "template": "templates/Human Torch/JACK OF HEARTS V1 Page 1.png",
+    "template": "templates/Human Torch/JACK OF HEARTS V1 Page 1.webp",
     "defaultStyle": "jack-of-hearts-v1-page-1",
     "styles": {
       "jack-of-hearts-v1-page-1": {
         "label": "Jack Of Hearts V1 Page 1",
-        "template": "templates/Human Torch/JACK OF HEARTS V1 Page 1.png"
+        "template": "templates/Human Torch/JACK OF HEARTS V1 Page 1.webp"
       },
       "jack-of-hearts-v1-page-2": {
         "label": "Jack Of Hearts V1 Page 2",
-        "template": "templates/Human Torch/JACK OF HEARTS V1 Page 2.png"
+        "template": "templates/Human Torch/JACK OF HEARTS V1 Page 2.webp"
       }
     }
   },
   "Invisible Woman": {
     "slug": "invisible-woman",
-    "template": "templates/Invisible Woman/DEFAULT V2 Page 1.png",
+    "template": "templates/Invisible Woman/DEFAULT V2 Page 1.webp",
     "defaultStyle": "default-v2-page-1",
     "styles": {
       "azure-shade-v1-page-1": {
         "label": "Azure Shade V1 Page 1",
-        "template": "templates/Invisible Woman/AZURE SHADE V1 Page 1.png"
+        "template": "templates/Invisible Woman/AZURE SHADE V1 Page 1.webp"
       },
       "azure-shade-v1-page-2": {
         "label": "Azure Shade V1 Page 2",
-        "template": "templates/Invisible Woman/AZURE SHADE V1 Page 2.png"
+        "template": "templates/Invisible Woman/AZURE SHADE V1 Page 2.webp"
       },
       "azure-shade-v2-page-1": {
         "label": "Azure Shade V2 Page 1",
-        "template": "templates/Invisible Woman/AZURE SHADE V2 Page 1.png"
+        "template": "templates/Invisible Woman/AZURE SHADE V2 Page 1.webp"
       },
       "azure-shade-v2-page-2": {
         "label": "Azure Shade V2 Page 2",
-        "template": "templates/Invisible Woman/AZURE SHADE V2 Page 2.png"
+        "template": "templates/Invisible Woman/AZURE SHADE V2 Page 2.webp"
       },
       "azure-shade-v3-page-1-2": {
         "label": "Azure Shade V3 Page 1 2",
-        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 1 (2).png"
+        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 1 (2).webp"
       },
       "azure-shade-v3-page-1": {
         "label": "Azure Shade V3 Page 1",
-        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 1.png"
+        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 1.webp"
       },
       "azure-shade-v3-page-2": {
         "label": "Azure Shade V3 Page 2",
-        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 2.png"
+        "template": "templates/Invisible Woman/AZURE SHADE V3 Page 2.webp"
       },
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Invisible Woman/DEFAULT V1 Page 1.png"
+        "template": "templates/Invisible Woman/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Invisible Woman/DEFAULT V1 Page 2.png"
+        "template": "templates/Invisible Woman/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Invisible Woman/DEFAULT V2 Page 1.png"
+        "template": "templates/Invisible Woman/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Invisible Woman/DEFAULT V2 Page 2.png"
+        "template": "templates/Invisible Woman/DEFAULT V2 Page 2.webp"
       },
       "default-v3-page-1": {
         "label": "Default V3 Page 1",
-        "template": "templates/Invisible Woman/DEFAULT V3 Page 1.png"
+        "template": "templates/Invisible Woman/DEFAULT V3 Page 1.webp"
       },
       "default-v3-page-2": {
         "label": "Default V3 Page 2",
-        "template": "templates/Invisible Woman/DEFAULT V3 Page 2.png"
+        "template": "templates/Invisible Woman/DEFAULT V3 Page 2.webp"
       },
       "disappearing-dessert-v1-page-1": {
         "label": "Disappearing Dessert V1 Page 1",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V1 Page 1.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V1 Page 1.webp"
       },
       "disappearing-dessert-v1-page-2": {
         "label": "Disappearing Dessert V1 Page 2",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V1 Page 2.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V1 Page 2.webp"
       },
       "disappearing-dessert-v2-page-1": {
         "label": "Disappearing Dessert V2 Page 1",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V2 Page 1.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V2 Page 1.webp"
       },
       "disappearing-dessert-v2-page-2": {
         "label": "Disappearing Dessert V2 Page 2",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V2 Page 2.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V2 Page 2.webp"
       },
       "disappearing-dessert-v3-page-1": {
         "label": "Disappearing Dessert V3 Page 1",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V3 Page 1.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V3 Page 1.webp"
       },
       "disappearing-dessert-v3-page-2": {
         "label": "Disappearing Dessert V3 Page 2",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V3 Page 2.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V3 Page 2.webp"
       },
       "disappearing-dessert-v4-page-1": {
         "label": "Disappearing Dessert V4 Page 1",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 1.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 1.webp"
       },
       "disappearing-dessert-v4-page-2": {
         "label": "Disappearing Dessert V4 Page 2",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 2.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V4 Page 2.webp"
       },
       "disappearing-dessert-v5-page-1": {
         "label": "Disappearing Dessert V5 Page 1",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V5 Page 1.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V5 Page 1.webp"
       },
       "disappearing-dessert-v5-page-2": {
         "label": "Disappearing Dessert V5 Page 2",
-        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V5 Page 2.png"
+        "template": "templates/Invisible Woman/DISAPPEARING DESSERT V5 Page 2.webp"
       },
       "future-foundation-v1-page-1": {
         "label": "Future Foundation V1 Page 1",
-        "template": "templates/Invisible Woman/FUTURE FOUNDATION V1 Page 1.png"
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V1 Page 1.webp"
       },
       "future-foundation-v1-page-2": {
         "label": "Future Foundation V1 Page 2",
-        "template": "templates/Invisible Woman/FUTURE FOUNDATION V1 Page 2.png"
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V1 Page 2.webp"
       },
       "future-foundation-v2-page-1": {
         "label": "Future Foundation V2 Page 1",
-        "template": "templates/Invisible Woman/FUTURE FOUNDATION V2 Page 1.png"
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V2 Page 1.webp"
       },
       "future-foundation-v2-page-2": {
         "label": "Future Foundation V2 Page 2",
-        "template": "templates/Invisible Woman/FUTURE FOUNDATION V2 Page 2.png"
+        "template": "templates/Invisible Woman/FUTURE FOUNDATION V2 Page 2.webp"
       },
       "life-fantastic-v1-page-1": {
         "label": "Life Fantastic V1 Page 1",
-        "template": "templates/Invisible Woman/LIFE FANTASTIC V1 Page 1.png"
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V1 Page 1.webp"
       },
       "life-fantastic-v1-page-2": {
         "label": "Life Fantastic V1 Page 2",
-        "template": "templates/Invisible Woman/LIFE FANTASTIC V1 Page 2.png"
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V1 Page 2.webp"
       },
       "life-fantastic-v2-page-1": {
         "label": "Life Fantastic V2 Page 1",
-        "template": "templates/Invisible Woman/LIFE FANTASTIC V2 Page 1.png"
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V2 Page 1.webp"
       },
       "life-fantastic-v2-page-2": {
         "label": "Life Fantastic V2 Page 2",
-        "template": "templates/Invisible Woman/LIFE FANTASTIC V2 Page 2.png"
+        "template": "templates/Invisible Woman/LIFE FANTASTIC V2 Page 2.webp"
       },
       "malice-v1-page-1": {
         "label": "Malice V1 Page 1",
-        "template": "templates/Invisible Woman/MALICE V1 Page 1.png"
+        "template": "templates/Invisible Woman/MALICE V1 Page 1.webp"
       },
       "malice-v1-page-2": {
         "label": "Malice V1 Page 2",
-        "template": "templates/Invisible Woman/MALICE V1 Page 2.png"
+        "template": "templates/Invisible Woman/MALICE V1 Page 2.webp"
       },
       "malice-v2-page-1": {
         "label": "Malice V2 Page 1",
-        "template": "templates/Invisible Woman/MALICE V2 Page 1.png"
+        "template": "templates/Invisible Woman/MALICE V2 Page 1.webp"
       },
       "malice-v2-page-2": {
         "label": "Malice V2 Page 2",
-        "template": "templates/Invisible Woman/MALICE V2 Page 2.png"
+        "template": "templates/Invisible Woman/MALICE V2 Page 2.webp"
       },
       "prism-parade-v1-page-1": {
         "label": "Prism Parade V1 Page 1",
-        "template": "templates/Invisible Woman/PRISM PARADE V1 Page 1.png"
+        "template": "templates/Invisible Woman/PRISM PARADE V1 Page 1.webp"
       },
       "prism-parade-v1-page-2": {
         "label": "Prism Parade V1 Page 2",
-        "template": "templates/Invisible Woman/PRISM PARADE V1 Page 2.png"
+        "template": "templates/Invisible Woman/PRISM PARADE V1 Page 2.webp"
       },
       "prism-parade-v2-page-1": {
         "label": "Prism Parade V2 Page 1",
-        "template": "templates/Invisible Woman/PRISM PARADE V2 Page 1.png"
+        "template": "templates/Invisible Woman/PRISM PARADE V2 Page 1.webp"
       },
       "prism-parade-v2-page-2": {
         "label": "Prism Parade V2 Page 2",
-        "template": "templates/Invisible Woman/PRISM PARADE V2 Page 2.png"
+        "template": "templates/Invisible Woman/PRISM PARADE V2 Page 2.webp"
       },
       "the-debater-v1-page-1": {
         "label": "The Debater V1 Page 1",
-        "template": "templates/Invisible Woman/THE DEBATER V1 Page 1.png"
+        "template": "templates/Invisible Woman/THE DEBATER V1 Page 1.webp"
       },
       "the-debater-v1-page-2": {
         "label": "The Debater V1 Page 2",
-        "template": "templates/Invisible Woman/THE DEBATER V1 Page 2.png"
+        "template": "templates/Invisible Woman/THE DEBATER V1 Page 2.webp"
       },
       "the-debater-v2-page-1": {
         "label": "The Debater V2 Page 1",
-        "template": "templates/Invisible Woman/THE DEBATER V2 Page 1.png"
+        "template": "templates/Invisible Woman/THE DEBATER V2 Page 1.webp"
       },
       "the-debater-v2-page-2": {
         "label": "The Debater V2 Page 2",
-        "template": "templates/Invisible Woman/THE DEBATER V2 Page 2.png"
+        "template": "templates/Invisible Woman/THE DEBATER V2 Page 2.webp"
       }
     }
   },
   "Iron Fist": {
     "slug": "iron-fist",
-    "template": "templates/Iron Fist/PHOENIX FIST V1 Page 1.png",
+    "template": "templates/Iron Fist/PHOENIX FIST V1 Page 1.webp",
     "defaultStyle": "phoenix-fist-v1-page-1",
     "styles": {
       "phoenix-fist-v1-page-1": {
         "label": "Phoenix Fist V1 Page 1",
-        "template": "templates/Iron Fist/PHOENIX FIST V1 Page 1.png"
+        "template": "templates/Iron Fist/PHOENIX FIST V1 Page 1.webp"
       },
       "phoenix-fist-v1-page-2": {
         "label": "Phoenix Fist V1 Page 2",
-        "template": "templates/Iron Fist/PHOENIX FIST V1 Page 2.png"
+        "template": "templates/Iron Fist/PHOENIX FIST V1 Page 2.webp"
       }
     }
   },
   "Iron Man": {
     "slug": "iron-man",
-    "template": "templates/Iron Man/BIG SHOT V1 Page 1.png",
+    "template": "templates/Iron Man/BIG SHOT V1 Page 1.webp",
     "defaultStyle": "big-shot-v1-page-1",
     "styles": {
       "big-shot-v1-page-1": {
         "label": "Big Shot V1 Page 1",
-        "template": "templates/Iron Man/BIG SHOT V1 Page 1.png"
+        "template": "templates/Iron Man/BIG SHOT V1 Page 1.webp"
       },
       "big-shot-v1-page-2": {
         "label": "Big Shot V1 Page 2",
-        "template": "templates/Iron Man/BIG SHOT V1 Page 2.png"
+        "template": "templates/Iron Man/BIG SHOT V1 Page 2.webp"
       }
     }
   },
   "Jeff the Land Shark": {
     "slug": "jeff-the-land-shark",
-    "template": "templates/Jeff the Land Shark/SUNSHINE LAND SHARK V1 Page 1.png",
+    "template": "templates/Jeff the Land Shark/SUNSHINE LAND SHARK V1 Page 1.webp",
     "defaultStyle": "sunshine-land-shark-v1-page-1",
     "styles": {
       "sunshine-land-shark-v1-page-1": {
         "label": "Sunshine Land Shark V1 Page 1",
-        "template": "templates/Jeff the Land Shark/SUNSHINE LAND SHARK V1 Page 1.png"
+        "template": "templates/Jeff the Land Shark/SUNSHINE LAND SHARK V1 Page 1.webp"
       },
       "sunshine-land-shark-v1-page-2": {
         "label": "Sunshine Land Shark V1 Page 2",
-        "template": "templates/Jeff the Land Shark/SUNSHINE LAND SHARK V1 Page 2.png"
+        "template": "templates/Jeff the Land Shark/SUNSHINE LAND SHARK V1 Page 2.webp"
       }
     }
   },
   "Jubilee": {
     "slug": "jubilee",
-    "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png",
+    "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.webp",
     "defaultStyle": "blood-trap-v1-page-1",
     "styles": {
       "blood-trap-v1-page-1": {
         "label": "Blood Trap V1 Page 1",
-        "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.png"
+        "template": "templates/Jubilee/BLOOD TRAP V1 Page 1.webp"
       },
       "blood-trap-v1-page-2": {
         "label": "Blood Trap V1 Page 2",
-        "template": "templates/Jubilee/BLOOD TRAP V1 Page 2.png"
+        "template": "templates/Jubilee/BLOOD TRAP V1 Page 2.webp"
       }
     }
   },
   "Loki": {
     "slug": "loki",
-    "template": "templates/Loki/LOKI S2 V1 Page 1.png",
+    "template": "templates/Loki/LOKI S2 V1 Page 1.webp",
     "defaultStyle": "loki-s2-v1-page-1",
     "styles": {
       "loki-s2-v1-page-1": {
         "label": "Loki S2 V1 Page 1",
-        "template": "templates/Loki/LOKI S2 V1 Page 1.png"
+        "template": "templates/Loki/LOKI S2 V1 Page 1.webp"
       },
       "loki-s2-v1-page-2": {
         "label": "Loki S2 V1 Page 2",
-        "template": "templates/Loki/LOKI S2 V1 Page 2.png"
+        "template": "templates/Loki/LOKI S2 V1 Page 2.webp"
       }
     }
   },
   "Luna Snow": {
     "slug": "luna-snow",
-    "template": "templates/Luna Snow/Abyssal Glow V1 Page 1.png",
+    "template": "templates/Luna Snow/Abyssal Glow V1 Page 1.webp",
     "defaultStyle": "abyssal-glow-v1-page-1",
     "styles": {
       "abyssal-glow-v1-page-1": {
         "label": "Abyssal Glow V1 Page 1",
-        "template": "templates/Luna Snow/Abyssal Glow V1 Page 1.png"
+        "template": "templates/Luna Snow/Abyssal Glow V1 Page 1.webp"
       },
       "abyssal-glow-v1-page-2": {
         "label": "Abyssal Glow V1 Page 2",
-        "template": "templates/Luna Snow/Abyssal Glow V1 Page 2.png"
+        "template": "templates/Luna Snow/Abyssal Glow V1 Page 2.webp"
       },
       "abyssal-glow-v2-page-1": {
         "label": "Abyssal Glow V2 Page 1",
-        "template": "templates/Luna Snow/Abyssal Glow V2 Page 1.png"
+        "template": "templates/Luna Snow/Abyssal Glow V2 Page 1.webp"
       },
       "abyssal-glow-v2-page-2": {
         "label": "Abyssal Glow V2 Page 2",
-        "template": "templates/Luna Snow/Abyssal Glow V2 Page 2.png"
+        "template": "templates/Luna Snow/Abyssal Glow V2 Page 2.webp"
       },
       "cherry-delight-v1-page-1": {
         "label": "Cherry Delight V1 Page 1",
-        "template": "templates/Luna Snow/Cherry Delight V1 Page 1.png"
+        "template": "templates/Luna Snow/Cherry Delight V1 Page 1.webp"
       },
       "cherry-delight-v1-page-2": {
         "label": "Cherry Delight V1 Page 2",
-        "template": "templates/Luna Snow/Cherry Delight V1 Page 2.png"
+        "template": "templates/Luna Snow/Cherry Delight V1 Page 2.webp"
       },
       "cherry-delight-v2-page-1": {
         "label": "Cherry Delight V2 Page 1",
-        "template": "templates/Luna Snow/Cherry Delight V2 Page 1.png"
+        "template": "templates/Luna Snow/Cherry Delight V2 Page 1.webp"
       },
       "cherry-delight-v2-page-2": {
         "label": "Cherry Delight V2 Page 2",
-        "template": "templates/Luna Snow/Cherry Delight V2 Page 2.png"
+        "template": "templates/Luna Snow/Cherry Delight V2 Page 2.webp"
       },
       "cherry-delight-v3-page-1": {
         "label": "Cherry Delight V3 Page 1",
-        "template": "templates/Luna Snow/Cherry Delight V3 Page 1.png"
+        "template": "templates/Luna Snow/Cherry Delight V3 Page 1.webp"
       },
       "cherry-delight-v3-page-2": {
         "label": "Cherry Delight V3 Page 2",
-        "template": "templates/Luna Snow/Cherry Delight V3 Page 2.png"
+        "template": "templates/Luna Snow/Cherry Delight V3 Page 2.webp"
       },
       "cherry-delight-v4-page-1": {
         "label": "Cherry Delight V4 Page 1",
-        "template": "templates/Luna Snow/Cherry Delight V4 Page 1.png"
+        "template": "templates/Luna Snow/Cherry Delight V4 Page 1.webp"
       },
       "cherry-delight-v4-page-2": {
         "label": "Cherry Delight V4 Page 2",
-        "template": "templates/Luna Snow/Cherry Delight V4 Page 2.png"
+        "template": "templates/Luna Snow/Cherry Delight V4 Page 2.webp"
       },
       "cherry-delight-v5-page-1": {
         "label": "Cherry Delight V5 Page 1",
-        "template": "templates/Luna Snow/Cherry Delight V5 Page 1.png"
+        "template": "templates/Luna Snow/Cherry Delight V5 Page 1.webp"
       },
       "cherry-delight-v5-page-2": {
         "label": "Cherry Delight V5 Page 2",
-        "template": "templates/Luna Snow/Cherry Delight V5 Page 2.png"
+        "template": "templates/Luna Snow/Cherry Delight V5 Page 2.webp"
       },
       "cool-summer-v1-page-1": {
         "label": "Cool Summer V1 Page 1",
-        "template": "templates/Luna Snow/Cool Summer V1 Page 1.png"
+        "template": "templates/Luna Snow/Cool Summer V1 Page 1.webp"
       },
       "cool-summer-v1-page-2": {
         "label": "Cool Summer V1 Page 2",
-        "template": "templates/Luna Snow/Cool Summer V1 Page 2.png"
+        "template": "templates/Luna Snow/Cool Summer V1 Page 2.webp"
       },
       "cool-summer-v2-page-1": {
         "label": "Cool Summer V2 Page 1",
-        "template": "templates/Luna Snow/Cool Summer V2 Page 1.png"
+        "template": "templates/Luna Snow/Cool Summer V2 Page 1.webp"
       },
       "cool-summer-v2-page-2": {
         "label": "Cool Summer V2 Page 2",
-        "template": "templates/Luna Snow/Cool Summer V2 Page 2.png"
+        "template": "templates/Luna Snow/Cool Summer V2 Page 2.webp"
       },
       "cool-summer-v3-page-1": {
         "label": "Cool Summer V3 Page 1",
-        "template": "templates/Luna Snow/Cool Summer V3 Page 1.png"
+        "template": "templates/Luna Snow/Cool Summer V3 Page 1.webp"
       },
       "cool-summer-v3-page-2": {
         "label": "Cool Summer V3 Page 2",
-        "template": "templates/Luna Snow/Cool Summer V3 Page 2.png"
+        "template": "templates/Luna Snow/Cool Summer V3 Page 2.webp"
       },
       "cool-summer-v4-page-1": {
         "label": "Cool Summer V4 Page 1",
-        "template": "templates/Luna Snow/Cool Summer V4 Page 1.png"
+        "template": "templates/Luna Snow/Cool Summer V4 Page 1.webp"
       },
       "cool-summer-v4-page-2": {
         "label": "Cool Summer V4 Page 2",
-        "template": "templates/Luna Snow/Cool Summer V4 Page 2.png"
+        "template": "templates/Luna Snow/Cool Summer V4 Page 2.webp"
       },
       "disco-pop-v1-page-1": {
         "label": "Disco Pop V1 Page 1",
-        "template": "templates/Luna Snow/DISCO POP V1 Page 1.png"
+        "template": "templates/Luna Snow/DISCO POP V1 Page 1.webp"
       },
       "disco-pop-v1-page-2": {
         "label": "Disco Pop V1 Page 2",
-        "template": "templates/Luna Snow/DISCO POP V1 Page 2.png"
+        "template": "templates/Luna Snow/DISCO POP V1 Page 2.webp"
       },
       "disco-pop-v2-page-1": {
         "label": "Disco Pop V2 Page 1",
-        "template": "templates/Luna Snow/DISCO POP V2 Page 1.png"
+        "template": "templates/Luna Snow/DISCO POP V2 Page 1.webp"
       },
       "disco-pop-v2-page-2": {
         "label": "Disco Pop V2 Page 2",
-        "template": "templates/Luna Snow/DISCO POP V2 Page 2.png"
+        "template": "templates/Luna Snow/DISCO POP V2 Page 2.webp"
       },
       "disco-pop-v3-page-1": {
         "label": "Disco Pop V3 Page 1",
-        "template": "templates/Luna Snow/DISCO POP V3 Page 1.png"
+        "template": "templates/Luna Snow/DISCO POP V3 Page 1.webp"
       },
       "disco-pop-v3-page-2": {
         "label": "Disco Pop V3 Page 2",
-        "template": "templates/Luna Snow/DISCO POP V3 Page 2.png"
+        "template": "templates/Luna Snow/DISCO POP V3 Page 2.webp"
       },
       "mirae-2099-v1-page-1": {
         "label": "Mirae 2099 V1 Page 1",
-        "template": "templates/Luna Snow/Mirae 2099 V1 Page 1.png"
+        "template": "templates/Luna Snow/Mirae 2099 V1 Page 1.webp"
       },
       "mirae-2099-v1-page-2": {
         "label": "Mirae 2099 V1 Page 2",
-        "template": "templates/Luna Snow/Mirae 2099 V1 Page 2.png"
+        "template": "templates/Luna Snow/Mirae 2099 V1 Page 2.webp"
       },
       "mirae-2099-v2-page-1": {
         "label": "Mirae 2099 V2 Page 1",
-        "template": "templates/Luna Snow/Mirae 2099 V2 Page 1.png"
+        "template": "templates/Luna Snow/Mirae 2099 V2 Page 1.webp"
       },
       "mirae-2099-v2-page-2": {
         "label": "Mirae 2099 V2 Page 2",
-        "template": "templates/Luna Snow/Mirae 2099 V2 Page 2.png"
+        "template": "templates/Luna Snow/Mirae 2099 V2 Page 2.webp"
       },
       "mirae-2099-v3-page-1": {
         "label": "Mirae 2099 V3 Page 1",
-        "template": "templates/Luna Snow/Mirae 2099 V3 Page 1.png"
+        "template": "templates/Luna Snow/Mirae 2099 V3 Page 1.webp"
       },
       "mirae-2099-v3-page-2": {
         "label": "Mirae 2099 V3 Page 2",
-        "template": "templates/Luna Snow/Mirae 2099 V3 Page 2.png"
+        "template": "templates/Luna Snow/Mirae 2099 V3 Page 2.webp"
       },
       "mirae-2099-v4-page-1": {
         "label": "Mirae 2099 V4 Page 1",
-        "template": "templates/Luna Snow/Mirae 2099 V4 Page 1.png"
+        "template": "templates/Luna Snow/Mirae 2099 V4 Page 1.webp"
       },
       "mirae-2099-v4-page-2": {
         "label": "Mirae 2099 V4 Page 2",
-        "template": "templates/Luna Snow/Mirae 2099 V4 Page 2.png"
+        "template": "templates/Luna Snow/Mirae 2099 V4 Page 2.webp"
       },
       "shining-star-v1-page-1": {
         "label": "Shining Star V1 Page 1",
-        "template": "templates/Luna Snow/SHINING STAR V1 Page 1.png"
+        "template": "templates/Luna Snow/SHINING STAR V1 Page 1.webp"
       },
       "shining-star-v1-page-2": {
         "label": "Shining Star V1 Page 2",
-        "template": "templates/Luna Snow/SHINING STAR V1 Page 2.png"
+        "template": "templates/Luna Snow/SHINING STAR V1 Page 2.webp"
       },
       "shining-star-v2-page-1": {
         "label": "Shining Star V2 Page 1",
-        "template": "templates/Luna Snow/SHINING STAR V2 Page 1.png"
+        "template": "templates/Luna Snow/SHINING STAR V2 Page 1.webp"
       },
       "shining-star-v2-page-2": {
         "label": "Shining Star V2 Page 2",
-        "template": "templates/Luna Snow/SHINING STAR V2 Page 2.png"
+        "template": "templates/Luna Snow/SHINING STAR V2 Page 2.webp"
       },
       "sonic-trailblazer-v1-page-1": {
         "label": "Sonic Trailblazer V1 Page 1",
-        "template": "templates/Luna Snow/SONIC TRAILBLAZER V1 Page 1.png"
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V1 Page 1.webp"
       },
       "sonic-trailblazer-v1-page-2": {
         "label": "Sonic Trailblazer V1 Page 2",
-        "template": "templates/Luna Snow/SONIC TRAILBLAZER V1 Page 2.png"
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V1 Page 2.webp"
       },
       "sonic-trailblazer-v2-page-1": {
         "label": "Sonic Trailblazer V2 Page 1",
-        "template": "templates/Luna Snow/SONIC TRAILBLAZER V2 Page 1.png"
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V2 Page 1.webp"
       },
       "sonic-trailblazer-v2-page-2": {
         "label": "Sonic Trailblazer V2 Page 2",
-        "template": "templates/Luna Snow/SONIC TRAILBLAZER V2 Page 2.png"
+        "template": "templates/Luna Snow/SONIC TRAILBLAZER V2 Page 2.webp"
       },
       "the-dancer-v1-page-1": {
         "label": "The Dancer V1 Page 1",
-        "template": "templates/Luna Snow/THE DANCER V1 Page 1.png"
+        "template": "templates/Luna Snow/THE DANCER V1 Page 1.webp"
       },
       "the-dancer-v1-page-2": {
         "label": "The Dancer V1 Page 2",
-        "template": "templates/Luna Snow/THE DANCER V1 Page 2.png"
+        "template": "templates/Luna Snow/THE DANCER V1 Page 2.webp"
       },
       "the-dancer-v2-page-1": {
         "label": "The Dancer V2 Page 1",
-        "template": "templates/Luna Snow/THE DANCER V2 Page 1.png"
+        "template": "templates/Luna Snow/THE DANCER V2 Page 1.webp"
       },
       "the-dancer-v2-page-2": {
         "label": "The Dancer V2 Page 2",
-        "template": "templates/Luna Snow/THE DANCER V2 Page 2.png"
+        "template": "templates/Luna Snow/THE DANCER V2 Page 2.webp"
       },
       "the-dancer-v3-page-1": {
         "label": "The Dancer V3 Page 1",
-        "template": "templates/Luna Snow/THE DANCER V3 Page 1.png"
+        "template": "templates/Luna Snow/THE DANCER V3 Page 1.webp"
       },
       "the-dancer-v3-page-2": {
         "label": "The Dancer V3 Page 2",
-        "template": "templates/Luna Snow/THE DANCER V3 Page 2.png"
+        "template": "templates/Luna Snow/THE DANCER V3 Page 2.webp"
       }
     }
   },
   "MR Default": {
     "slug": "mr-default",
-    "template": "templates/MR Default/MR Default V1 Page 1.png",
+    "template": "templates/MR Default/MR Default V1 Page 1.webp",
     "defaultStyle": "mr-default-v1-page-1",
     "styles": {
       "mr-default-v1-page-1": {
         "label": "Mr Default V1 Page 1",
-        "template": "templates/MR Default/MR Default V1 Page 1.png"
+        "template": "templates/MR Default/MR Default V1 Page 1.webp"
       },
       "mr-default-v1-page-2": {
         "label": "Mr Default V1 Page 2",
-        "template": "templates/MR Default/MR Default V1 Page 2.png"
+        "template": "templates/MR Default/MR Default V1 Page 2.webp"
       }
     }
   },
   "Magik": {
     "slug": "magik",
-    "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 1.png",
+    "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 1.webp",
     "defaultStyle": "netherworld-noble-v1-page-1",
     "styles": {
       "netherworld-noble-v1-page-1": {
         "label": "Netherworld Noble V1 Page 1",
-        "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 1.png"
+        "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 1.webp"
       },
       "netherworld-noble-v1-page-2": {
         "label": "Netherworld Noble V1 Page 2",
-        "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 2.png"
+        "template": "templates/Magik/NETHERWORLD NOBLE V1 Page 2.webp"
       }
     }
   },
   "Magneto": {
     "slug": "magneto",
-    "template": "templates/Magneto/MASTER OF MAGNETISM V1 Page 1.png",
+    "template": "templates/Magneto/MASTER OF MAGNETISM V1 Page 1.webp",
     "defaultStyle": "master-of-magnetism-v1-page-1",
     "styles": {
       "master-of-magnetism-v1-page-1": {
         "label": "Master Of Magnetism V1 Page 1",
-        "template": "templates/Magneto/MASTER OF MAGNETISM V1 Page 1.png"
+        "template": "templates/Magneto/MASTER OF MAGNETISM V1 Page 1.webp"
       },
       "master-of-magnetism-v1-page-2": {
         "label": "Master Of Magnetism V1 Page 2",
-        "template": "templates/Magneto/MASTER OF MAGNETISM V1 Page 2.png"
+        "template": "templates/Magneto/MASTER OF MAGNETISM V1 Page 2.webp"
       }
     }
   },
   "Mantis": {
     "slug": "mantis",
-    "template": "templates/Mantis/GUARDIANS OF THE GALAXY V1 Page 1.png",
+    "template": "templates/Mantis/GUARDIANS OF THE GALAXY V1 Page 1.webp",
     "defaultStyle": "guardians-of-the-galaxy-v1-page-1",
     "styles": {
       "guardians-of-the-galaxy-v1-page-1": {
         "label": "Guardians Of The Galaxy V1 Page 1",
-        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V1 Page 1.png"
+        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V1 Page 1.webp"
       },
       "guardians-of-the-galaxy-v1-page-2": {
         "label": "Guardians Of The Galaxy V1 Page 2",
-        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V1 Page 2.png"
+        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V1 Page 2.webp"
       },
       "guardians-of-the-galaxy-v2-page-1": {
         "label": "Guardians Of The Galaxy V2 Page 1",
-        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V2 Page 1.png"
+        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V2 Page 1.webp"
       },
       "guardians-of-the-galaxy-v2-page-2": {
         "label": "Guardians Of The Galaxy V2 Page 2",
-        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V2 Page 2.png"
+        "template": "templates/Mantis/GUARDIANS OF THE GALAXY V2 Page 2.webp"
       }
     }
   },
   "Mister Fantastic": {
     "slug": "mister-fantastic",
-    "template": "templates/Mister Fantastic/LIFE FANTASTIC V1 Page 1.png",
+    "template": "templates/Mister Fantastic/LIFE FANTASTIC V1 Page 1.webp",
     "defaultStyle": "life-fantastic-v1-page-1",
     "styles": {
       "life-fantastic-v1-page-1": {
         "label": "Life Fantastic V1 Page 1",
-        "template": "templates/Mister Fantastic/LIFE FANTASTIC V1 Page 1.png"
+        "template": "templates/Mister Fantastic/LIFE FANTASTIC V1 Page 1.webp"
       },
       "life-fantastic-v1-page-2": {
         "label": "Life Fantastic V1 Page 2",
-        "template": "templates/Mister Fantastic/LIFE FANTASTIC V1 Page 2.png"
+        "template": "templates/Mister Fantastic/LIFE FANTASTIC V1 Page 2.webp"
       },
       "life-fantastic-v2-page-1": {
         "label": "Life Fantastic V2 Page 1",
-        "template": "templates/Mister Fantastic/LIFE FANTASTIC V2 Page 1.png"
+        "template": "templates/Mister Fantastic/LIFE FANTASTIC V2 Page 1.webp"
       },
       "life-fantastic-v2-page-2": {
         "label": "Life Fantastic V2 Page 2",
-        "template": "templates/Mister Fantastic/LIFE FANTASTIC V2 Page 2.png"
+        "template": "templates/Mister Fantastic/LIFE FANTASTIC V2 Page 2.webp"
       },
       "the-professor-v1-page-1": {
         "label": "The Professor V1 Page 1",
-        "template": "templates/Mister Fantastic/THE PROFESSOR V1 Page 1.png"
+        "template": "templates/Mister Fantastic/THE PROFESSOR V1 Page 1.webp"
       },
       "the-professor-v1-page-2": {
         "label": "The Professor V1 Page 2",
-        "template": "templates/Mister Fantastic/THE PROFESSOR V1 Page 2.png"
+        "template": "templates/Mister Fantastic/THE PROFESSOR V1 Page 2.webp"
       }
     }
   },
   "Moon Knight": {
     "slug": "moon-knight",
-    "template": "templates/Moon Knight/DEFAULT V1 Page 1.png",
+    "template": "templates/Moon Knight/DEFAULT V1 Page 1.webp",
     "defaultStyle": "default-v1-page-1",
     "styles": {
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Moon Knight/DEFAULT V1 Page 1.png"
+        "template": "templates/Moon Knight/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Moon Knight/DEFAULT V1 Page 2.png"
+        "template": "templates/Moon Knight/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Moon Knight/DEFAULT V2 Page 1.png"
+        "template": "templates/Moon Knight/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Moon Knight/DEFAULT V2 Page 2.png"
+        "template": "templates/Moon Knight/DEFAULT V2 Page 2.webp"
       },
       "eclipse-knight-v1-page-1": {
         "label": "Eclipse Knight V1 Page 1",
-        "template": "templates/Moon Knight/ECLIPSE KNIGHT V1 Page 1.png"
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V1 Page 1.webp"
       },
       "eclipse-knight-v1-page-2": {
         "label": "Eclipse Knight V1 Page 2",
-        "template": "templates/Moon Knight/ECLIPSE KNIGHT V1 Page 2.png"
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V1 Page 2.webp"
       },
       "eclipse-knight-v2-page-1": {
         "label": "Eclipse Knight V2 Page 1",
-        "template": "templates/Moon Knight/ECLIPSE KNIGHT V2 Page 1.png"
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V2 Page 1.webp"
       },
       "eclipse-knight-v2-page-2": {
         "label": "Eclipse Knight V2 Page 2",
-        "template": "templates/Moon Knight/ECLIPSE KNIGHT V2 Page 2.png"
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V2 Page 2.webp"
       },
       "eclipse-knight-v3-page-1": {
         "label": "Eclipse Knight V3 Page 1",
-        "template": "templates/Moon Knight/ECLIPSE KNIGHT V3 Page 1.png"
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V3 Page 1.webp"
       },
       "eclipse-knight-v3-page-2": {
         "label": "Eclipse Knight V3 Page 2",
-        "template": "templates/Moon Knight/ECLIPSE KNIGHT V3 Page 2.png"
+        "template": "templates/Moon Knight/ECLIPSE KNIGHT V3 Page 2.webp"
       },
       "fist-of-vengeance-v1-page-1": {
         "label": "Fist Of Vengeance V1 Page 1",
-        "template": "templates/Moon Knight/Fist Of Vengeance V1 Page 1.png"
+        "template": "templates/Moon Knight/Fist Of Vengeance V1 Page 1.webp"
       },
       "fist-of-vengeance-v1-page-2": {
         "label": "Fist Of Vengeance V1 Page 2",
-        "template": "templates/Moon Knight/Fist Of Vengeance V1 Page 2.png"
+        "template": "templates/Moon Knight/Fist Of Vengeance V1 Page 2.webp"
       },
       "fist-of-vengeance-v2-page-1": {
         "label": "Fist Of Vengeance V2 Page 1",
-        "template": "templates/Moon Knight/Fist Of Vengeance V2 Page 1.png"
+        "template": "templates/Moon Knight/Fist Of Vengeance V2 Page 1.webp"
       },
       "fist-of-vengeance-v2-page-2": {
         "label": "Fist Of Vengeance V2 Page 2",
-        "template": "templates/Moon Knight/Fist Of Vengeance V2 Page 2.png"
+        "template": "templates/Moon Knight/Fist Of Vengeance V2 Page 2.webp"
       },
       "king-of-clubs-v1-page-1": {
         "label": "King Of Clubs V1 Page 1",
-        "template": "templates/Moon Knight/King of Clubs V1 Page 1.png"
+        "template": "templates/Moon Knight/King of Clubs V1 Page 1.webp"
       },
       "king-of-clubs-v1-page-2": {
         "label": "King Of Clubs V1 Page 2",
-        "template": "templates/Moon Knight/King of Clubs V1 Page 2.png"
+        "template": "templates/Moon Knight/King of Clubs V1 Page 2.webp"
       },
       "king-of-clubs-v2-page-1": {
         "label": "King Of Clubs V2 Page 1",
-        "template": "templates/Moon Knight/King of Clubs V2 Page 1.png"
+        "template": "templates/Moon Knight/King of Clubs V2 Page 1.webp"
       },
       "king-of-clubs-v2-page-2": {
         "label": "King Of Clubs V2 Page 2",
-        "template": "templates/Moon Knight/King of Clubs V2 Page 2.png"
+        "template": "templates/Moon Knight/King of Clubs V2 Page 2.webp"
       },
       "king-of-clubs-v3-page-1": {
         "label": "King Of Clubs V3 Page 1",
-        "template": "templates/Moon Knight/King of Clubs V3 Page 1.png"
+        "template": "templates/Moon Knight/King of Clubs V3 Page 1.webp"
       },
       "king-of-clubs-v3-page-2": {
         "label": "King Of Clubs V3 Page 2",
-        "template": "templates/Moon Knight/King of Clubs V3 Page 2.png"
+        "template": "templates/Moon Knight/King of Clubs V3 Page 2.webp"
       },
       "lunar-general-v1-page-1": {
         "label": "Lunar General V1 Page 1",
-        "template": "templates/Moon Knight/Lunar General V1 Page 1.png"
+        "template": "templates/Moon Knight/Lunar General V1 Page 1.webp"
       },
       "lunar-general-v1-page-2": {
         "label": "Lunar General V1 Page 2",
-        "template": "templates/Moon Knight/Lunar General V1 Page 2.png"
+        "template": "templates/Moon Knight/Lunar General V1 Page 2.webp"
       },
       "lunar-general-v2-page-1": {
         "label": "Lunar General V2 Page 1",
-        "template": "templates/Moon Knight/Lunar General V2 Page 1.png"
+        "template": "templates/Moon Knight/Lunar General V2 Page 1.webp"
       },
       "lunar-general-v2-page-2": {
         "label": "Lunar General V2 Page 2",
-        "template": "templates/Moon Knight/Lunar General V2 Page 2.png"
+        "template": "templates/Moon Knight/Lunar General V2 Page 2.webp"
       },
       "mister-knight-v1-page-1": {
         "label": "Mister Knight V1 Page 1",
-        "template": "templates/Moon Knight/MISTER KNIGHT V1 Page 1.png"
+        "template": "templates/Moon Knight/MISTER KNIGHT V1 Page 1.webp"
       },
       "mister-knight-v1-page-2": {
         "label": "Mister Knight V1 Page 2",
-        "template": "templates/Moon Knight/MISTER KNIGHT V1 Page 2.png"
+        "template": "templates/Moon Knight/MISTER KNIGHT V1 Page 2.webp"
       },
       "mister-knight-v2-page-1": {
         "label": "Mister Knight V2 Page 1",
-        "template": "templates/Moon Knight/MISTER KNIGHT V2 Page 1.png"
+        "template": "templates/Moon Knight/MISTER KNIGHT V2 Page 1.webp"
       },
       "mister-knight-v2-page-2": {
         "label": "Mister Knight V2 Page 2",
-        "template": "templates/Moon Knight/MISTER KNIGHT V2 Page 2.png"
+        "template": "templates/Moon Knight/MISTER KNIGHT V2 Page 2.webp"
       },
       "moon-knight-mech-v1-page-1": {
         "label": "Moon Knight Mech V1 Page 1",
-        "template": "templates/Moon Knight/Moon Knight Mech V1 Page 1.png"
+        "template": "templates/Moon Knight/Moon Knight Mech V1 Page 1.webp"
       },
       "moon-knight-mech-v1-page-2": {
         "label": "Moon Knight Mech V1 Page 2",
-        "template": "templates/Moon Knight/Moon Knight Mech V1 Page 2.png"
+        "template": "templates/Moon Knight/Moon Knight Mech V1 Page 2.webp"
       },
       "moon-knight-mech-v2-page-1": {
         "label": "Moon Knight Mech V2 Page 1",
-        "template": "templates/Moon Knight/Moon Knight Mech V2 Page 1.png"
+        "template": "templates/Moon Knight/Moon Knight Mech V2 Page 1.webp"
       },
       "moon-knight-mech-v2-page-2": {
         "label": "Moon Knight Mech V2 Page 2",
-        "template": "templates/Moon Knight/Moon Knight Mech V2 Page 2.png"
+        "template": "templates/Moon Knight/Moon Knight Mech V2 Page 2.webp"
       },
       "phoenix-knight-v1-page-1": {
         "label": "Phoenix Knight V1 Page 1",
-        "template": "templates/Moon Knight/Phoenix Knight V1 Page 1.png"
+        "template": "templates/Moon Knight/Phoenix Knight V1 Page 1.webp"
       },
       "phoenix-knight-v1-page-2": {
         "label": "Phoenix Knight V1 Page 2",
-        "template": "templates/Moon Knight/Phoenix Knight V1 Page 2.png"
+        "template": "templates/Moon Knight/Phoenix Knight V1 Page 2.webp"
       },
       "phoenix-knight-v2-page-1": {
         "label": "Phoenix Knight V2 Page 1",
-        "template": "templates/Moon Knight/Phoenix Knight V2 Page 1.png"
+        "template": "templates/Moon Knight/Phoenix Knight V2 Page 1.webp"
       },
       "phoenix-knight-v2-page-2": {
         "label": "Phoenix Knight V2 Page 2",
-        "template": "templates/Moon Knight/Phoenix Knight V2 Page 2.png"
+        "template": "templates/Moon Knight/Phoenix Knight V2 Page 2.webp"
       },
       "suave-spector-v1-page-1": {
         "label": "Suave Spector V1 Page 1",
-        "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 1.png"
+        "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 1.webp"
       },
       "suave-spector-v1-page-2": {
         "label": "Suave Spector V1 Page 2",
-        "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 2.png"
+        "template": "templates/Moon Knight/SUAVE SPECTOR V1 Page 2.webp"
       },
       "suave-spector-v2-page-1": {
         "label": "Suave Spector V2 Page 1",
-        "template": "templates/Moon Knight/SUAVE SPECTOR V2 Page 1.png"
+        "template": "templates/Moon Knight/SUAVE SPECTOR V2 Page 1.webp"
       },
       "suave-spector-v2-page-2": {
         "label": "Suave Spector V2 Page 2",
-        "template": "templates/Moon Knight/SUAVE SPECTOR V2 Page 2.png"
+        "template": "templates/Moon Knight/SUAVE SPECTOR V2 Page 2.webp"
       },
       "suave-spector-v3-page-1": {
         "label": "Suave Spector V3 Page 1",
-        "template": "templates/Moon Knight/SUAVE SPECTOR V3 Page 1.png"
+        "template": "templates/Moon Knight/SUAVE SPECTOR V3 Page 1.webp"
       },
       "suave-spector-v3-page-2": {
         "label": "Suave Spector V3 Page 2",
-        "template": "templates/Moon Knight/SUAVE SPECTOR V3 Page 2.png"
+        "template": "templates/Moon Knight/SUAVE SPECTOR V3 Page 2.webp"
       }
     }
   },
   "Namor": {
     "slug": "namor",
-    "template": "templates/Namor/WAKANDA FOREVER V1 Page 1.png",
+    "template": "templates/Namor/WAKANDA FOREVER V1 Page 1.webp",
     "defaultStyle": "wakanda-forever-v1-page-1",
     "styles": {
       "wakanda-forever-v1-page-1": {
         "label": "Wakanda Forever V1 Page 1",
-        "template": "templates/Namor/WAKANDA FOREVER V1 Page 1.png"
+        "template": "templates/Namor/WAKANDA FOREVER V1 Page 1.webp"
       },
       "wakanda-forever-v1-page-2": {
         "label": "Wakanda Forever V1 Page 2",
-        "template": "templates/Namor/WAKANDA FOREVER V1 Page 2.png"
+        "template": "templates/Namor/WAKANDA FOREVER V1 Page 2.webp"
       }
     }
   },
   "Peni Parker": {
     "slug": "peni-parker",
-    "template": "templates/Peni Parker/BADLANDS LULLABY V1 Page 1.png",
+    "template": "templates/Peni Parker/BADLANDS LULLABY V1 Page 1.webp",
     "defaultStyle": "badlands-lullaby-v1-page-1",
     "styles": {
       "badlands-lullaby-v1-page-1": {
         "label": "Badlands Lullaby V1 Page 1",
-        "template": "templates/Peni Parker/BADLANDS LULLABY V1 Page 1.png"
+        "template": "templates/Peni Parker/BADLANDS LULLABY V1 Page 1.webp"
       },
       "badlands-lullaby-v1-page-2": {
         "label": "Badlands Lullaby V1 Page 2",
-        "template": "templates/Peni Parker/BADLANDS LULLABY V1 Page 2.png"
+        "template": "templates/Peni Parker/BADLANDS LULLABY V1 Page 2.webp"
       }
     }
   },
   "Phoenix": {
     "slug": "phoenix",
-    "template": "templates/Phoenix/DARK PHOENIX V1 Page 1.png",
+    "template": "templates/Phoenix/DARK PHOENIX V1 Page 1.webp",
     "defaultStyle": "dark-phoenix-v1-page-1",
     "styles": {
       "dark-phoenix-v1-page-1": {
         "label": "Dark Phoenix V1 Page 1",
-        "template": "templates/Phoenix/DARK PHOENIX V1 Page 1.png"
+        "template": "templates/Phoenix/DARK PHOENIX V1 Page 1.webp"
       },
       "dark-phoenix-v1-page-2": {
         "label": "Dark Phoenix V1 Page 2",
-        "template": "templates/Phoenix/DARK PHOENIX V1 Page 2.png"
+        "template": "templates/Phoenix/DARK PHOENIX V1 Page 2.webp"
       }
     }
   },
   "Psylocke": {
     "slug": "psylocke",
-    "template": "templates/Psylocke/FLEETING BUTTERFLY V1 Page 1.png",
+    "template": "templates/Psylocke/FLEETING BUTTERFLY V1 Page 1.webp",
     "defaultStyle": "fleeting-butterfly-v1-page-1",
     "styles": {
       "fleeting-butterfly-v1-page-1": {
         "label": "Fleeting Butterfly V1 Page 1",
-        "template": "templates/Psylocke/FLEETING BUTTERFLY V1 Page 1.png"
+        "template": "templates/Psylocke/FLEETING BUTTERFLY V1 Page 1.webp"
       },
       "fleeting-butterfly-v1-page-2": {
         "label": "Fleeting Butterfly V1 Page 2",
-        "template": "templates/Psylocke/FLEETING BUTTERFLY V1 Page 2.png"
+        "template": "templates/Psylocke/FLEETING BUTTERFLY V1 Page 2.webp"
       }
     }
   },
   "Rocket Raccoon": {
     "slug": "rocket-raccoon",
-    "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 1.png",
+    "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 1.webp",
     "defaultStyle": "bounty-hunter-v1-page-1",
     "styles": {
       "bounty-hunter-v1-page-1": {
         "label": "Bounty Hunter V1 Page 1",
-        "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 1.webp"
       },
       "bounty-hunter-v1-page-2": {
         "label": "Bounty Hunter V1 Page 2",
-        "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/Bounty Hunter V1 Page 2.webp"
       },
       "bounty-hunter-v2-page-1": {
         "label": "Bounty Hunter V2 Page 1",
-        "template": "templates/Rocket Raccoon/Bounty Hunter V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/Bounty Hunter V2 Page 1.webp"
       },
       "bounty-hunter-v2-page-2": {
         "label": "Bounty Hunter V2 Page 2",
-        "template": "templates/Rocket Raccoon/Bounty Hunter V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/Bounty Hunter V2 Page 2.webp"
       },
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Rocket Raccoon/DEFAULT V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Rocket Raccoon/DEFAULT V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Rocket Raccoon/DEFAULT V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Rocket Raccoon/DEFAULT V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/DEFAULT V2 Page 2.webp"
       },
       "giant-panda-v1-page-1": {
         "label": "Giant Panda V1 Page 1",
-        "template": "templates/Rocket Raccoon/GIANT PANDA V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/GIANT PANDA V1 Page 1.webp"
       },
       "giant-panda-v1-page-2": {
         "label": "Giant Panda V1 Page 2",
-        "template": "templates/Rocket Raccoon/GIANT PANDA V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/GIANT PANDA V1 Page 2.webp"
       },
       "giant-panda-v2-page-1": {
         "label": "Giant Panda V2 Page 1",
-        "template": "templates/Rocket Raccoon/GIANT PANDA V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/GIANT PANDA V2 Page 1.webp"
       },
       "giant-panda-v2-page-2": {
         "label": "Giant Panda V2 Page 2",
-        "template": "templates/Rocket Raccoon/GIANT PANDA V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/GIANT PANDA V2 Page 2.webp"
       },
       "guardians-of-the-galaxy-vol-3-v1-page-1": {
         "label": "Guardians Of The Galaxy Vol 3 V1 Page 1",
-        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V1 Page 1.webp"
       },
       "guardians-of-the-galaxy-vol-3-v1-page-2": {
         "label": "Guardians Of The Galaxy Vol 3 V1 Page 2",
-        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V1 Page 2.webp"
       },
       "guardians-of-the-galaxy-vol-3-v2-page-1": {
         "label": "Guardians Of The Galaxy Vol 3 V2 Page 1",
-        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V2 Page 1.webp"
       },
       "guardians-of-the-galaxy-vol-3-v2-page-2": {
         "label": "Guardians Of The Galaxy Vol 3 V2 Page 2",
-        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/Guardians of the Galaxy Vol. 3 V2 Page 2.webp"
       },
       "rocket-of-the-rafters-v1-page-1": {
         "label": "Rocket Of The Rafters V1 Page 1",
-        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V1 Page 1.webp"
       },
       "rocket-of-the-rafters-v1-page-2": {
         "label": "Rocket Of The Rafters V1 Page 2",
-        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V1 Page 2.webp"
       },
       "rocket-of-the-rafters-v2-page-1": {
         "label": "Rocket Of The Rafters V2 Page 1",
-        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V2 Page 1.webp"
       },
       "rocket-of-the-rafters-v2-page-2": {
         "label": "Rocket Of The Rafters V2 Page 2",
-        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/ROCKET OF THE RAFTERS V2 Page 2.webp"
       },
       "sunshine-raccoon-v1-page-1": {
         "label": "Sunshine Raccoon V1 Page 1",
-        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 1.webp"
       },
       "sunshine-raccoon-v1-page-2": {
         "label": "Sunshine Raccoon V1 Page 2",
-        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V1 Page 2.webp"
       },
       "sunshine-raccoon-v2-page-1": {
         "label": "Sunshine Raccoon V2 Page 1",
-        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V2 Page 1.webp"
       },
       "sunshine-raccoon-v2-page-2": {
         "label": "Sunshine Raccoon V2 Page 2",
-        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V2 Page 2.webp"
       },
       "sunshine-raccoon-v3-page-1": {
         "label": "Sunshine Raccoon V3 Page 1",
-        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V3 Page 1.png"
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V3 Page 1.webp"
       },
       "sunshine-raccoon-v3-page-2": {
         "label": "Sunshine Raccoon V3 Page 2",
-        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V3 Page 2.png"
+        "template": "templates/Rocket Raccoon/SUNSHINE RACCOON V3 Page 2.webp"
       },
       "symbiote-raccoon-v1-page-1": {
         "label": "Symbiote Raccoon V1 Page 1",
-        "template": "templates/Rocket Raccoon/Symbiote Raccoon V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V1 Page 1.webp"
       },
       "symbiote-raccoon-v1-page-2": {
         "label": "Symbiote Raccoon V1 Page 2",
-        "template": "templates/Rocket Raccoon/Symbiote Raccoon V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V1 Page 2.webp"
       },
       "symbiote-raccoon-v2-page-1": {
         "label": "Symbiote Raccoon V2 Page 1",
-        "template": "templates/Rocket Raccoon/Symbiote Raccoon V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V2 Page 1.webp"
       },
       "symbiote-raccoon-v2-page-2": {
         "label": "Symbiote Raccoon V2 Page 2",
-        "template": "templates/Rocket Raccoon/Symbiote Raccoon V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/Symbiote Raccoon V2 Page 2.webp"
       },
       "wild-winter-v1-page-1": {
         "label": "Wild Winter V1 Page 1",
-        "template": "templates/Rocket Raccoon/Wild Winter V1 Page 1.png"
+        "template": "templates/Rocket Raccoon/Wild Winter V1 Page 1.webp"
       },
       "wild-winter-v1-page-2": {
         "label": "Wild Winter V1 Page 2",
-        "template": "templates/Rocket Raccoon/Wild Winter V1 Page 2.png"
+        "template": "templates/Rocket Raccoon/Wild Winter V1 Page 2.webp"
       },
       "wild-winter-v2-page-1": {
         "label": "Wild Winter V2 Page 1",
-        "template": "templates/Rocket Raccoon/Wild Winter V2 Page 1.png"
+        "template": "templates/Rocket Raccoon/Wild Winter V2 Page 1.webp"
       },
       "wild-winter-v2-page-2": {
         "label": "Wild Winter V2 Page 2",
-        "template": "templates/Rocket Raccoon/Wild Winter V2 Page 2.png"
+        "template": "templates/Rocket Raccoon/Wild Winter V2 Page 2.webp"
       },
       "wild-winter-v3-page-1": {
         "label": "Wild Winter V3 Page 1",
-        "template": "templates/Rocket Raccoon/Wild Winter V3 Page 1.png"
+        "template": "templates/Rocket Raccoon/Wild Winter V3 Page 1.webp"
       },
       "wild-winter-v3-page-2": {
         "label": "Wild Winter V3 Page 2",
-        "template": "templates/Rocket Raccoon/Wild Winter V3 Page 2.png"
+        "template": "templates/Rocket Raccoon/Wild Winter V3 Page 2.webp"
       }
     }
   },
   "Rogue": {
     "slug": "rogue",
-    "template": "templates/Rogue/DEFAULT V1 Page 1.png",
+    "template": "templates/Rogue/DEFAULT V1 Page 1.webp",
     "defaultStyle": "default-v1-page-1",
     "styles": {
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/Rogue/DEFAULT V1 Page 1.png"
+        "template": "templates/Rogue/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/Rogue/DEFAULT V1 Page 2.png"
+        "template": "templates/Rogue/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/Rogue/DEFAULT V2 Page 1.png"
+        "template": "templates/Rogue/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/Rogue/DEFAULT V2 Page 2.png"
+        "template": "templates/Rogue/DEFAULT V2 Page 2.webp"
       },
       "mrs-x-v1-page-1": {
         "label": "Mrs X V1 Page 1",
-        "template": "templates/Rogue/MRS. X V1 Page 1.png"
+        "template": "templates/Rogue/MRS. X V1 Page 1.webp"
       },
       "mrs-x-v1-page-2": {
         "label": "Mrs X V1 Page 2",
-        "template": "templates/Rogue/MRS. X V1 Page 2.png"
+        "template": "templates/Rogue/MRS. X V1 Page 2.webp"
       },
       "mrs-x-v2-page-1": {
         "label": "Mrs X V2 Page 1",
-        "template": "templates/Rogue/MRS. X V2 Page 1.png"
+        "template": "templates/Rogue/MRS. X V2 Page 1.webp"
       },
       "mrs-x-v2-page-2": {
         "label": "Mrs X V2 Page 2",
-        "template": "templates/Rogue/MRS. X V2 Page 2.png"
+        "template": "templates/Rogue/MRS. X V2 Page 2.webp"
       },
       "savage-land-redux-v1-page-1": {
         "label": "Savage Land Redux V1 Page 1",
-        "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 1.png"
+        "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 1.webp"
       },
       "savage-land-redux-v1-page-2": {
         "label": "Savage Land Redux V1 Page 2",
-        "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 2.png"
+        "template": "templates/Rogue/SAVAGE LAND REDUX V1 Page 2.webp"
       },
       "savage-land-redux-v2-page-1": {
         "label": "Savage Land Redux V2 Page 1",
-        "template": "templates/Rogue/SAVAGE LAND REDUX V2 Page 1.png"
+        "template": "templates/Rogue/SAVAGE LAND REDUX V2 Page 1.webp"
       },
       "savage-land-redux-v2-page-2": {
         "label": "Savage Land Redux V2 Page 2",
-        "template": "templates/Rogue/SAVAGE LAND REDUX V2 Page 2.png"
+        "template": "templates/Rogue/SAVAGE LAND REDUX V2 Page 2.webp"
       },
       "starlit-rebel-v1-page-1": {
         "label": "Starlit Rebel V1 Page 1",
-        "template": "templates/Rogue/STARLIT REBEL V1 Page 1.png"
+        "template": "templates/Rogue/STARLIT REBEL V1 Page 1.webp"
       },
       "starlit-rebel-v1-page-2": {
         "label": "Starlit Rebel V1 Page 2",
-        "template": "templates/Rogue/STARLIT REBEL V1 Page 2.png"
+        "template": "templates/Rogue/STARLIT REBEL V1 Page 2.webp"
       },
       "starlit-rebel-v2-page-1": {
         "label": "Starlit Rebel V2 Page 1",
-        "template": "templates/Rogue/STARLIT REBEL V2 Page 1.png"
+        "template": "templates/Rogue/STARLIT REBEL V2 Page 1.webp"
       },
       "starlit-rebel-v2-page-2": {
         "label": "Starlit Rebel V2 Page 2",
-        "template": "templates/Rogue/STARLIT REBEL V2 Page 2.png"
+        "template": "templates/Rogue/STARLIT REBEL V2 Page 2.webp"
       }
     }
   },
   "Spider-Man": {
     "slug": "spider-man",
-    "template": "templates/Spider-Man/NO WAY HOME V1 Page 1.png",
+    "template": "templates/Spider-Man/NO WAY HOME V1 Page 1.webp",
     "defaultStyle": "no-way-home-v1-page-1",
     "styles": {
       "no-way-home-v1-page-1": {
         "label": "No Way Home V1 Page 1",
-        "template": "templates/Spider-Man/NO WAY HOME V1 Page 1.png"
+        "template": "templates/Spider-Man/NO WAY HOME V1 Page 1.webp"
       },
       "no-way-home-v1-page-2": {
         "label": "No Way Home V1 Page 2",
-        "template": "templates/Spider-Man/NO WAY HOME V1 Page 2.png"
+        "template": "templates/Spider-Man/NO WAY HOME V1 Page 2.webp"
       }
     }
   },
   "Squirrel Girl": {
     "slug": "squirrel-girl",
-    "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V1 Page 1.png",
+    "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V1 Page 1.webp",
     "defaultStyle": "cheerful-dragoness-v1-page-1",
     "styles": {
       "cheerful-dragoness-v1-page-1": {
         "label": "Cheerful Dragoness V1 Page 1",
-        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V1 Page 1.png"
+        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V1 Page 1.webp"
       },
       "cheerful-dragoness-v1-page-2": {
         "label": "Cheerful Dragoness V1 Page 2",
-        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V1 Page 2.png"
+        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V1 Page 2.webp"
       },
       "cheerful-dragoness-v2-page-1": {
         "label": "Cheerful Dragoness V2 Page 1",
-        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V2 Page 1.png"
+        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V2 Page 1.webp"
       },
       "cheerful-dragoness-v2-page-2": {
         "label": "Cheerful Dragoness V2 Page 2",
-        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V2 Page 2.png"
+        "template": "templates/Squirrel Girl/CHEERFUL DRAGONESS V2 Page 2.webp"
       }
     }
   },
   "Star Lord": {
     "slug": "star-lord",
-    "template": "templates/Star-Lord/GUARDIANS OF THE GALAXY V1 Page 1.png",
+    "template": "templates/Star-Lord/GUARDIANS OF THE GALAXY V1 Page 1.webp",
     "defaultStyle": "guardians-of-the-galaxy-v1-page-1",
     "styles": {
       "guardians-of-the-galaxy-v1-page-1": {
         "label": "Guardians Of The Galaxy V1 Page 1",
-        "template": "templates/Star-Lord/GUARDIANS OF THE GALAXY V1 Page 1.png"
+        "template": "templates/Star-Lord/GUARDIANS OF THE GALAXY V1 Page 1.webp"
       },
       "guardians-of-the-galaxy-v1-page-2": {
         "label": "Guardians Of The Galaxy V1 Page 2",
-        "template": "templates/Star-Lord/GUARDIANS OF THE GALAXY V1 Page 2.png"
+        "template": "templates/Star-Lord/GUARDIANS OF THE GALAXY V1 Page 2.webp"
       }
     }
   },
   "Storm": {
     "slug": "storm",
-    "template": "templates/Storm/JUDICATOR XIEZHI V1 Page 1.png",
+    "template": "templates/Storm/JUDICATOR XIEZHI V1 Page 1.webp",
     "defaultStyle": "judicator-xiezhi-v1-page-1",
     "styles": {
       "judicator-xiezhi-v1-page-1": {
         "label": "Judicator Xiezhi V1 Page 1",
-        "template": "templates/Storm/JUDICATOR XIEZHI V1 Page 1.png"
+        "template": "templates/Storm/JUDICATOR XIEZHI V1 Page 1.webp"
       },
       "judicator-xiezhi-v1-page-2": {
         "label": "Judicator Xiezhi V1 Page 2",
-        "template": "templates/Storm/JUDICATOR XIEZHI V1 Page 2.png"
+        "template": "templates/Storm/JUDICATOR XIEZHI V1 Page 2.webp"
       }
     }
   },
   "The Punisher": {
     "slug": "the-punisher",
-    "template": "templates/The Punisher/BORN AGAIN V1 Page 1.png",
+    "template": "templates/The Punisher/BORN AGAIN V1 Page 1.webp",
     "defaultStyle": "born-again-v1-page-1",
     "styles": {
       "born-again-v1-page-1": {
         "label": "Born Again V1 Page 1",
-        "template": "templates/The Punisher/BORN AGAIN V1 Page 1.png"
+        "template": "templates/The Punisher/BORN AGAIN V1 Page 1.webp"
       },
       "born-again-v1-page-2": {
         "label": "Born Again V1 Page 2",
-        "template": "templates/The Punisher/BORN AGAIN V1 Page 2.png"
+        "template": "templates/The Punisher/BORN AGAIN V1 Page 2.webp"
       }
     }
   },
   "The Scarlet Witch": {
     "slug": "the-scarlet-witch",
-    "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V1 Page 1.png",
+    "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V1 Page 1.webp",
     "defaultStyle": "witch-of-the-evil-eye-v1-page-1",
     "styles": {
       "witch-of-the-evil-eye-v1-page-1": {
         "label": "Witch Of The Evil Eye V1 Page 1",
-        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V1 Page 1.png"
+        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V1 Page 1.webp"
       },
       "witch-of-the-evil-eye-v1-page-2": {
         "label": "Witch Of The Evil Eye V1 Page 2",
-        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V1 Page 2.png"
+        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V1 Page 2.webp"
       },
       "witch-of-the-evil-eye-v2-page-1": {
         "label": "Witch Of The Evil Eye V2 Page 1",
-        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V2 Page 1.png"
+        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V2 Page 1.webp"
       },
       "witch-of-the-evil-eye-v2-page-2": {
         "label": "Witch Of The Evil Eye V2 Page 2",
-        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V2 Page 2.png"
+        "template": "templates/The Scarlet Witch/WITCH OF THE EVIL EYE V2 Page 2.webp"
       }
     }
   },
   "The Thing": {
     "slug": "the-thing",
-    "template": "templates/The Thing/DEFAULT V1 Page 1.png",
+    "template": "templates/The Thing/DEFAULT V1 Page 1.webp",
     "defaultStyle": "default-v1-page-1",
     "styles": {
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/The Thing/DEFAULT V1 Page 1.png"
+        "template": "templates/The Thing/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/The Thing/DEFAULT V1 Page 2.png"
+        "template": "templates/The Thing/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/The Thing/DEFAULT V2 Page 1.png"
+        "template": "templates/The Thing/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/The Thing/DEFAULT V2 Page 2.png"
+        "template": "templates/The Thing/DEFAULT V2 Page 2.webp"
       },
       "fear-itself-v1-page-1": {
         "label": "Fear Itself V1 Page 1",
-        "template": "templates/The Thing/FEAR ITSELF V1 Page 1.png"
+        "template": "templates/The Thing/FEAR ITSELF V1 Page 1.webp"
       },
       "fear-itself-v1-page-2": {
         "label": "Fear Itself V1 Page 2",
-        "template": "templates/The Thing/FEAR ITSELF V1 Page 2.png"
+        "template": "templates/The Thing/FEAR ITSELF V1 Page 2.webp"
       },
       "future-foundation-v1-page-1": {
         "label": "Future Foundation V1 Page 1",
-        "template": "templates/The Thing/Future Foundation V1 Page 1.png"
+        "template": "templates/The Thing/Future Foundation V1 Page 1.webp"
       },
       "future-foundation-v1-page-2": {
         "label": "Future Foundation V1 Page 2",
-        "template": "templates/The Thing/Future Foundation V1 Page 2.png"
+        "template": "templates/The Thing/Future Foundation V1 Page 2.webp"
       },
       "rocky-tide-v1-page-1": {
         "label": "Rocky Tide V1 Page 1",
-        "template": "templates/The Thing/ROCKY TIDE V1 Page 1.png"
+        "template": "templates/The Thing/ROCKY TIDE V1 Page 1.webp"
       },
       "rocky-tide-v1-page-2": {
         "label": "Rocky Tide V1 Page 2",
-        "template": "templates/The Thing/ROCKY TIDE V1 Page 2.png"
+        "template": "templates/The Thing/ROCKY TIDE V1 Page 2.webp"
       },
       "symbiote-thing-v1-page-1": {
         "label": "Symbiote Thing V1 Page 1",
-        "template": "templates/The Thing/Symbiote-Thing V1 Page 1.png"
+        "template": "templates/The Thing/Symbiote-Thing V1 Page 1.webp"
       },
       "symbiote-thing-v1-page-2": {
         "label": "Symbiote Thing V1 Page 2",
-        "template": "templates/The Thing/Symbiote-Thing V1 Page 2.png"
+        "template": "templates/The Thing/Symbiote-Thing V1 Page 2.webp"
       },
       "trench-coat-v1-page-1": {
         "label": "Trench Coat V1 Page 1",
-        "template": "templates/The Thing/Trench Coat V1 Page 1.png"
+        "template": "templates/The Thing/Trench Coat V1 Page 1.webp"
       },
       "trench-coat-v1-page-2": {
         "label": "Trench Coat V1 Page 2",
-        "template": "templates/The Thing/Trench Coat V1 Page 2.png"
+        "template": "templates/The Thing/Trench Coat V1 Page 2.webp"
       }
     }
   },
   "Thor": {
     "slug": "thor",
-    "template": "templates/Thor/LOVE AND THUNDER V1 Page 1.png",
+    "template": "templates/Thor/LOVE AND THUNDER V1 Page 1.webp",
     "defaultStyle": "love-and-thunder-v1-page-1",
     "styles": {
       "love-and-thunder-v1-page-1": {
         "label": "Love And Thunder V1 Page 1",
-        "template": "templates/Thor/LOVE AND THUNDER V1 Page 1.png"
+        "template": "templates/Thor/LOVE AND THUNDER V1 Page 1.webp"
       },
       "love-and-thunder-v1-page-2": {
         "label": "Love And Thunder V1 Page 2",
-        "template": "templates/Thor/LOVE AND THUNDER V1 Page 2.png"
+        "template": "templates/Thor/LOVE AND THUNDER V1 Page 2.webp"
       }
     }
   },
   "Ultron": {
     "slug": "ultron",
-    "template": "templates/Ultron/X-TRON V1 Page 1.png",
+    "template": "templates/Ultron/X-TRON V1 Page 1.webp",
     "defaultStyle": "x-tron-v1-page-1",
     "styles": {
       "x-tron-v1-page-1": {
         "label": "X Tron V1 Page 1",
-        "template": "templates/Ultron/X-TRON V1 Page 1.png"
+        "template": "templates/Ultron/X-TRON V1 Page 1.webp"
       },
       "x-tron-v1-page-2": {
         "label": "X Tron V1 Page 2",
-        "template": "templates/Ultron/X-TRON V1 Page 2.png"
+        "template": "templates/Ultron/X-TRON V1 Page 2.webp"
       }
     }
   },
   "Venom": {
     "slug": "venom",
-    "template": "templates/Venom/SPACE CORSAIR V1 Page 1.png",
+    "template": "templates/Venom/SPACE CORSAIR V1 Page 1.webp",
     "defaultStyle": "space-corsair-v1-page-1",
     "styles": {
       "space-corsair-v1-page-1": {
         "label": "Space Corsair V1 Page 1",
-        "template": "templates/Venom/SPACE CORSAIR V1 Page 1.png"
+        "template": "templates/Venom/SPACE CORSAIR V1 Page 1.webp"
       },
       "space-corsair-v1-page-2": {
         "label": "Space Corsair V1 Page 2",
-        "template": "templates/Venom/SPACE CORSAIR V1 Page 2.png"
+        "template": "templates/Venom/SPACE CORSAIR V1 Page 2.webp"
       }
     }
   },
   "White Fox": {
     "slug": "white-fox",
-    "template": "templates/White Fox/DEFAULT V1 Page 1.png",
+    "template": "templates/White Fox/DEFAULT V1 Page 1.webp",
     "defaultStyle": "default-v1-page-1",
     "styles": {
       "default-v1-page-1": {
         "label": "Default V1 Page 1",
-        "template": "templates/White Fox/DEFAULT V1 Page 1.png"
+        "template": "templates/White Fox/DEFAULT V1 Page 1.webp"
       },
       "default-v1-page-2": {
         "label": "Default V1 Page 2",
-        "template": "templates/White Fox/DEFAULT V1 Page 2.png"
+        "template": "templates/White Fox/DEFAULT V1 Page 2.webp"
       },
       "default-v2-page-1": {
         "label": "Default V2 Page 1",
-        "template": "templates/White Fox/DEFAULT V2 Page 1.png"
+        "template": "templates/White Fox/DEFAULT V2 Page 1.webp"
       },
       "default-v2-page-2": {
         "label": "Default V2 Page 2",
-        "template": "templates/White Fox/DEFAULT V2 Page 2.png"
+        "template": "templates/White Fox/DEFAULT V2 Page 2.webp"
       },
       "the-leader-v1-page-1": {
         "label": "The Leader V1 Page 1",
-        "template": "templates/White Fox/The Leader V1 Page 1.png"
+        "template": "templates/White Fox/The Leader V1 Page 1.webp"
       },
       "the-leader-v1-page-2": {
         "label": "The Leader V1 Page 2",
-        "template": "templates/White Fox/The Leader V1 Page 2.png"
+        "template": "templates/White Fox/The Leader V1 Page 2.webp"
       },
       "the-leader-v2-page-1": {
         "label": "The Leader V2 Page 1",
-        "template": "templates/White Fox/THE LEADER V2 Page 1.png"
+        "template": "templates/White Fox/THE LEADER V2 Page 1.webp"
       },
       "the-leader-v2-page-2": {
         "label": "The Leader V2 Page 2",
-        "template": "templates/White Fox/THE LEADER V2 Page 2.png"
+        "template": "templates/White Fox/THE LEADER V2 Page 2.webp"
       }
     }
   },
   "Winter Soldier": {
     "slug": "winter-soldier",
-    "template": "templates/Winter Soldier/THUNDERBOLDS_ V1 Page 1.png",
+    "template": "templates/Winter Soldier/THUNDERBOLDS_ V1 Page 1.webp",
     "defaultStyle": "thunderbolds-v1-page-1",
     "styles": {
       "thunderbolds-v1-page-1": {
         "label": "Thunderbolds V1 Page 1",
-        "template": "templates/Winter Soldier/THUNDERBOLDS_ V1 Page 1.png"
+        "template": "templates/Winter Soldier/THUNDERBOLDS_ V1 Page 1.webp"
       },
       "thunderbolds-v1-page-2": {
         "label": "Thunderbolds V1 Page 2",
-        "template": "templates/Winter Soldier/THUNDERBOLDS_ V1 Page 2.png"
+        "template": "templates/Winter Soldier/THUNDERBOLDS_ V1 Page 2.webp"
       }
     }
   },
   "Wolverine": {
     "slug": "wolverine",
-    "template": "templates/Wolverine/BLOOD BERSERKER V1 Page 1.png",
+    "template": "templates/Wolverine/BLOOD BERSERKER V1 Page 1.webp",
     "defaultStyle": "blood-berserker-v1-page-1",
     "styles": {
       "blood-berserker-v1-page-1": {
         "label": "Blood Berserker V1 Page 1",
-        "template": "templates/Wolverine/BLOOD BERSERKER V1 Page 1.png"
+        "template": "templates/Wolverine/BLOOD BERSERKER V1 Page 1.webp"
       },
       "blood-berserker-v1-page-2": {
         "label": "Blood Berserker V1 Page 2",
-        "template": "templates/Wolverine/BLOOD BERSERKER V1 Page 2.png"
+        "template": "templates/Wolverine/BLOOD BERSERKER V1 Page 2.webp"
       },
       "blood-berserker-v2-page-1": {
         "label": "Blood Berserker V2 Page 1",
-        "template": "templates/Wolverine/BLOOD BERSERKER V2 Page 1.png"
+        "template": "templates/Wolverine/BLOOD BERSERKER V2 Page 1.webp"
       },
       "blood-berserker-v2-page-2": {
         "label": "Blood Berserker V2 Page 2",
-        "template": "templates/Wolverine/BLOOD BERSERKER V2 Page 2.png"
+        "template": "templates/Wolverine/BLOOD BERSERKER V2 Page 2.webp"
       }
     }
   }
