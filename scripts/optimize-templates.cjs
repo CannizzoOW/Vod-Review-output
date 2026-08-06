@@ -5,7 +5,7 @@ const { spawnSync } = require("child_process");
 const templatesDir = path.join(__dirname, "..", "public", "templates");
 const targetWidth = 1080;
 const targetHeight = 1527;
-const allowedExtensions = new Set([".png"]);
+const allowedExtensions = new Set([".png", ".webp"]);
 
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -22,7 +22,8 @@ function walk(dir) {
 }
 
 function optimize(filePath) {
-  const tempPath = `${filePath}.optimized.png`;
+  const outputPath = filePath.replace(/\.(?:png|webp)$/i, ".webp");
+  const tempPath = `${outputPath}.optimized.webp`;
   const result = spawnSync(
     "ffmpeg",
     [
@@ -34,8 +35,12 @@ function optimize(filePath) {
       filePath,
       "-vf",
       `scale=${targetWidth}:${targetHeight}`,
+      "-c:v",
+      "libwebp",
+      "-quality",
+      "85",
       "-compression_level",
-      "100",
+      "6",
       tempPath,
     ],
     { stdio: "inherit" }
@@ -46,7 +51,11 @@ function optimize(filePath) {
     throw new Error(`ffmpeg failed for ${filePath}`);
   }
 
-  fs.renameSync(tempPath, filePath);
+  fs.renameSync(tempPath, outputPath);
+
+  if (outputPath !== filePath) {
+    fs.rmSync(filePath);
+  }
 }
 
 const files = walk(templatesDir);
@@ -56,7 +65,7 @@ for (const filePath of files) {
   optimize(filePath);
 }
 
-const after = files.reduce((sum, filePath) => sum + fs.statSync(filePath).size, 0);
+const after = walk(templatesDir).reduce((sum, filePath) => sum + fs.statSync(filePath).size, 0);
 
 console.log(`Optimized ${files.length} templates.`);
 console.log(`Before: ${before} bytes`);
