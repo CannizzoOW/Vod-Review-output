@@ -85,6 +85,36 @@ function toModule(emojis) {
   return `export const RIVALS_EMOJI_SOURCE = ${JSON.stringify(SOURCE_URL)};\n\nexport const RIVALS_EMOJIS = ${JSON.stringify(emojis, null, 2)};\n`;
 }
 
+async function readExistingEmojis() {
+  try {
+    const source = await readFile(OUTPUT_PATH, "utf8");
+    const match = source.match(/export const RIVALS_EMOJIS = (?<json>\[[\s\S]*\]);?\s*$/);
+
+    if (!match?.groups?.json) return [];
+
+    const emojis = JSON.parse(match.groups.json);
+    return Array.isArray(emojis) ? emojis : [];
+  } catch {
+    return [];
+  }
+}
+
+function mergeEmojis(fetchedEmojis, existingEmojis) {
+  const merged = new Map(existingEmojis.map((emoji) => [String(emoji.id), emoji]));
+
+  // Fresh source data wins, while emojis omitted by a partial/paginated response
+  // remain available in the picker.
+  for (const emoji of fetchedEmojis) {
+    merged.set(String(emoji.id), emoji);
+  }
+
+  const fetchedIds = new Set(fetchedEmojis.map((emoji) => String(emoji.id)));
+  return [
+    ...fetchedEmojis,
+    ...[...merged.values()].filter((emoji) => !fetchedIds.has(String(emoji.id))),
+  ];
+}
+
 const response = await fetch(SOURCE_URL);
 
 if (!response.ok) {
@@ -100,6 +130,7 @@ if (!emojis.length) {
 
 await mkdir(EMOJI_OUTPUT_DIR, { recursive: true });
 
+const existingEmojis = await readExistingEmojis();
 const localEmojis = [];
 
 for (const emoji of emojis) {
@@ -113,5 +144,10 @@ for (const emoji of emojis) {
   });
 }
 
-await writeFile(OUTPUT_PATH, toModule(localEmojis), "utf8");
-console.log(`Updated ${OUTPUT_PATH} with ${localEmojis.length} Rivals emojis.`);
+const mergedEmojis = mergeEmojis(localEmojis, existingEmojis);
+
+await writeFile(OUTPUT_PATH, toModule(mergedEmojis), "utf8");
+console.log(
+  `Updated ${OUTPUT_PATH} with ${mergedEmojis.length} Rivals emojis ` +
+  `(${localEmojis.length} fetched, ${mergedEmojis.length - localEmojis.length} preserved).`
+);
