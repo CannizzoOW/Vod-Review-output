@@ -55,7 +55,7 @@ export function PlacedLayer({
   const hasTimestamp = layer.kind === "text" && Boolean(layer.timestamp);
   const hasTimestampGutter =
     timestampGutterWidth > 0 &&
-    hasTimestamp;
+    (hasTimestamp || layer.reserveTimestampGutter);
   const timestampGutter = timestampGutterWidth;
 
   const style = {
