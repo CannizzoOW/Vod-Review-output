@@ -697,6 +697,104 @@ export default function App() {
     );
   }
 
+  function overrideDiscordTimestampIndent() {
+    const importedTextLayers = activePage?.layers.filter(
+      (layer) => layer.kind === "text" && layer.sourceSegmentId
+    ) || [];
+    const isOverrideActive = importedTextLayers.some(
+      (layer) => layer.discordIndentOverride || layer.reserveTimestampGutter
+    );
+
+    if (!isOverrideActive) uiState.setTimestampGutterWidth(84);
+
+    updateActivePageLayers((layers) =>
+      layers.map((layer) =>
+        layer.kind === "text" && layer.sourceSegmentId
+          ? isOverrideActive
+            ? {
+              ...layer,
+              timestampGutter: layer.discordOriginalIndent?.timestampGutter ?? (layer.timestamp ? 84 : 0),
+              reserveTimestampGutter: layer.discordOriginalIndent?.reserveTimestampGutter ?? false,
+              discordIndentOverride: false,
+              discordOriginalIndent: undefined,
+            }
+            : {
+              ...layer,
+              discordOriginalIndent: {
+                timestampGutter: layer.timestampGutter,
+                reserveTimestampGutter: layer.reserveTimestampGutter,
+              },
+              timestampGutter: layer.segmentType === "heading" ? 0 : 84,
+              reserveTimestampGutter: layer.segmentType !== "heading",
+              discordIndentOverride: true,
+            }
+          : layer
+      )
+    );
+  }
+
+  function overrideDiscordTextLayout() {
+    const mainZone = activeSafeZones.find((zone) => zone.id === "mainText");
+    if (!mainZone) return;
+
+    const padding = mainZone.padding || 20;
+    const width = mainZone.w - padding * 2;
+    const importedTextLayers = activePage?.layers.filter(
+      (layer) =>
+        layer.kind === "text" &&
+        layer.sourceSegmentId &&
+        layer.groupName !== "Description" &&
+        layer.parentGroupName !== "Image"
+    ) || [];
+    const isOverrideActive = importedTextLayers.some((layer) => layer.discordPlacementOverride);
+
+    updateActivePageLayers((layers) =>
+      layers.map((layer) => {
+        if (
+          layer.kind !== "text" ||
+          !layer.sourceSegmentId ||
+          layer.groupName === "Description" ||
+          layer.parentGroupName === "Image"
+        ) {
+          return layer;
+        }
+
+        if (isOverrideActive) {
+          const original = layer.discordOriginalPlacement;
+
+          return {
+            ...layer,
+            ...(original || {}),
+            discordPlacementOverride: false,
+            discordOriginalPlacement: undefined,
+          };
+        }
+
+        const timestampGutter = layer.segmentType === "heading"
+          ? 0
+          : (layer.timestampGutter || ((layer.timestamp || layer.reserveTimestampGutter) ? 84 : 0));
+        const nextLayer = {
+          ...layer,
+          discordOriginalPlacement: {
+            x: layer.x,
+            w: layer.w,
+            h: layer.h,
+            zoneId: layer.zoneId,
+            autoFlow: layer.autoFlow,
+          },
+          x: mainZone.x + padding,
+          w: width,
+          h: estimateTextHeight(layer.text, width - timestampGutter, layer.fontSize),
+          zoneId: mainZone.id,
+          autoFlow: false,
+          discordPlacementOverride: true,
+        };
+
+        return nextLayer;
+      })
+    );
+  }
+
   function updateCanvasLayer(layerId, patch, options = {}) {
     const isMultiSelection =
       selectedLayerIds.length > 1 &&
@@ -2117,6 +2215,8 @@ export default function App() {
               setTimestampFontSize={uiState.setTimestampFontSize}
               timestampColor={uiState.timestampColor}
               setTimestampColor={uiState.setTimestampColor}
+              overrideDiscordTimestampIndent={overrideDiscordTimestampIndent}
+              overrideDiscordTextLayout={overrideDiscordTextLayout}
               layerListOpen={uiState.layerListOpen}
               setLayerListOpen={uiState.setLayerListOpen}
               historyOpen={uiState.historyOpen}

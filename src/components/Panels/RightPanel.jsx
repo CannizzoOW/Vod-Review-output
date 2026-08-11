@@ -38,6 +38,8 @@ export function RightPanel({
   setTimestampFontSize,
   timestampColor,
   setTimestampColor,
+  overrideDiscordTimestampIndent,
+  overrideDiscordTextLayout,
   layerListOpen,
   setLayerListOpen,
   historyOpen,
@@ -51,6 +53,15 @@ export function RightPanel({
   const [collapsedGroups, setCollapsedGroups] = useState({});
   const [editingName, setEditingName] = useState(null);
   const layerEntries = buildLayerEntries(activePage.layers || []);
+  const discordTextLayers = (activePage.layers || []).filter(
+    (layer) => layer.kind === "text" && layer.sourceSegmentId
+  );
+  const discordIndentOverrideActive = discordTextLayers.some(
+    (layer) => layer.discordIndentOverride || layer.reserveTimestampGutter
+  );
+  const discordPlacementOverrideActive = discordTextLayers.some(
+    (layer) => layer.discordPlacementOverride
+  );
 
   function getLayerGroupKey(layer) {
     if (!layer.groupId) return "";
@@ -672,6 +683,67 @@ export function RightPanel({
               tabIndex={timestampGutterWidth > 0 ? 0 : -1}
             />
           </label>
+        </div>
+      </div>
+
+      <div className="panel mt-3">
+        <div>
+          <p className="font-black">Discord layout overrides</p>
+          <p className="mt-1 text-sm text-slate-400">
+            Reapply formatting to imported text on this page.
+          </p>
+        </div>
+
+        <div className="mt-3 grid gap-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="font-bold">Timestamp indent</p>
+              <p className="text-sm text-slate-400">
+                {discordIndentOverrideActive ? "Override on" : "Original spacing"}
+              </p>
+            </div>
+
+            <button
+              className={`relative h-7 w-12 shrink-0 rounded-full border transition ${
+                discordIndentOverrideActive
+                  ? "border-blue-400 bg-blue-600"
+                  : "border-slate-700 bg-slate-950"
+              }`}
+              onClick={overrideDiscordTimestampIndent}
+              title={discordIndentOverrideActive ? "Restore timestamp indentation" : "Override timestamp indentation"}
+            >
+              <span
+                className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                  discordIndentOverrideActive ? "left-6" : "left-1"
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="font-bold">Fit to text zone</p>
+              <p className="text-sm text-slate-400">
+                {discordPlacementOverrideActive ? "Override on" : "Original placement"}
+              </p>
+            </div>
+
+            <button
+              className={`relative h-7 w-12 shrink-0 rounded-full border transition ${
+                discordPlacementOverrideActive
+                  ? "border-blue-400 bg-blue-600"
+                  : "border-slate-700 bg-slate-950"
+              }`}
+              onClick={overrideDiscordTextLayout}
+              title={discordPlacementOverrideActive ? "Restore text placement" : "Fit imported text to the main text zone"}
+            >
+              <span
+                className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+                  discordPlacementOverrideActive ? "left-6" : "left-1"
+                }`}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
