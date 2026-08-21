@@ -44,6 +44,7 @@ export async function exportAllPages({
         const exportOptions = getPngExportOptions(PAGE_W, PAGE_H);
 
         if (pages.length <= 1) {
+            await waitForCanvasAssets(exportRef.current);
             const dataUrl = await toPng(exportRef.current, exportOptions);
 
             downloadUrl(dataUrl, `${baseName}-page-${activePageIndex + 1}.png`);
@@ -61,6 +62,7 @@ export async function exportAllPages({
         const files = [];
 
         for (const [index, node] of pageNodes.entries()) {
+            await waitForCanvasAssets(node);
             const dataUrl = await toPng(node, exportOptions);
 
             files.push({
@@ -77,6 +79,54 @@ export async function exportAllPages({
         uiState.setGridEnabled(wasGridEnabled);
         uiState.setLockToRegions(wasLockToRegions);
         uiState.setIsExporting(false);
+    }
+}
+
+async function waitForCanvasAssets(node) {
+    if (document.fonts?.ready) {
+        await document.fonts.ready;
+    }
+
+    const images = Array.from(node.querySelectorAll("img"));
+    await Promise.all(images.map(waitForImage));
+
+    // Give the browser a paint after decoding before html-to-image clones the node.
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+async function waitForImage(image) {
+    if (!image.complete) {
+        await new Promise((resolve, reject) => {
+            const timeoutId = setTimeout(() => {
+                cleanup();
+                reject(new Error(`Timed out while loading export image: ${image.currentSrc || image.src}`));
+            }, 15000);
+
+            const cleanup = () => {
+                clearTimeout(timeoutId);
+                image.removeEventListener("load", handleLoad);
+                image.removeEventListener("error", handleError);
+            };
+            const handleLoad = () => {
+                cleanup();
+                resolve();
+            };
+            const handleError = () => {
+                cleanup();
+                reject(new Error(`Could not load export image: ${image.currentSrc || image.src}`));
+            };
+
+            image.addEventListener("load", handleLoad, { once: true });
+            image.addEventListener("error", handleError, { once: true });
+        });
+    }
+
+    if (!image.naturalWidth) {
+        throw new Error(`Export image has no decoded content: ${image.currentSrc || image.src}`);
+    }
+
+    if (typeof image.decode === "function") {
+        await image.decode();
     }
 }
 

@@ -465,6 +465,8 @@ export function PlacedLayer({
             <img
               src={layer.src}
               alt={layer.name || "Screenshot"}
+              loading="eager"
+              decoding={isExporting ? "sync" : "async"}
               className="h-full w-full"
               style={{ width: "100%", height: "100%", objectFit: layer.objectFit || "fill" }}
               draggable={false}
@@ -499,6 +501,8 @@ export function PlacedLayer({
         <img
           src={layer.src}
           alt={layer.name || "Rivals emoji"}
+          loading="eager"
+          decoding={isExporting ? "sync" : "async"}
           className="h-full w-full object-fill"
           style={{ width: "100%", height: "100%", objectFit: "fill" }}
           draggable={false}
