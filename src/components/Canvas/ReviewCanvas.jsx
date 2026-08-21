@@ -74,9 +74,9 @@ export function ReviewCanvas({
         <img
           src={templateBackground}
           alt="Hero template"
-          fetchPriority={isExporting ? "auto" : "high"}
-          loading={isExporting ? "lazy" : "eager"}
-          decoding="async"
+          fetchPriority="high"
+          loading="eager"
+          decoding={isExporting ? "sync" : "async"}
           onError={(e) => {
             e.currentTarget.src = FALLBACK_TEMPLATE;
           }}
